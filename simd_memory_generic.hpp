@@ -62,6 +62,33 @@ inline void setvec_simd(F * dest, F f, uint n)
     }
 }
 
+template <typename F>
+inline void set_slope_vec(F * dest, F f, F slope, uint n)
+{
+    assert(n);
+    do
+    {
+        *dest++ = f; f += slope;
+    }
+    while (--n);
+}
+
+template <typename F>
+inline void set_slope_vec_simd(F * dest, F f, F slope, uint n)
+{
+    for (uint i = 0; i != n; i+=8)
+    {
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+        *dest++ = f; f += slope;
+    }
+}
+
 
 template <typename F>
 inline void copyvec(F * dest, const F * src, uint n)

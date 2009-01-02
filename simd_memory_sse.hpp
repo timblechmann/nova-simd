@@ -136,6 +136,29 @@ inline void setvec_simd(float *dest, float v, uint n)
 }
 
 
+template <>
+inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
+{
+    n = n / 8;
+
+    __m128 val =_mm_set_ps(v, v + slope,
+                           v+2*slope, v+3*slope);
+    const __m128 vslope =_mm_set_ps1(4*slope);
+
+    do
+    {
+        _mm_store_ps(dest, val);
+        val = _mm_add_ps(val, vslope);
+
+        _mm_store_ps(dest+4, val);
+        val = _mm_add_ps(val, vslope);
+
+        dest += 8;
+    }
+    while (--n);
+}
+
+
 namespace detail
 {
 
