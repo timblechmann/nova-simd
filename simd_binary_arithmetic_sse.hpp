@@ -184,17 +184,14 @@ inline void plus_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_add_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -217,17 +214,14 @@ inline void plus_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_add_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -381,17 +375,14 @@ inline void minus_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_sub_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -414,17 +405,14 @@ inline void minus_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_sub_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -578,17 +566,14 @@ inline void times_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_mul_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -611,17 +596,14 @@ inline void times_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_mul_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -775,17 +757,14 @@ inline void over_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_div_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -808,17 +787,14 @@ inline void over_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_div_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -972,17 +948,14 @@ inline void min_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_min_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1005,17 +978,14 @@ inline void min_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_min_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -1169,17 +1139,14 @@ inline void max_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_max_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1202,17 +1169,14 @@ inline void max_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_max_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -1366,17 +1330,14 @@ inline void less_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmplt_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1399,17 +1360,14 @@ inline void less_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmplt_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -1563,17 +1521,14 @@ inline void less_equal_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmple_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1596,17 +1551,14 @@ inline void less_equal_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmple_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -1760,17 +1712,14 @@ inline void greater_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmpgt_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1793,17 +1742,14 @@ inline void greater_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmpgt_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -1957,17 +1903,14 @@ inline void greater_equal_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmpge_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -1990,17 +1933,14 @@ inline void greater_equal_vec_simd(float * out, float arg1, const float arg1_slo
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmpge_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -2154,17 +2094,14 @@ inline void equal_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmpeq_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -2187,17 +2124,14 @@ inline void equal_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmpeq_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -2351,17 +2285,14 @@ inline void notequal_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = _mm_cmpneq_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -2384,17 +2315,14 @@ inline void notequal_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = _mm_cmpneq_ps(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }

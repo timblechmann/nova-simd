@@ -191,17 +191,14 @@ inline void ${label}_vec_simd(float * out, const float * arg1, float arg2,
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
-
-        in1 = _mm_load_ps(arg1);
+        in1 = _mm_load_ps(arg1+4);
         result = ${opcode}(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
 
-        out += 4;
-        arg1 += 4;
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -224,17 +221,14 @@ inline void ${label}_vec_simd(float * out, float arg1, const float arg1_slope,
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
-
-        in2 = _mm_load_ps(arg2);
+        in2 = _mm_load_ps(arg2+4);
         result = ${opcode}(in1, in2);
 
-        _mm_store_ps(out, result);
+        _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
 
-        out += 4;
-        arg2 += 4;
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
