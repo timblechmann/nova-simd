@@ -141,7 +141,7 @@ inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
 {
     n = n / 8;
 
-    __m128 val =_mm_set_ps(v, v + slope,
+    __m128 val = _mm_set_ps(v, v + slope,
                            v+2*slope, v+3*slope);
     const __m128 vslope =_mm_set_ps1(4*slope);
 
@@ -152,6 +152,28 @@ inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
 
         _mm_store_ps(dest+4, val);
         val = _mm_add_ps(val, vslope);
+
+        dest += 8;
+    }
+    while (--n);
+}
+
+template <>
+inline void set_exp_vec_simd(float * dest, float f, float curve, uint n)
+{
+    n = n / 8;
+
+    __m128 val = _mm_set_ps(f, f * curve, f * curve * curve,
+                            f * curve * curve * curve);
+    const __m128 vcurve =_mm_set_ps1(curve * curve * curve * curve);
+
+    do
+    {
+        _mm_store_ps(dest, val);
+        val = _mm_mul_ps(val, vcurve);
+
+        _mm_store_ps(dest+4, val);
+        val = _mm_add_ps(val, vcurve);
 
         dest += 8;
     }
