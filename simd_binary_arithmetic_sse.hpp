@@ -58,12 +58,15 @@ template <int n>
 always_inline void plus_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_add_ps(in1, src2);
+    const __m128 result1 = _mm_add_ps(in1, src2);
+    const __m128 result2 = _mm_add_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    plus_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    plus_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -73,13 +76,16 @@ always_inline void plus_vec_simd_mp_iteration<0>(float * out, const float * src1
 template <int n>
 always_inline void plus_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_add_ps(src1, in2);
+    const __m128 result1 = _mm_add_ps(src1, in1);
+    const __m128 result2 = _mm_add_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    plus_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    plus_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -249,12 +255,15 @@ template <int n>
 always_inline void minus_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_sub_ps(in1, src2);
+    const __m128 result1 = _mm_sub_ps(in1, src2);
+    const __m128 result2 = _mm_sub_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    minus_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    minus_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -264,13 +273,16 @@ always_inline void minus_vec_simd_mp_iteration<0>(float * out, const float * src
 template <int n>
 always_inline void minus_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_sub_ps(src1, in2);
+    const __m128 result1 = _mm_sub_ps(src1, in1);
+    const __m128 result2 = _mm_sub_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    minus_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    minus_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -440,12 +452,15 @@ template <int n>
 always_inline void times_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_mul_ps(in1, src2);
+    const __m128 result1 = _mm_mul_ps(in1, src2);
+    const __m128 result2 = _mm_mul_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    times_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    times_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -455,13 +470,16 @@ always_inline void times_vec_simd_mp_iteration<0>(float * out, const float * src
 template <int n>
 always_inline void times_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_mul_ps(src1, in2);
+    const __m128 result1 = _mm_mul_ps(src1, in1);
+    const __m128 result2 = _mm_mul_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    times_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    times_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -631,12 +649,15 @@ template <int n>
 always_inline void over_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_div_ps(in1, src2);
+    const __m128 result1 = _mm_div_ps(in1, src2);
+    const __m128 result2 = _mm_div_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    over_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    over_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -646,13 +667,16 @@ always_inline void over_vec_simd_mp_iteration<0>(float * out, const float * src1
 template <int n>
 always_inline void over_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_div_ps(src1, in2);
+    const __m128 result1 = _mm_div_ps(src1, in1);
+    const __m128 result2 = _mm_div_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    over_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    over_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -822,12 +846,15 @@ template <int n>
 always_inline void min_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_min_ps(in1, src2);
+    const __m128 result1 = _mm_min_ps(in1, src2);
+    const __m128 result2 = _mm_min_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    min_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    min_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -837,13 +864,16 @@ always_inline void min_vec_simd_mp_iteration<0>(float * out, const float * src1,
 template <int n>
 always_inline void min_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_min_ps(src1, in2);
+    const __m128 result1 = _mm_min_ps(src1, in1);
+    const __m128 result2 = _mm_min_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    min_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    min_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1013,12 +1043,15 @@ template <int n>
 always_inline void max_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_max_ps(in1, src2);
+    const __m128 result1 = _mm_max_ps(in1, src2);
+    const __m128 result2 = _mm_max_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    max_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    max_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1028,13 +1061,16 @@ always_inline void max_vec_simd_mp_iteration<0>(float * out, const float * src1,
 template <int n>
 always_inline void max_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_max_ps(src1, in2);
+    const __m128 result1 = _mm_max_ps(src1, in1);
+    const __m128 result2 = _mm_max_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    max_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    max_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1204,12 +1240,15 @@ template <int n>
 always_inline void less_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmplt_ps(in1, src2);
+    const __m128 result1 = _mm_cmplt_ps(in1, src2);
+    const __m128 result2 = _mm_cmplt_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    less_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    less_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1219,13 +1258,16 @@ always_inline void less_vec_simd_mp_iteration<0>(float * out, const float * src1
 template <int n>
 always_inline void less_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmplt_ps(src1, in2);
+    const __m128 result1 = _mm_cmplt_ps(src1, in1);
+    const __m128 result2 = _mm_cmplt_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    less_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    less_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1395,12 +1437,15 @@ template <int n>
 always_inline void less_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmple_ps(in1, src2);
+    const __m128 result1 = _mm_cmple_ps(in1, src2);
+    const __m128 result2 = _mm_cmple_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    less_equal_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1410,13 +1455,16 @@ always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const float 
 template <int n>
 always_inline void less_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmple_ps(src1, in2);
+    const __m128 result1 = _mm_cmple_ps(src1, in1);
+    const __m128 result2 = _mm_cmple_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    less_equal_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1586,12 +1634,15 @@ template <int n>
 always_inline void greater_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmpgt_ps(in1, src2);
+    const __m128 result1 = _mm_cmpgt_ps(in1, src2);
+    const __m128 result2 = _mm_cmpgt_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    greater_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    greater_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1601,13 +1652,16 @@ always_inline void greater_vec_simd_mp_iteration<0>(float * out, const float * s
 template <int n>
 always_inline void greater_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmpgt_ps(src1, in2);
+    const __m128 result1 = _mm_cmpgt_ps(src1, in1);
+    const __m128 result2 = _mm_cmpgt_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    greater_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    greater_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1777,12 +1831,15 @@ template <int n>
 always_inline void greater_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmpge_ps(in1, src2);
+    const __m128 result1 = _mm_cmpge_ps(in1, src2);
+    const __m128 result2 = _mm_cmpge_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    greater_equal_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1792,13 +1849,16 @@ always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const flo
 template <int n>
 always_inline void greater_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmpge_ps(src1, in2);
+    const __m128 result1 = _mm_cmpge_ps(src1, in1);
+    const __m128 result2 = _mm_cmpge_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    greater_equal_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -1968,12 +2028,15 @@ template <int n>
 always_inline void equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmpeq_ps(in1, src2);
+    const __m128 result1 = _mm_cmpeq_ps(in1, src2);
+    const __m128 result2 = _mm_cmpeq_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    equal_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -1983,13 +2046,16 @@ always_inline void equal_vec_simd_mp_iteration<0>(float * out, const float * src
 template <int n>
 always_inline void equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmpeq_ps(src1, in2);
+    const __m128 result1 = _mm_cmpeq_ps(src1, in1);
+    const __m128 result2 = _mm_cmpeq_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    equal_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
@@ -2159,12 +2225,15 @@ template <int n>
 always_inline void notequal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
 {
     const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result = _mm_cmpneq_ps(in1, src2);
+    const __m128 result1 = _mm_cmpneq_ps(in1, src2);
+    const __m128 result2 = _mm_cmpneq_ps(in2, src2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    notequal_vec_simd_mp_iteration<n-4>(out+4, src1+4, src2);
+    notequal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
 }
 
 template <>
@@ -2174,13 +2243,16 @@ always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const float * 
 template <int n>
 always_inline void notequal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
 {
-    const __m128 in2 = _mm_load_ps(src2);
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result = _mm_cmpneq_ps(src1, in2);
+    const __m128 result1 = _mm_cmpneq_ps(src1, in1);
+    const __m128 result2 = _mm_cmpneq_ps(src1, in2);
 
-    _mm_store_ps(out, result);
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
 
-    notequal_vec_simd_mp_iteration<n-4>(out+4, src1, src2+4);
+    notequal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
 }
 
 template <>
