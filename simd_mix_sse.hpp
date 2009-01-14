@@ -32,17 +32,19 @@ void mix_vec_simd(float * out, const float * in0, float factor0, const float * i
 
     n /= 8;
     do {
-        __m128 sig0 = _mm_load_ps(in0);
-        __m128 sig1 = _mm_load_ps(in1);
-        __m128 mix  = _mm_add_ps(_mm_mul_ps(sig0, f0),
-                                 _mm_mul_ps(sig1, f1));
-        _mm_store_ps(out, mix);
+        __m128 sig00 = _mm_load_ps(in0);
+        __m128 sig01 = _mm_load_ps(in1);
+        __m128 sig10 = _mm_load_ps(in0+4);
+        __m128 sig11 = _mm_load_ps(in1+4);
 
-        sig0 = _mm_load_ps(in0+4);
-        sig1 = _mm_load_ps(in1+4);
-        mix  = _mm_add_ps(_mm_mul_ps(sig0, f0),
-                          _mm_mul_ps(sig1, f1));
-        _mm_store_ps(out+4, mix);
+        __m128 mix0  = _mm_add_ps(_mm_mul_ps(sig00, f0),
+                                  _mm_mul_ps(sig01, f1));
+
+        __m128 mix1  = _mm_add_ps(_mm_mul_ps(sig10, f0),
+                                  _mm_mul_ps(sig11, f1));
+
+        _mm_store_ps(out, mix0);
+        _mm_store_ps(out+4, mix1);
 
         out += 8;
         in0 += 8;
@@ -64,20 +66,21 @@ void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
 
     n /= 8;
     do {
-        __m128 sig0 = _mm_load_ps(in0);
-        __m128 sig1 = _mm_load_ps(in1);
-        __m128 mix  = _mm_add_ps(_mm_mul_ps(sig0, f0),
-                                 _mm_mul_ps(sig1, f1));
-        _mm_store_ps(out, mix);
+        __m128 sig00 = _mm_load_ps(in0);
+        __m128 sig01 = _mm_load_ps(in1);
+        __m128 sig10 = _mm_load_ps(in0+4);
+        __m128 sig11 = _mm_load_ps(in1+4);
+        __m128 mix0  = _mm_add_ps(_mm_mul_ps(sig00, f0),
+                                  _mm_mul_ps(sig01, f1));
+        _mm_store_ps(out, mix0);
 
         f0 = _mm_add_ps(f0, vslope0);
         f1 = _mm_add_ps(f1, vslope1);
 
-        sig0 = _mm_load_ps(in0+4);
-        sig1 = _mm_load_ps(in1+4);
-        mix  = _mm_add_ps(_mm_mul_ps(sig0, f0),
-                          _mm_mul_ps(sig1, f1));
-        _mm_store_ps(out+4, mix);
+        __m128 mix1  = _mm_add_ps(_mm_mul_ps(sig10, f0),
+                                  _mm_mul_ps(sig11, f1));
+        _mm_store_ps(out+4, mix1);
+
         f0 = _mm_add_ps(f0, vslope0);
         f1 = _mm_add_ps(f1, vslope1);
 

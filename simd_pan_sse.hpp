@@ -35,13 +35,13 @@ void pan2_vec_simd(float * out0, float * out1, const float * in,
 
     do
     {
-        __m128 sig = _mm_load_ps(in);
-        _mm_store_ps(out0, _mm_mul_ps(sig, f0));
-        _mm_store_ps(out1, _mm_mul_ps(sig, f1));
+        __m128 sig0 = _mm_load_ps(in);
+        __m128 sig1 = _mm_load_ps(in+4);
+        _mm_store_ps(out0, _mm_mul_ps(sig0, f0));
+        _mm_store_ps(out1, _mm_mul_ps(sig0, f1));
 
-        sig = _mm_load_ps(in+4);
-        _mm_store_ps(out0+4, _mm_mul_ps(sig, f0));
-        _mm_store_ps(out1+4, _mm_mul_ps(sig, f1));
+        _mm_store_ps(out0+4, _mm_mul_ps(sig1, f0));
+        _mm_store_ps(out1+4, _mm_mul_ps(sig1, f1));
 
         in += 8;
         out0 += 8;
@@ -65,15 +65,15 @@ void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, 
 
     do
     {
-        __m128 sig = _mm_load_ps(in);
-        _mm_store_ps(out0, _mm_mul_ps(sig, f0));
-        _mm_store_ps(out1, _mm_mul_ps(sig, f1));
+        __m128 sig0 = _mm_load_ps(in);
+        __m128 sig1 = _mm_load_ps(in+4);
+        _mm_store_ps(out0, _mm_mul_ps(sig0, f0));
+        _mm_store_ps(out1, _mm_mul_ps(sig0, f1));
         f0 = _mm_add_ps(f0, vslope0);
         f1 = _mm_add_ps(f1, vslope1);
 
-        sig = _mm_load_ps(in+4);
-        _mm_store_ps(out0+4, _mm_mul_ps(sig, f0));
-        _mm_store_ps(out1+4, _mm_mul_ps(sig, f1));
+        _mm_store_ps(out0+4, _mm_mul_ps(sig1, f0));
+        _mm_store_ps(out1+4, _mm_mul_ps(sig1, f1));
         f0 = _mm_add_ps(f0, vslope0);
         f1 = _mm_add_ps(f1, vslope1);
 
