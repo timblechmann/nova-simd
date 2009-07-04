@@ -79,14 +79,26 @@ inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const f
 {
     unsigned int loops = n / 8;
     do {
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
-        *out++ = $operation(*arg1++, *arg2++);
+        float_type out0 = $operation(arg1[0], arg2[0]);
+        float_type out1 = $operation(arg1[1], arg2[1]);
+        float_type out2 = $operation(arg1[2], arg2[2]);
+        float_type out3 = $operation(arg1[3], arg2[3]);
+        float_type out4 = $operation(arg1[4], arg2[4]);
+        float_type out5 = $operation(arg1[5], arg2[5]);
+        float_type out6 = $operation(arg1[6], arg2[6]);
+        float_type out7 = $operation(arg1[7], arg2[7]);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg1 += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
@@ -96,14 +108,25 @@ inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const f
 {
     unsigned int loops = n / 8;
     do {
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
-        *out++ = $operation(*arg1++, arg2);
+        float_type out0 = $operation(arg1[0], arg2);
+        float_type out1 = $operation(arg1[1], arg2);
+        float_type out2 = $operation(arg1[2], arg2);
+        float_type out3 = $operation(arg1[3], arg2);
+        float_type out4 = $operation(arg1[4], arg2);
+        float_type out5 = $operation(arg1[5], arg2);
+        float_type out6 = $operation(arg1[6], arg2);
+        float_type out7 = $operation(arg1[7], arg2);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg1 += 8;
     }
     while (--loops);
 }
@@ -113,14 +136,25 @@ inline void ${label}_vec_simd(float_type * out, const float_type arg1, const flo
 {
     unsigned int loops = n / 8;
     do {
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
-        *out++ = $operation(arg1, *arg2++);
+        float_type out0 = $operation(arg1, arg2[0]);
+        float_type out1 = $operation(arg1, arg2[1]);
+        float_type out2 = $operation(arg1, arg2[2]);
+        float_type out3 = $operation(arg1, arg2[3]);
+        float_type out4 = $operation(arg1, arg2[4]);
+        float_type out5 = $operation(arg1, arg2[5]);
+        float_type out6 = $operation(arg1, arg2[6]);
+        float_type out7 = $operation(arg1, arg2[7]);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg2 += 8;
     }
     while (--loops);
 }
