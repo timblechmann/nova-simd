@@ -257,7 +257,7 @@ body = binary_sse_template.substitute(label='plus', opcode='_mm_add_ps') + \
 body = binary_sse_prolog + body + binary_sse_epilog
 
 ret = generate_file(body, "binary arithmetic simd functions for sse",
-                    "SIMD_BINARY_ARITHMETIC_SSE_HPP", ["<xmmintrin.h>", "\"simd_binary_arithmetic.hpp\""],
+                    "SIMD_BINARY_ARITHMETIC_SSE_HPP", ["<xmmintrin.h>"],
                     'nova')
 
 if (len(sys.argv) > 1):

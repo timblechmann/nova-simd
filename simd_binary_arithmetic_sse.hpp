@@ -22,7 +22,6 @@
 #define SIMD_BINARY_ARITHMETIC_SSE_HPP
 
 #include <xmmintrin.h>
-#include "simd_binary_arithmetic.hpp"
 
 namespace nova {
 
