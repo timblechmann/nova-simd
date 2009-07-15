@@ -1,5 +1,5 @@
 //  softclip
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@
 #include <cassert>
 #include <cmath>
 
-#ifdef __SSE2__
+#ifdef __SSE__
 #include <xmmintrin.h>
-#include <emmintrin.h>
 #include "simd_utils.hpp"
 #endif
 
@@ -51,7 +50,7 @@ inline void softclip4(float_type * out, const float_type * in, unsigned int n)
     softclip(out, in, n);
 }
 
-#ifdef __SSE2__
+#ifdef __SSE__
 /* this computes both parts of the branch
  *
  * benchmarks (core2) showed:

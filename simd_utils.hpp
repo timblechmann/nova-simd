@@ -1,5 +1,5 @@
 //  utilities for the simd implementation
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -58,8 +58,18 @@ inline __m128 gen_05(void)
     __m128i ones = _mm_cmpeq_epi32(x, x);
     return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 26), 24);
 }
+
+inline __m128 gen_025(void)
+{
+    __m128i x = _mm_setzero_si128();
+    __m128i ones = _mm_cmpeq_epi32(x, x);
+    return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 27), 25);
+}
+
 #else
+
 /* SSE fallback */
+
 inline __m128 gen_sign_mask(void)
 {
     static const int sign_mask = 0x80000000;
@@ -82,6 +92,11 @@ inline __m128 gen_one(void)
 inline __m128 gen_05(void)
 {
     return _mm_set_ps1(0.5f);
+}
+
+inline __m128 gen_025(void)
+{
+    return _mm_set_ps1(0.25f);
 }
 #endif
 
