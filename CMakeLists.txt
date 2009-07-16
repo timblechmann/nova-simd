@@ -4,4 +4,5 @@ project (nova-simd)
 enable_testing()
 
 add_subdirectory (benchmarks)
+add_subdirectory (testsuite)
 
