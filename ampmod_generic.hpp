@@ -69,7 +69,7 @@ inline void amp_mod_simd(float_type * out, const float_type * in1, const float_t
 }
 
 template <typename float_type>
-inline void amp_mod4_simd(float_type * out, const float_type * in1, const float_type * in2,
+inline void amp_mod_simd(float_type * out, const float_type * in1, const float_type * in2,
                           float_type amount, const float_type amount_slope,
                           unsigned int n)
 {

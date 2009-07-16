@@ -31,7 +31,7 @@ namespace detail
 {
 
 /** compute x1 * (1 + x2 * amount)  */
-__m128 inline amp_mod4_loop(__m128 x1, __m128 x2, __m128 amount, __m128 one)
+__m128 inline amp_mod_simd_loop(__m128 x1, __m128 x2, __m128 amount, __m128 one)
 {
     return _mm_mul_ps(x1,
                       _mm_add_ps(one,
@@ -41,8 +41,8 @@ __m128 inline amp_mod4_loop(__m128 x1, __m128 x2, __m128 amount, __m128 one)
 } /* namespace detail */
 
 template <>
-inline void amp_mod4(float * out, const float * in1, const float * in2,
-                     const float amount, unsigned int n)
+inline void amp_mod_simd(float * out, const float * in1, const float * in2,
+                         const float amount, unsigned int n)
 {
     std::size_t loops = n >> 2;
     const __m128 one = detail::gen_one();
@@ -56,7 +56,7 @@ inline void amp_mod4(float * out, const float * in1, const float * in2,
         const __m128 x2 = _mm_load_ps(in2);
         in2 += 4;
 
-        const __m128 result = detail::amp_mod4_loop(x1, x2, amnt, one);
+        const __m128 result = detail::amp_mod_simd_loop(x1, x2, amnt, one);
 
         _mm_store_ps(out, result);
         out += 4;
@@ -65,8 +65,8 @@ inline void amp_mod4(float * out, const float * in1, const float * in2,
 }
 
 template <>
-inline void amp_mod4(float * out, const float * in1, const float * in2,
-                     const float amount, const float amount_slope, unsigned int n)
+inline void amp_mod_simd(float * out, const float * in1, const float * in2,
+                         const float amount, const float amount_slope, unsigned int n)
 {
     std::size_t loops = n >> 2;
     const __m128 one = detail::gen_one();
@@ -84,7 +84,7 @@ inline void amp_mod4(float * out, const float * in1, const float * in2,
         const __m128 x2 = _mm_load_ps(in2);
         in2 += 4;
 
-        const __m128 result = detail::amp_mod4_loop(x1, x2, amnt, one);
+        const __m128 result = detail::amp_mod_simd_loop(x1, x2, amnt, one);
 
         amnt = _mm_add_ps(amnt, slope);
 
@@ -95,8 +95,8 @@ inline void amp_mod4(float * out, const float * in1, const float * in2,
 }
 
 template <>
-inline void amp_mod4(float * out, const float * in1, const float * in2,
-                     const float * amount, unsigned int n)
+inline void amp_mod_simd(float * out, const float * in1, const float * in2,
+                         const float * amount, unsigned int n)
 {
     std::size_t loops = n >> 2;
     const __m128 one = detail::gen_one();
@@ -110,7 +110,7 @@ inline void amp_mod4(float * out, const float * in1, const float * in2,
         const __m128 amnt = _mm_load_ps(amount);
         amount += 4;
 
-        const __m128 result = detail::amp_mod4_loop(x1, x2, amnt, one);
+        const __m128 result = detail::amp_mod_simd_loop(x1, x2, amnt, one);
 
         _mm_store_ps(out, result);
         out += 4;
