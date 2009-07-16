@@ -1,6 +1,7 @@
 set(tests
   simd_math_tests.cpp
   simd_tests.cpp
+  simd_unary_tests.cpp
   softclip_test.cpp
 )
 

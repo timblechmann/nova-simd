@@ -13,25 +13,6 @@ using namespace std;
 
 static const int size = 64;
 
-#if 0
-/* test range: -25, 25 */
-BOOST_AUTO_TEST_CASE( sign_test )
-{
-    aligned_array<float, size> in;
-    aligned_array<float, size> out;
-    in[0] = -2;
-    in[1] = in[2] = 0;
-    in[3] = 2;
-
-    nova::sgn_vec_simd(out.begin(), in.begin(), size);
-
-    BOOST_REQUIRE_EQUAL( out[0], -1 );
-    BOOST_REQUIRE_EQUAL( out[1], 0 );
-    BOOST_REQUIRE_EQUAL( out[2], 0 );
-    BOOST_REQUIRE_EQUAL( out[3], 1 );
-}
-#endif
-
 template <typename F>
 void run_peak(void)
 {
