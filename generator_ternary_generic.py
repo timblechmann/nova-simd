@@ -24,321 +24,125 @@ import sys
 
 from generator_common import *
 
-ternary_template = Template("""
-/* vector/vector/vector */
+def gen_fn_arg(index, arg):
+    if arg == 0:
+        return "const float_type * arg%d" % index
+    if arg == 1:
+        return "const float_type arg%d" % index
+    if arg == 2:
+        return "float_type arg%d, const float_type arg%d_slope" % (index, index)
+
+def gen_fn_args(a1, a2, a3):
+    ret = "%s, %s, %s" % (gen_fn_arg(1, a1),
+                          gen_fn_arg(2, a2),
+                          gen_fn_arg(3, a3))
+    return ret
+
+def gen_call_arg(index, arg):
+    if arg == 0:
+        return "*arg%d++" % index
+    if arg == 1 or arg == 2:
+        return "arg%d" % index
+
+def gen_call_args(a1, a2, a3):
+    ret = "%s, %s, %s" % (gen_call_arg(1, a1),
+                          gen_call_arg(2, a2),
+                          gen_call_arg(3, a3))
+    return ret
+
+
+def gen_fn_arg(index, arg):
+    if arg == 0:
+        return "const float_type * arg%d" % index
+    if arg == 1:
+        return "const float_type arg%d" % index
+    if arg == 2:
+        return "float_type arg%d, const float_type arg%d_slope" % (index, index)
+
+
+def gen_inc_slope_(index, arg):
+    if arg != 2:
+        return ""
+
+    return 8 * ' ' + "arg%d += arg%d_slope;\n" % (index, index)
+
+
+def gen_inc_slope(a1, a2, a3):
+    ret = gen_inc_slope_(1, a1) + \
+          gen_inc_slope_(2, a2) + \
+          gen_inc_slope_(3, a3)
+
+    if ret == "":
+        return ret
+    return "\n" + ret.rstrip()
+
+def gen_fn_suffix(a1, a2, a3):
+    ret = ""
+
+    if a1 == 2:
+        ret += "r1"
+    if a2 == 2:
+        ret += "r2"
+    if a3 == 2:
+        ret += "r3"
+
+    if ret != "":
+        ret = "_" + ret
+
+    return ret
+
+def gen_template(a1, a2, a3):
+    fn_args = gen_fn_args(a1, a2, a3)
+    call_args = gen_call_args(a1, a2, a3)
+    inc_slopes = gen_inc_slope(a1, a2, a3)
+    fn_suffix = gen_fn_suffix(a1, a2, a3)
+
+    ret = Template("""
 template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1, const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
+inline void $${label}_vec$fnsuffix(float_type * out, $fnargs, unsigned int n)
 {
     do {
-        *out++ = $operation(*arg1++, *arg2++, *arg3++);
+        *out++ = $$operation($callargs);$increments
     }
     while (--n);
 }
 
-/* vector/vector/scalar */
 template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1, const float_type * arg2,
-                         const float_type arg3, unsigned int n)
+inline void $${label}_vec_simd$fnsuffix(float_type * out, $fnargs, unsigned int n)
 {
     do {
-        *out++ = $operation(*arg1++, *arg2++, arg3);
+        float_type out0 = $$operation($callargs);$increments
+        float_type out1 = $$operation($callargs);$increments
+        float_type out2 = $$operation($callargs);$increments
+        float_type out3 = $$operation($callargs);$increments
+        float_type out4 = $$operation($callargs);$increments
+        float_type out5 = $$operation($callargs);$increments
+        float_type out6 = $$operation($callargs);$increments
+        float_type out7 = $$operation($callargs);$increments
+        *out++ = out0;
+        *out++ = out1;
+        *out++ = out2;
+        *out++ = out3;
+        *out++ = out4;
+        *out++ = out5;
+        *out++ = out6;
+        *out++ = out7;
     }
     while (--n);
 }
-
-/* vector/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1, const float_type arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(*arg1++, arg2, *arg3++);
-    }
-    while (--n);
-}
-
-/* vector/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1, const float_type arg2,
-                         const float_type arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(*arg1++, arg2, arg3);
-    }
-    while (--n);
-}
-
-
-/* scalar/vector/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, *arg2++, *arg3++);
-    }
-    while (--n);
-}
-
-/* scalar/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type * arg2,
-                         const float_type arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, *arg2++, arg3);
-    }
-    while (--n);
-}
-
-/* scalar/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, arg2, *arg3++);
-    }
-    while (--n);
-}
-
-/* scalar/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg2,
-                         const float_type arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, arg2, arg3);
-    }
-    while (--n);
-}
-
-
-/* vector/vector/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* vector/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2,
-                         const float_type arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* vector/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const float_type arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* vector/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1, const float_type arg2,
-                         const float_type arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-
-/* scalar/vector/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* scalar/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type * arg2,
-                         const float_type arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* scalar/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-/* scalar/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg2,
-                         const float_type arg3, unsigned int n)
-{
-    ${label}_vec(out, arg1, arg2, arg3, n);
-}
-
-
-
-
-/* vector/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1,
-                         const float_type * arg2,
-                         const float_type arg3, const float_type arg3_slope, unsigned int n)
-{
-    do {
-        *out++ = $operation(*arg1++, *arg2++, arg3); arg3 += arg3_slope;
-    }
-    while (--n);
-}
-
-/* vector/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(*arg1++, arg2, *arg3++); arg2 += arg2_slope;
-    }
-    while (--n);
-}
-
-/* vector/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type * arg1,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type arg3, const float_type arg3_slope,
-                         unsigned int n)
-{
-    do {
-        *out++ = $operation(*arg1++, arg2, arg3); arg2 += arg2_slope; arg3 += arg3_slope;
-    }
-    while (--n);
-}
-
-
-/* scalar/vector/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, *arg2++, *arg3++); arg1 += arg1_slope;
-    }
-    while (--n);
-}
-
-/* scalar/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type * arg2,
-                         const float_type arg3, const float_type arg3_slope, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, *arg2++, arg3); arg1 += arg1_slope; arg3 += arg3_slope;
-    }
-    while (--n);
-}
-
-/* scalar/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type * arg3, unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, arg2, *arg3++); arg1 += arg1_slope; arg2 += arg2_slope;
-    }
-    while (--n);
-}
-
-/* scalar/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type arg3, const float_type arg3_slope,
-                         unsigned int n)
-{
-    do {
-        *out++ = $operation(arg1, arg2, arg3); arg1 += arg1_slope; arg2 += arg2_slope; arg3 += arg3_slope;
-    }
-    while (--n);
-}
-
-
-
-/* vector/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1,
-                         const float_type * arg2,
-                         const float_type arg3, const float_type arg3_slope, unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg2, arg3, arg3_slope, n);
-}
-
-/* vector/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg2, arg2_slope, arg3, n);
-}
-
-/* vector/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type * arg1,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type arg3, const float_type arg3_slope,
-                         unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
-}
-
-
-/* scalar/vector/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type * arg2,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg1_slope, arg2, arg3, n);
-}
-
-/* scalar/vector/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type * arg2,
-                         const float_type arg3, const float_type arg3_slope, unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg1_slope, arg2, arg3, n);
-}
-
-/* scalar/scalar/vector */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type * arg3, unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
-}
-
-/* scalar/scalar/scalar */
-template <typename float_type>
-inline void ${label}_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope,
-                         const float_type arg2, const float_type arg2_slope,
-                         const float_type arg3, const float_type arg3_slope,
-                         unsigned int n)
-{
-    ${label}_vec_simd(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
-}
-
 """)
+
+    return ret.substitute( fnargs = fn_args, callargs = call_args, increments = inc_slopes, fnsuffix = fn_suffix)
+
+template_string = ""
+
+for a1 in range(3):
+    for a2 in range(3):
+        for a3 in range(3):
+            template_string += gen_template(a1, a2, a3)
+
+
+ternary_template = Template(template_string)
 
 functions = """
 namespace detail

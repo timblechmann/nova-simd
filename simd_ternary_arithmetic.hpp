@@ -23,4 +23,8 @@
 
 #include "simd_ternary_arithmetic_generic.hpp"
 
+#ifdef __SSE__
+#include "simd_ternary_arithmetic_sse.hpp"
+#endif
+
 #endif /* SIMD_TERNARY_ARITHMETIC_HPP */
