@@ -4,6 +4,7 @@ set(benchmarks
   simd_ampmod_benchmarks.cpp
   simd_mix_benchmark.cpp
   simd_pan2_benchmark.cpp
+  simd_peakmeter_benchmarks.cpp
   simd_plus_benchmarks.cpp
   simd_pow_benchmarks.cpp
   simd_slope_benchmarks.cpp
