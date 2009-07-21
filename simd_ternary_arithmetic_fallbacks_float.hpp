@@ -27,596 +27,380 @@ namespace nova {
 template <unsigned int n>
 inline void clip_vec(float * out, const float * arg1, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, *arg2++, *arg3++);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float * arg1, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, *arg2++, arg3);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r3(float * out, const float * arg1, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, *arg2++, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float * arg1, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, *arg3++);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float * arg1, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, arg3);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r3(float * out, const float * arg1, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2(float * out, const float * arg1, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, *arg3++);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2(float * out, const float * arg1, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, arg3);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2r3(float * out, const float * arg1, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(*arg1++, arg2, arg3);
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float arg1, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, *arg3++);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float arg1, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, arg3);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r3(float * out, const float arg1, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float arg1, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, *arg3++);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec(float * out, const float arg1, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-    }
-    while (--loops);
+    clip_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r3(float * out, const float arg1, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2(float * out, const float arg1, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, *arg3++);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2(float * out, const float arg1, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r2r3(float * out, const float arg1, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1(float * out, float arg1, const float arg1_slope, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, *arg3++);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1(float * out, float arg1, const float arg1_slope, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, arg3);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1r3(float * out, float arg1, const float arg1_slope, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, *arg2++, arg3);
-        arg1 += arg1_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1(float * out, float arg1, const float arg1_slope, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, *arg3++);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1(float * out, float arg1, const float arg1_slope, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1r3(float * out, float arg1, const float arg1_slope, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1r2(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, *arg3++);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1r2(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void clip_vec_r1r2r3(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::clip<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    clip_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float * arg1, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, *arg2++, *arg3++);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float * arg1, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, *arg2++, arg3);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r3(float * out, const float * arg1, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, *arg2++, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float * arg1, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, *arg3++);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float * arg1, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, arg3);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r3(float * out, const float * arg1, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2(float * out, const float * arg1, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, *arg3++);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2(float * out, const float * arg1, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, arg3);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2r3(float * out, const float * arg1, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(*arg1++, arg2, arg3);
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float arg1, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, *arg3++);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float arg1, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, arg3);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r3(float * out, const float arg1, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float arg1, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, *arg3++);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec(float * out, const float arg1, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-    }
-    while (--loops);
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r3(float * out, const float arg1, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2(float * out, const float arg1, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, *arg3++);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2(float * out, const float arg1, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r2r3(float * out, const float arg1, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1(float * out, float arg1, const float arg1_slope, const float * arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, *arg3++);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1(float * out, float arg1, const float arg1_slope, const float * arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, arg3);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1r3(float * out, float arg1, const float arg1_slope, const float * arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, *arg2++, arg3);
-        arg1 += arg1_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1(float * out, float arg1, const float arg1_slope, const float arg2, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, *arg3++);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1(float * out, float arg1, const float arg1_slope, const float arg2, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1r3(float * out, float arg1, const float arg1_slope, const float arg2, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1r2(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, const float * arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, *arg3++);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1r2(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, const float arg3)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
+
 
 template <unsigned int n>
 inline void muladd_vec_r1r2r3(float * out, float arg1, const float arg1_slope, float arg2, const float arg2_slope, float arg3, const float arg3_slope)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = detail::muladd<float>(arg1, arg2, arg3);
-        arg1 += arg1_slope;
-        arg2 += arg2_slope;
-        arg3 += arg3_slope;
-    }
-    while (--loops);
+    muladd_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }
+
 
 } /* namespace nova */
 

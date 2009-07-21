@@ -90,26 +90,41 @@ def gen_fn_suffix(a1, a2, a3):
 
     return ret
 
+def gen_initial_mp_arg(index, arg):
+    if (arg == 0):
+        return "arg" + str(index)
+    if (arg == 1):
+        return "arg%d" % index
+    if (arg == 2):
+        return "arg%d, arg%d_slope" % (index, index)
+
+def gen_initial_mp_args(arg1_type, arg2_type, arg3_type):
+    args = (gen_initial_mp_arg(1, arg1_type),
+            gen_initial_mp_arg(2, arg2_type),
+            gen_initial_mp_arg(3, arg3_type))
+
+    mp_args = "out, %s, %s, %s"%args
+
+    return mp_args
+
 def gen_template(float_type, a1, a2, a3):
     fn_args = gen_fn_args(float_type, a1, a2, a3)
     call_args = gen_call_args(a1, a2, a3)
     inc_slopes = gen_inc_slope(a1, a2, a3)
     fn_suffix = gen_fn_suffix(a1, a2, a3)
+    fmpargs = gen_initial_mp_args(a1, a2, a3)
 
     ret = Template("""
 template <unsigned int n>
 inline void $${label}_vec$fnsuffix($float_type * out, $fnargs)
 {
-    unsigned int loops = n;
-    do {
-        *out++ = $$operation($callargs);$increments
-    }
-    while (--loops);
+    $${label}_vec_simd$fnsuffix($fmpargs, n);
 }
+
 """)
 
     return ret.substitute( fnargs = fn_args, callargs = call_args, increments = inc_slopes, fnsuffix = fn_suffix,
-                           float_type = float_type)
+                           float_type = float_type, fmpargs = fmpargs)
 
 float_template_string = ""
 double_template_string = ""
