@@ -244,7 +244,9 @@ def gen_prefix(a1, a2, a3):
 
 def gen_function(arg1_type, arg2_type, arg3_type):
 
-    fargs = "float * out, " + gen_main_args(arg1_type, arg2_type, arg3_type) + ", unsigned int n"
+    fargs = "float * out, " + gen_main_args(arg1_type, arg2_type, arg3_type)
+    fargs_mp = fargs.replace("float_type", "float")
+
     fname = gen_mp_name(arg1_type, arg2_type, arg3_type)
     fmpargs = gen_initial_mp_args(arg1_type, arg2_type, arg3_type)
     fn_suffix = gen_fn_suffix(arg1_type, arg2_type, arg3_type)
@@ -254,7 +256,7 @@ def gen_function(arg1_type, arg2_type, arg3_type):
 
     function = Template("""
 template <>
-inline void $${label}_vec_simd$fnsuffix($fargs)
+inline void $${label}_vec_simd$fnsuffix($fargs, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
 $prefix
@@ -265,10 +267,19 @@ $prefix
 $increments
     } while (--n);
 }
+
+template<unsigned int n>
+inline void $${label}_vec_simd$fnsuffix($fargs_mp)
+{
+$prefix
+
+    detail::${fname}<n>($fmpargs);
+}
+
 """)
 
     return function.substitute(fargs = fargs, fname = fname, fmpargs = fmpargs, increments = increments, prefix = prefix,
-                               fnsuffix = fn_suffix)
+                               fnsuffix = fn_suffix, fargs_mp = fargs_mp)
 
 
 def gen_template(a1, a2, a3):
@@ -307,7 +318,7 @@ inline __m128 muladd(__m128 value, __m128 mul, __m128 add)
                       add);
 }
 
-} /* namespace */
+} /* namespace detail */
 """
 
 body = ternary_sse_prolog + functions + \

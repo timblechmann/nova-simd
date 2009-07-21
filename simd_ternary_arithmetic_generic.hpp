@@ -31,7 +31,7 @@ namespace detail
 template <typename float_type>
 inline float_type clip(float_type value, float_type low, float_type high)
 {
-    return std::max(std::min(value, high),
+    return std::max<float_type>(std::min<float_type>(value, high),
                     low);
 }
 
