@@ -1,4 +1,5 @@
 set(benchmarks
+  abs_benchmarks.cpp
   clear_benchmark.cpp
   copy_benchmark.cpp
   simd_ampmod_benchmarks.cpp
