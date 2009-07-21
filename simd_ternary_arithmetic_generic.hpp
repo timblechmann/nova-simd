@@ -32,7 +32,7 @@ template <typename float_type>
 inline float_type clip(float_type value, float_type low, float_type high)
 {
     return std::max<float_type>(std::min<float_type>(value, high),
-                    low);
+                                low);
 }
 
 template <typename float_type>
@@ -41,7 +41,7 @@ inline float_type muladd(float_type value, float_type mul, float_type add)
     return value * mul + add;
 }
 
-} /* namespace */
+} /* namespace detail */
 
 template <typename float_type>
 inline void clip_vec(float_type * out, const float_type * arg1, const float_type * arg2, const float_type * arg3, unsigned int n)

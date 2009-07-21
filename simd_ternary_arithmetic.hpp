@@ -27,4 +27,11 @@
 #include "simd_ternary_arithmetic_sse.hpp"
 #endif
 
+#include "simd_ternary_arithmetic_fallbacks_double.hpp"
+
+#ifndef __SSE__
+#include "simd_ternary_arithmetic_fallbacks_float.hpp"
+#endif
+
+
 #endif /* SIMD_TERNARY_ARITHMETIC_HPP */
