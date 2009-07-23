@@ -57,7 +57,7 @@ template <typename float_type>
 inline void abs_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = std::abs(*arg);
+        *out++ = std::abs(*arg++);
     }
     while (--n);
 }
@@ -94,7 +94,7 @@ template <typename float_type>
 inline void sgn_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = detail::sgn<float_type>(*arg);
+        *out++ = detail::sgn<float_type>(*arg++);
     }
     while (--n);
 }
@@ -131,7 +131,7 @@ template <typename float_type>
 inline void square_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = detail::square<float_type>(*arg);
+        *out++ = detail::square<float_type>(*arg++);
     }
     while (--n);
 }
@@ -168,7 +168,7 @@ template <typename float_type>
 inline void cube_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = detail::cube<float_type>(*arg);
+        *out++ = detail::cube<float_type>(*arg++);
     }
     while (--n);
 }

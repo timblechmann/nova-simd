@@ -29,7 +29,7 @@ template <typename float_type>
 inline void ${label}_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = $operation(*arg);
+        *out++ = $operation(*arg++);
     }
     while (--n);
 }

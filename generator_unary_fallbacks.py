@@ -28,7 +28,7 @@ unary_fallbacks_template = Template("""
 template <int n>
 inline void ${label}_vec_simd(${float} * out, const ${float} * src)
 {
-    ${label}_vec_simd<n>(out, src);
+    ${label}_vec_simd(out, src, n);
 }
 """)
 

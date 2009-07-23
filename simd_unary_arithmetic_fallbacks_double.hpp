@@ -28,25 +28,25 @@ namespace nova {
 template <int n>
 inline void abs_vec_simd(double * out, const double * src)
 {
-    abs_vec_simd<n>(out, src);
+    abs_vec_simd(out, src, n);
 }
 
 template <int n>
 inline void sgn_vec_simd(double * out, const double * src)
 {
-    sgn_vec_simd<n>(out, src);
+    sgn_vec_simd(out, src, n);
 }
 
 template <int n>
 inline void square_vec_simd(double * out, const double * src)
 {
-    square_vec_simd<n>(out, src);
+    square_vec_simd(out, src, n);
 }
 
 template <int n>
 inline void cube_vec_simd(double * out, const double * src)
 {
-    cube_vec_simd<n>(out, src);
+    cube_vec_simd(out, src, n);
 }
 
 } /* namespace nova */
