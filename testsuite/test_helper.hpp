@@ -20,8 +20,22 @@ void randomize_buffer(float_type * buffer, std::size_t size)
 }
 
 template <typename float_type>
+void randomize_buffer(float_type * buffer, std::size_t size, float_type offset)
+{
+    for (std::size_t i = 0; i != size; ++i)
+        buffer[i] = randomize_float<float_type>() + offset;
+}
+
+template <typename float_type>
 void compare_buffers(const float_type * ref, const float_type * test, std::size_t size)
 {
     for (std::size_t i = 0; i != size; ++i)
         BOOST_REQUIRE_CLOSE_FRACTION( ref[i], test[i], 1e-9 );
+}
+
+template <typename float_type>
+void compare_buffers_relative(const float_type * ref, const float_type * test, std::size_t size)
+{
+    for (std::size_t i = 0; i != size; ++i)
+        BOOST_REQUIRE_CLOSE_FRACTION( ref[i], test[i], 1 );
 }
