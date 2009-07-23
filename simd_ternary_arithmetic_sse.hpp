@@ -180,7 +180,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float * arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_vvr<samples_per_loop>(out, arg1, arg2, a3, a3_slope);
@@ -197,7 +197,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float * arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_vvr<n>(out, arg1, arg2, a3, a3_slope);
 }
@@ -331,7 +331,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_vsr<samples_per_loop>(out, arg1, a2, a3, a3_slope);
@@ -348,7 +348,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_vsr<n>(out, arg1, a2, a3, a3_slope);
 }
@@ -386,7 +386,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::clip_vec_simd_mp_vrv<samples_per_loop>(out, arg1, a2, a2_slope, arg3);
@@ -403,7 +403,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::clip_vec_simd_mp_vrv<n>(out, arg1, a2, a2_slope, arg3);
 }
@@ -441,7 +441,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::clip_vec_simd_mp_vrs<samples_per_loop>(out, arg1, a2, a2_slope, a3);
@@ -457,7 +457,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::clip_vec_simd_mp_vrs<n>(out, arg1, a2, a2_slope, a3);
 }
@@ -496,11 +496,11 @@ inline void clip_vec_simd_r2r3(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_vrr<samples_per_loop>(out, arg1, a2, a2_slope, a3, a3_slope);
@@ -516,11 +516,11 @@ inline void clip_vec_simd_r2r3(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_vrr<n>(out, arg1, a2, a2_slope, a3, a3_slope);
 }
@@ -654,7 +654,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float * arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_svr<samples_per_loop>(out, a1, arg2, a3, a3_slope);
@@ -671,7 +671,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float * arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_svr<n>(out, a1, arg2, a3, a3_slope);
 }
@@ -809,7 +809,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float arg2, co
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_ssr<samples_per_loop>(out, a1, a2, a3, a3_slope);
@@ -827,7 +827,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float arg2, co
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_ssr<n>(out, a1, a2, a3, a3_slope);
 }
@@ -866,7 +866,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::clip_vec_simd_mp_srv<samples_per_loop>(out, a1, a2, a2_slope, arg3);
@@ -883,7 +883,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::clip_vec_simd_mp_srv<n>(out, a1, a2, a2_slope, arg3);
 }
@@ -922,7 +922,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::clip_vec_simd_mp_srs<samples_per_loop>(out, a1, a2, a2_slope, a3);
@@ -939,7 +939,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::clip_vec_simd_mp_srs<n>(out, a1, a2, a2_slope, a3);
 }
@@ -979,11 +979,11 @@ inline void clip_vec_simd_r2r3(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_srr<samples_per_loop>(out, a1, a2, a2_slope, a3, a3_slope);
@@ -1000,11 +1000,11 @@ inline void clip_vec_simd_r2r3(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_srr<n>(out, a1, a2, a2_slope, a3, a3_slope);
 }
@@ -1042,7 +1042,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         detail::clip_vec_simd_mp_rvv<samples_per_loop>(out, a1, a1_slope, arg2, arg3);
@@ -1059,7 +1059,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     detail::clip_vec_simd_mp_rvv<n>(out, a1, a1_slope, arg2, arg3);
 }
@@ -1097,7 +1097,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::clip_vec_simd_mp_rvs<samples_per_loop>(out, a1, a1_slope, arg2, a3);
@@ -1113,7 +1113,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::clip_vec_simd_mp_rvs<n>(out, a1, a1_slope, arg2, a3);
 }
@@ -1152,11 +1152,11 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_rvr<samples_per_loop>(out, a1, a1_slope, arg2, a3, a3_slope);
@@ -1172,11 +1172,11 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_rvr<n>(out, a1, a1_slope, arg2, a3, a3_slope);
 }
@@ -1214,7 +1214,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     do {
         detail::clip_vec_simd_mp_rsv<samples_per_loop>(out, a1, a1_slope, a2, arg3);
@@ -1230,7 +1230,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     detail::clip_vec_simd_mp_rsv<n>(out, a1, a1_slope, a2, arg3);
 }
@@ -1268,7 +1268,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
     __m128 a3 = _mm_set_ps1(arg3);
 
     do {
@@ -1285,7 +1285,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
     __m128 a3 = _mm_set_ps1(arg3);
 
     detail::clip_vec_simd_mp_rss<n>(out, a1, a1_slope, a2, a3);
@@ -1325,12 +1325,12 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_rsr<samples_per_loop>(out, a1, a1_slope, a2, a3, a3_slope);
@@ -1346,12 +1346,12 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_rsr<n>(out, a1, a1_slope, a2, a3, a3_slope);
 }
@@ -1390,11 +1390,11 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::clip_vec_simd_mp_rrv<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, arg3);
@@ -1410,11 +1410,11 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::clip_vec_simd_mp_rrv<n>(out, a1, a1_slope, a2, a2_slope, arg3);
 }
@@ -1453,11 +1453,11 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::clip_vec_simd_mp_rrs<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3);
@@ -1473,11 +1473,11 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::clip_vec_simd_mp_rrs<n>(out, a1, a1_slope, a2, a2_slope, a3);
 }
@@ -1517,15 +1517,15 @@ inline void clip_vec_simd_r1r2r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::clip_vec_simd_mp_rrr<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
@@ -1541,15 +1541,15 @@ inline void clip_vec_simd_r1r2r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::clip_vec_simd_mp_rrr<n>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
 }
@@ -1682,7 +1682,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float * ar
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_vvr<samples_per_loop>(out, arg1, arg2, a3, a3_slope);
@@ -1699,7 +1699,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float * ar
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_vvr<n>(out, arg1, arg2, a3, a3_slope);
 }
@@ -1833,7 +1833,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_vsr<samples_per_loop>(out, arg1, a2, a3, a3_slope);
@@ -1850,7 +1850,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_vsr<n>(out, arg1, a2, a3, a3_slope);
 }
@@ -1888,7 +1888,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::muladd_vec_simd_mp_vrv<samples_per_loop>(out, arg1, a2, a2_slope, arg3);
@@ -1905,7 +1905,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::muladd_vec_simd_mp_vrv<n>(out, arg1, a2, a2_slope, arg3);
 }
@@ -1943,7 +1943,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::muladd_vec_simd_mp_vrs<samples_per_loop>(out, arg1, a2, a2_slope, a3);
@@ -1959,7 +1959,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::muladd_vec_simd_mp_vrs<n>(out, arg1, a2, a2_slope, a3);
 }
@@ -1998,11 +1998,11 @@ inline void muladd_vec_simd_r2r3(float * out, const float * arg1, const float ar
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_vrr<samples_per_loop>(out, arg1, a2, a2_slope, a3, a3_slope);
@@ -2018,11 +2018,11 @@ inline void muladd_vec_simd_r2r3(float * out, const float * arg1, const float ar
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_vrr<n>(out, arg1, a2, a2_slope, a3, a3_slope);
 }
@@ -2156,7 +2156,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float * arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_svr<samples_per_loop>(out, a1, arg2, a3, a3_slope);
@@ -2173,7 +2173,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float * arg2
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_svr<n>(out, a1, arg2, a3, a3_slope);
 }
@@ -2311,7 +2311,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_ssr<samples_per_loop>(out, a1, a2, a3, a3_slope);
@@ -2329,7 +2329,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float arg2, 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_ssr<n>(out, a1, a2, a3, a3_slope);
 }
@@ -2368,7 +2368,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::muladd_vec_simd_mp_srv<samples_per_loop>(out, a1, a2, a2_slope, arg3);
@@ -2385,7 +2385,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::muladd_vec_simd_mp_srv<n>(out, a1, a2, a2_slope, arg3);
 }
@@ -2424,7 +2424,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::muladd_vec_simd_mp_srs<samples_per_loop>(out, a1, a2, a2_slope, a3);
@@ -2441,7 +2441,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::muladd_vec_simd_mp_srs<n>(out, a1, a2, a2_slope, a3);
 }
@@ -2481,11 +2481,11 @@ inline void muladd_vec_simd_r2r3(float * out, const float arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_srr<samples_per_loop>(out, a1, a2, a2_slope, a3, a3_slope);
@@ -2502,11 +2502,11 @@ inline void muladd_vec_simd_r2r3(float * out, const float arg1, const float arg2
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_srr<n>(out, a1, a2, a2_slope, a3, a3_slope);
 }
@@ -2544,7 +2544,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         detail::muladd_vec_simd_mp_rvv<samples_per_loop>(out, a1, a1_slope, arg2, arg3);
@@ -2561,7 +2561,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     detail::muladd_vec_simd_mp_rvv<n>(out, a1, a1_slope, arg2, arg3);
 }
@@ -2599,7 +2599,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::muladd_vec_simd_mp_rvs<samples_per_loop>(out, a1, a1_slope, arg2, a3);
@@ -2615,7 +2615,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::muladd_vec_simd_mp_rvs<n>(out, a1, a1_slope, arg2, a3);
 }
@@ -2654,11 +2654,11 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_rvr<samples_per_loop>(out, a1, a1_slope, arg2, a3, a3_slope);
@@ -2674,11 +2674,11 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_rvr<n>(out, a1, a1_slope, arg2, a3, a3_slope);
 }
@@ -2716,7 +2716,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     do {
         detail::muladd_vec_simd_mp_rsv<samples_per_loop>(out, a1, a1_slope, a2, arg3);
@@ -2732,7 +2732,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     detail::muladd_vec_simd_mp_rsv<n>(out, a1, a1_slope, a2, arg3);
 }
@@ -2770,7 +2770,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
     __m128 a3 = _mm_set_ps1(arg3);
 
     do {
@@ -2787,7 +2787,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
     __m128 a3 = _mm_set_ps1(arg3);
 
     detail::muladd_vec_simd_mp_rss<n>(out, a1, a1_slope, a2, a3);
@@ -2827,12 +2827,12 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_rsr<samples_per_loop>(out, a1, a1_slope, a2, a3, a3_slope);
@@ -2848,12 +2848,12 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
 
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_rsr<n>(out, a1, a1_slope, a2, a3, a3_slope);
 }
@@ -2892,11 +2892,11 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         detail::muladd_vec_simd_mp_rrv<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, arg3);
@@ -2912,11 +2912,11 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     detail::muladd_vec_simd_mp_rrv<n>(out, a1, a1_slope, a2, a2_slope, arg3);
 }
@@ -2955,11 +2955,11 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     do {
         detail::muladd_vec_simd_mp_rrs<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3);
@@ -2975,11 +2975,11 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
 
     detail::muladd_vec_simd_mp_rrs<n>(out, a1, a1_slope, a2, a2_slope, a3);
 }
@@ -3019,15 +3019,15 @@ inline void muladd_vec_simd_r1r2r3(float * out, const float arg1, const float ar
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     do {
         detail::muladd_vec_simd_mp_rrr<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
@@ -3043,15 +3043,15 @@ inline void muladd_vec_simd_r1r2r3(float * out, const float arg1, const float ar
     __m128 a1 = _mm_set_ps(arg1, arg1 + arg1_slope,
                            arg1 + arg1_slope + arg1_slope,
                            arg1 + arg1_slope + arg1_slope + arg1_slope);
-    __m128 a1_slope = _mm_set_ps1(4*arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     __m128 a2 = _mm_set_ps(arg2, arg2 + arg2_slope,
                            arg2 + arg2_slope + arg2_slope,
                            arg2 + arg2_slope + arg2_slope + arg2_slope);
-    __m128 a2_slope = _mm_set_ps1(4*arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     __m128 a3 = _mm_set_ps(arg3, arg3 + arg3_slope,
                            arg3 + arg3_slope + arg3_slope,
                            arg3 + arg3_slope + arg3_slope + arg3_slope);
-    __m128 a3_slope = _mm_set_ps1(4*arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
 
     detail::muladd_vec_simd_mp_rrr<n>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
 }

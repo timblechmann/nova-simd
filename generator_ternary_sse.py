@@ -230,7 +230,7 @@ def gen_prefix_(index, arg):
     __m128 a$i = _mm_set_ps(arg$i, arg$i + arg${i}_slope,
                            arg$i + arg${i}_slope + arg${i}_slope,
                            arg$i + arg${i}_slope + arg${i}_slope + arg${i}_slope);
-    __m128 a${i}_slope = _mm_set_ps1(4*arg${i}_slope);
+    __m128 a${i}_slope = _mm_set_ps1(arg${i}_slope + arg${i}_slope + arg${i}_slope + arg${i}_slope);
    """)
 
         return ret.substitute( i = index ).rstrip()
