@@ -84,7 +84,7 @@ template <unsigned int n>
 always_inline void zerovec_simd_mp(double *dest)
 {
     const __m128 zero = _mm_setzero_ps();
-    detail::setvec_simd_mp_iteration<n*2>(dest, zero);
+    detail::setvec_simd_mp_iteration<n*2>((float*)dest, zero);
 }
 
 template <unsigned int n>
@@ -233,6 +233,15 @@ inline void copyvec_aa_simd(double * dest, const double * src, uint n)
     }
     while(--n);
 }
+
+
+/* double fallback */
+template <unsigned int n>
+void setvec_simd(double *dest, double v)
+{
+    setvec(dest, v, n);
+}
+
 
 } /* namespace nova */
 

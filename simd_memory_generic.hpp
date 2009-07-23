@@ -186,6 +186,7 @@ inline void addvec(F * out, const F in, const F slope, unsigned int n)
 template <typename F>
 inline void addvec_simd(F * out, const F * in, unsigned int n)
 {
+    n /= 8;
     do
     {
         F out0 = out[0] + in[0];
@@ -215,6 +216,7 @@ inline void addvec_simd(F * out, const F * in, unsigned int n)
 template <typename F>
 inline void addvec_simd(F * out, const F in, unsigned int n)
 {
+    n /= 8;
     do
     {
         F out0 = out[0] + in;
@@ -243,6 +245,7 @@ inline void addvec_simd(F * out, const F in, unsigned int n)
 template <typename F>
 inline void addvec_simd(F * out, const F in, const F slope, unsigned int n)
 {
+    n /= 8;
     do
     {
         F out0 = out[0] + in; in += slope;
