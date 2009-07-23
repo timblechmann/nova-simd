@@ -22,6 +22,7 @@
 #define SIMD_BINARY_ARITHMETIC_SSE_HPP
 
 #include <xmmintrin.h>
+#include "simd_utils.hpp"
 
 namespace nova {
 
@@ -128,7 +129,7 @@ always_inline void plus_vec_simd_mp(float * out, const float src1, const float *
 template <int n>
 void plus_vec_simd(float * out, const float src1, const float * src2)
 {
-    plus_vec_simd<n>(out, src1, src2);
+    plus_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -325,7 +326,7 @@ always_inline void minus_vec_simd_mp(float * out, const float src1, const float 
 template <int n>
 void minus_vec_simd(float * out, const float src1, const float * src2)
 {
-    minus_vec_simd<n>(out, src1, src2);
+    minus_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -522,7 +523,7 @@ always_inline void times_vec_simd_mp(float * out, const float src1, const float 
 template <int n>
 void times_vec_simd(float * out, const float src1, const float * src2)
 {
-    times_vec_simd<n>(out, src1, src2);
+    times_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -719,7 +720,7 @@ always_inline void over_vec_simd_mp(float * out, const float src1, const float *
 template <int n>
 void over_vec_simd(float * out, const float src1, const float * src2)
 {
-    over_vec_simd<n>(out, src1, src2);
+    over_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -916,7 +917,7 @@ always_inline void min_vec_simd_mp(float * out, const float src1, const float * 
 template <int n>
 void min_vec_simd(float * out, const float src1, const float * src2)
 {
-    min_vec_simd<n>(out, src1, src2);
+    min_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1113,7 +1114,7 @@ always_inline void max_vec_simd_mp(float * out, const float src1, const float * 
 template <int n>
 void max_vec_simd(float * out, const float src1, const float * src2)
 {
-    max_vec_simd<n>(out, src1, src2);
+    max_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1219,58 +1220,58 @@ inline void max_vec_simd(float * out, float arg1, const float arg1_slope,
 namespace detail {
 
 template <int n>
-always_inline void less_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void less_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmplt_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmplt_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    less_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    less_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void less_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void less_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void less_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void less_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmplt_ps(in1, src2);
-    const __m128 result2 = _mm_cmplt_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmplt_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmplt_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    less_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    less_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void less_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void less_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void less_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void less_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmplt_ps(src1, in1);
-    const __m128 result2 = _mm_cmplt_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmplt_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmplt_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    less_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    less_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void less_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void less_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -1282,7 +1283,7 @@ using detail::less_vec_simd_mp;
 template <int n>
 void less_vec_simd(float * out, const float * src1, const float * src2)
 {
-    less_vec_simd_mp<n>(out, src1, src2);
+    less_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -1290,7 +1291,7 @@ template <int n>
 always_inline void less_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::less_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::less_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -1304,13 +1305,13 @@ template <int n>
 always_inline void less_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::less_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::less_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void less_vec_simd(float * out, const float src1, const float * src2)
 {
-    less_vec_simd<n>(out, src1, src2);
+    less_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1318,8 +1319,9 @@ template <>
 inline void less_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::less_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::less_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -1332,8 +1334,9 @@ inline void less_vec_simd(float * out, const float * arg1, const float arg2, uns
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::less_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::less_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -1345,8 +1348,9 @@ inline void less_vec_simd(float * out, const float arg1, const float * arg2, uns
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::less_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::less_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -1362,17 +1366,18 @@ inline void less_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmplt_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmplt_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmplt_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmplt_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -1392,17 +1397,18 @@ inline void less_vec_simd(float * out, float arg1, const float arg1_slope,
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmplt_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmplt_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmplt_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmplt_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
@@ -1416,58 +1422,58 @@ inline void less_vec_simd(float * out, float arg1, const float arg1_slope,
 namespace detail {
 
 template <int n>
-always_inline void less_equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void less_equal_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmple_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmple_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    less_equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    less_equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void less_equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void less_equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void less_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void less_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmple_ps(in1, src2);
-    const __m128 result2 = _mm_cmple_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmple_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmple_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void less_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void less_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmple_ps(src1, in1);
-    const __m128 result2 = _mm_cmple_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmple_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmple_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    less_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -1479,7 +1485,7 @@ using detail::less_equal_vec_simd_mp;
 template <int n>
 void less_equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    less_equal_vec_simd_mp<n>(out, src1, src2);
+    less_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -1487,7 +1493,7 @@ template <int n>
 always_inline void less_equal_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::less_equal_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::less_equal_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -1501,13 +1507,13 @@ template <int n>
 always_inline void less_equal_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::less_equal_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::less_equal_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void less_equal_vec_simd(float * out, const float src1, const float * src2)
 {
-    less_equal_vec_simd<n>(out, src1, src2);
+    less_equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1515,8 +1521,9 @@ template <>
 inline void less_equal_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::less_equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::less_equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -1529,8 +1536,9 @@ inline void less_equal_vec_simd(float * out, const float * arg1, const float arg
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::less_equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::less_equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -1542,8 +1550,9 @@ inline void less_equal_vec_simd(float * out, const float arg1, const float * arg
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::less_equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::less_equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -1559,17 +1568,18 @@ inline void less_equal_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmple_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmple_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmple_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmple_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -1589,17 +1599,18 @@ inline void less_equal_vec_simd(float * out, float arg1, const float arg1_slope,
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmple_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmple_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmple_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmple_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
@@ -1613,58 +1624,58 @@ inline void less_equal_vec_simd(float * out, float arg1, const float arg1_slope,
 namespace detail {
 
 template <int n>
-always_inline void greater_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void greater_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmpgt_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmpgt_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    greater_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    greater_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void greater_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void greater_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void greater_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void greater_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmpgt_ps(in1, src2);
-    const __m128 result2 = _mm_cmpgt_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpgt_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpgt_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    greater_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    greater_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void greater_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void greater_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void greater_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void greater_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmpgt_ps(src1, in1);
-    const __m128 result2 = _mm_cmpgt_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpgt_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpgt_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    greater_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    greater_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void greater_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void greater_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -1676,7 +1687,7 @@ using detail::greater_vec_simd_mp;
 template <int n>
 void greater_vec_simd(float * out, const float * src1, const float * src2)
 {
-    greater_vec_simd_mp<n>(out, src1, src2);
+    greater_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -1684,7 +1695,7 @@ template <int n>
 always_inline void greater_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::greater_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::greater_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -1698,13 +1709,13 @@ template <int n>
 always_inline void greater_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::greater_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::greater_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void greater_vec_simd(float * out, const float src1, const float * src2)
 {
-    greater_vec_simd<n>(out, src1, src2);
+    greater_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1712,8 +1723,9 @@ template <>
 inline void greater_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::greater_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -1726,8 +1738,9 @@ inline void greater_vec_simd(float * out, const float * arg1, const float arg2, 
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::greater_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -1739,8 +1752,9 @@ inline void greater_vec_simd(float * out, const float arg1, const float * arg2, 
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::greater_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -1756,17 +1770,18 @@ inline void greater_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmpgt_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpgt_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmpgt_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpgt_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -1786,17 +1801,18 @@ inline void greater_vec_simd(float * out, float arg1, const float arg1_slope,
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmpgt_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpgt_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmpgt_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpgt_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
@@ -1810,58 +1826,58 @@ inline void greater_vec_simd(float * out, float arg1, const float arg1_slope,
 namespace detail {
 
 template <int n>
-always_inline void greater_equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void greater_equal_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmpge_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmpge_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    greater_equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    greater_equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void greater_equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void greater_equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void greater_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void greater_equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmpge_ps(in1, src2);
-    const __m128 result2 = _mm_cmpge_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpge_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpge_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void greater_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void greater_equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmpge_ps(src1, in1);
-    const __m128 result2 = _mm_cmpge_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpge_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpge_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    greater_equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -1873,7 +1889,7 @@ using detail::greater_equal_vec_simd_mp;
 template <int n>
 void greater_equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    greater_equal_vec_simd_mp<n>(out, src1, src2);
+    greater_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -1881,7 +1897,7 @@ template <int n>
 always_inline void greater_equal_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::greater_equal_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::greater_equal_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -1895,13 +1911,13 @@ template <int n>
 always_inline void greater_equal_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::greater_equal_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::greater_equal_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void greater_equal_vec_simd(float * out, const float src1, const float * src2)
 {
-    greater_equal_vec_simd<n>(out, src1, src2);
+    greater_equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -1909,8 +1925,9 @@ template <>
 inline void greater_equal_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::greater_equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -1923,8 +1940,9 @@ inline void greater_equal_vec_simd(float * out, const float * arg1, const float 
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::greater_equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -1936,8 +1954,9 @@ inline void greater_equal_vec_simd(float * out, const float arg1, const float * 
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::greater_equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::greater_equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -1953,17 +1972,18 @@ inline void greater_equal_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmpge_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpge_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmpge_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpge_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -1983,17 +2003,18 @@ inline void greater_equal_vec_simd(float * out, float arg1, const float arg1_slo
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmpge_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpge_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmpge_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpge_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
@@ -2007,58 +2028,58 @@ inline void greater_equal_vec_simd(float * out, float arg1, const float arg1_slo
 namespace detail {
 
 template <int n>
-always_inline void equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void equal_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmpeq_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmpeq_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    equal_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void equal_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void equal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmpeq_ps(in1, src2);
-    const __m128 result2 = _mm_cmpeq_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpeq_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpeq_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    equal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void equal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void equal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmpeq_ps(src1, in1);
-    const __m128 result2 = _mm_cmpeq_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpeq_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpeq_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    equal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void equal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -2070,7 +2091,7 @@ using detail::equal_vec_simd_mp;
 template <int n>
 void equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    equal_vec_simd_mp<n>(out, src1, src2);
+    equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -2078,7 +2099,7 @@ template <int n>
 always_inline void equal_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::equal_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::equal_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -2092,13 +2113,13 @@ template <int n>
 always_inline void equal_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::equal_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::equal_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void equal_vec_simd(float * out, const float src1, const float * src2)
 {
-    equal_vec_simd<n>(out, src1, src2);
+    equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -2106,8 +2127,9 @@ template <>
 inline void equal_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::equal_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -2120,8 +2142,9 @@ inline void equal_vec_simd(float * out, const float * arg1, const float arg2, un
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::equal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -2133,8 +2156,9 @@ inline void equal_vec_simd(float * out, const float arg1, const float * arg2, un
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::equal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -2150,17 +2174,18 @@ inline void equal_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmpeq_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpeq_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmpeq_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpeq_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -2180,17 +2205,18 @@ inline void equal_vec_simd(float * out, float arg1, const float arg1_slope,
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmpeq_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpeq_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmpeq_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpeq_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
@@ -2204,58 +2230,58 @@ inline void equal_vec_simd(float * out, float arg1, const float arg1_slope,
 namespace detail {
 
 template <int n>
-always_inline void notequal_vec_simd_mp(float * out, const float * src1, const float * src2)
+always_inline void notequal_vec_simd_mp(float * out, const float * src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src2);
 
-    const __m128 result = _mm_cmpneq_ps(in1, in2);
+    const __m128 result = _mm_and_ps(_mm_cmpneq_ps(in1, in2), one);
 
     _mm_store_ps(out, result);
 
-    notequal_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+    notequal_vec_simd_mp<n-4>(out+4, src1+4, src2+4, one);
 }
 
 template <>
-always_inline void notequal_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+always_inline void notequal_vec_simd_mp<0>(float * out, const float * src1, const float * src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void notequal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+always_inline void notequal_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src1);
     const __m128 in2 = _mm_load_ps(src1+4);
 
-    const __m128 result1 = _mm_cmpneq_ps(in1, src2);
-    const __m128 result2 = _mm_cmpneq_ps(in2, src2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpneq_ps(in1, src2), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpneq_ps(in2, src2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    notequal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+    notequal_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2, one);
 }
 
 template <>
-always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2, const __m128 one)
 {}
 
 template <int n>
-always_inline void notequal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+always_inline void notequal_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {
     const __m128 in1 = _mm_load_ps(src2);
     const __m128 in2 = _mm_load_ps(src2+4);
 
-    const __m128 result1 = _mm_cmpneq_ps(src1, in1);
-    const __m128 result2 = _mm_cmpneq_ps(src1, in2);
+    const __m128 result1 = _mm_and_ps(_mm_cmpneq_ps(src1, in1), one);
+    const __m128 result2 = _mm_and_ps(_mm_cmpneq_ps(src1, in2), one);
 
     _mm_store_ps(out, result1);
     _mm_store_ps(out+4, result2);
 
-    notequal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+    notequal_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8, one);
 }
 
 template <>
-always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2, const __m128 one)
 {}
 
 } /* namespace detail */
@@ -2267,7 +2293,7 @@ using detail::notequal_vec_simd_mp;
 template <int n>
 void notequal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    notequal_vec_simd_mp<n>(out, src1, src2);
+    notequal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
 }
 
 /* vector/scalar */
@@ -2275,7 +2301,7 @@ template <int n>
 always_inline void notequal_vec_simd_mp(float * out, const float * src1, const float src2)
 {
     __m128 in2 = _mm_set_ps1(src2);
-    detail::notequal_vec_simd_mp_iteration<n>(out, src1, in2);
+    detail::notequal_vec_simd_mp_iteration<n>(out, src1, in2, detail::gen_one());
 }
 
 template <int n>
@@ -2289,13 +2315,13 @@ template <int n>
 always_inline void notequal_vec_simd_mp(float * out, const float src1, const float * src2)
 {
     __m128 in1 = _mm_set_ps1(src1);
-    detail::notequal_vec_simd_mp_iteration<n>(out, in1, src2);
+    detail::notequal_vec_simd_mp_iteration<n>(out, in1, src2, detail::gen_one());
 }
 
 template <int n>
 void notequal_vec_simd(float * out, const float src1, const float * src2)
 {
-    notequal_vec_simd<n>(out, src1, src2);
+    notequal_vec_simd_mp<n>(out, src1, src2);
 }
 
 
@@ -2303,8 +2329,9 @@ template <>
 inline void notequal_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
 {
     unsigned int loops = n / samples_per_loop;
+    __m128 one = detail::gen_one();
     do {
-        detail::notequal_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        detail::notequal_vec_simd_mp<samples_per_loop>(out, arg1, arg2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
@@ -2317,8 +2344,9 @@ inline void notequal_vec_simd(float * out, const float * arg1, const float arg2,
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in2 = _mm_set_ps1(arg2);
+    __m128 one = detail::gen_one();
     do {
-        detail::notequal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        detail::notequal_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2, one);
         out += samples_per_loop;
         arg1 += samples_per_loop;
     }
@@ -2330,8 +2358,9 @@ inline void notequal_vec_simd(float * out, const float arg1, const float * arg2,
 {
     unsigned int loops = n / samples_per_loop;
     const __m128 in1 = _mm_set_ps1(arg1);
+    __m128 one = detail::gen_one();
     do {
-        detail::notequal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        detail::notequal_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2, one);
         out += samples_per_loop;
         arg2 += samples_per_loop;
     }
@@ -2347,17 +2376,18 @@ inline void notequal_vec_simd(float * out, const float * arg1, float arg2,
                               arg2 +   arg2_slope,
                               arg2 + 2*arg2_slope,
                               arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
-        __m128 result = _mm_cmpneq_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpneq_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in2 = _mm_add_ps(in2, vslope);
 
         in1 = _mm_load_ps(arg1+4);
-        result = _mm_cmpneq_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpneq_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in2 = _mm_add_ps(in2, vslope);
@@ -2377,17 +2407,18 @@ inline void notequal_vec_simd(float * out, float arg1, const float arg1_slope,
                               arg1 +   arg1_slope,
                               arg1 + 2*arg1_slope,
                               arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    const __m128 one = detail::gen_one();
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
-        __m128 result = _mm_cmpneq_ps(in1, in2);
+        __m128 result = _mm_and_ps(_mm_cmpneq_ps(in1, in2), one);
 
         _mm_store_ps(out, result);
         in1 = _mm_add_ps(in1, vslope);
 
         in2 = _mm_load_ps(arg2+4);
-        result = _mm_cmpneq_ps(in1, in2);
+        result = _mm_and_ps(_mm_cmpneq_ps(in1, in2), one);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);
