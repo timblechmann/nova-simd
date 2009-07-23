@@ -116,7 +116,7 @@ def gen_template(float_type, a1, a2, a3):
 
     ret = Template("""
 template <unsigned int n>
-inline void $${label}_vec$fnsuffix($float_type * out, $fnargs)
+inline void $${label}_vec_simd$fnsuffix($float_type * out, $fnargs)
 {
     $${label}_vec_simd$fnsuffix($fmpargs, n);
 }

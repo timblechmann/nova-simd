@@ -25,378 +25,378 @@
 namespace nova {
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double * arg1, const double * arg2, const double * arg3)
+inline void clip_vec_simd(double * out, const double * arg1, const double * arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double * arg1, const double * arg2, const double arg3)
+inline void clip_vec_simd(double * out, const double * arg1, const double * arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r3(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r3(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double * arg1, const double arg2, const double * arg3)
+inline void clip_vec_simd(double * out, const double * arg1, const double arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double * arg1, const double arg2, const double arg3)
+inline void clip_vec_simd(double * out, const double * arg1, const double arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r3(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r3(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
+inline void clip_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
+inline void clip_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2r3(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r2r3(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double arg1, const double * arg2, const double * arg3)
+inline void clip_vec_simd(double * out, const double arg1, const double * arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double arg1, const double * arg2, const double arg3)
+inline void clip_vec_simd(double * out, const double arg1, const double * arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r3(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r3(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double arg1, const double arg2, const double * arg3)
+inline void clip_vec_simd(double * out, const double arg1, const double arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec(double * out, const double arg1, const double arg2, const double arg3)
+inline void clip_vec_simd(double * out, const double arg1, const double arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r3(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r3(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
+inline void clip_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
+inline void clip_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r2r3(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r2r3(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
+inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
+inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1r3(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
+inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
+inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1r3(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
+inline void clip_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
 {
     clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
+inline void clip_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
 {
     clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void clip_vec_r1r2r3(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void clip_vec_simd_r1r2r3(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double * arg1, const double * arg2, const double * arg3)
+inline void muladd_vec_simd(double * out, const double * arg1, const double * arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double * arg1, const double * arg2, const double arg3)
+inline void muladd_vec_simd(double * out, const double * arg1, const double * arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r3(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r3(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double * arg1, const double arg2, const double * arg3)
+inline void muladd_vec_simd(double * out, const double * arg1, const double arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double * arg1, const double arg2, const double arg3)
+inline void muladd_vec_simd(double * out, const double * arg1, const double arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r3(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r3(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
+inline void muladd_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
+inline void muladd_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2r3(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r2r3(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double arg1, const double * arg2, const double * arg3)
+inline void muladd_vec_simd(double * out, const double arg1, const double * arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double arg1, const double * arg2, const double arg3)
+inline void muladd_vec_simd(double * out, const double arg1, const double * arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r3(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r3(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double arg1, const double arg2, const double * arg3)
+inline void muladd_vec_simd(double * out, const double arg1, const double arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec(double * out, const double arg1, const double arg2, const double arg3)
+inline void muladd_vec_simd(double * out, const double arg1, const double arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r3(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r3(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
+inline void muladd_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
+inline void muladd_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r2r3(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r2r3(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
+inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
+inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1r3(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
+inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
+inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1r3(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
+inline void muladd_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
 {
     muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
+inline void muladd_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
 {
     muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
 
 template <unsigned int n>
-inline void muladd_vec_r1r2r3(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+inline void muladd_vec_simd_r1r2r3(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }

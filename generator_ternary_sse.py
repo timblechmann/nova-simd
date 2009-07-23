@@ -265,7 +265,7 @@ $prefix
         detail::${fname}<samples_per_loop>($fmpargs);
         out += samples_per_loop;
 $increments
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>

@@ -55,6 +55,7 @@ inline void clip_vec(float_type * out, const float_type * arg1, const float_type
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, *arg2++, *arg3++);
         float_type out1 = detail::clip<float_type>(*arg1++, *arg2++, *arg3++);
@@ -73,7 +74,7 @@ inline void clip_vec_simd(float_type * out, const float_type * arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -88,6 +89,7 @@ inline void clip_vec(float_type * out, const float_type * arg1, const float_type
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, *arg2++, arg3);
         float_type out1 = detail::clip<float_type>(*arg1++, *arg2++, arg3);
@@ -106,7 +108,7 @@ inline void clip_vec_simd(float_type * out, const float_type * arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -122,6 +124,7 @@ inline void clip_vec_r3(float_type * out, const float_type * arg1, const float_t
 template <typename float_type>
 inline void clip_vec_simd_r3(float_type * out, const float_type * arg1, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, *arg2++, arg3);
         arg3 += arg3_slope;
@@ -148,7 +151,7 @@ inline void clip_vec_simd_r3(float_type * out, const float_type * arg1, const fl
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -163,6 +166,7 @@ inline void clip_vec(float_type * out, const float_type * arg1, const float_type
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, *arg3++);
         float_type out1 = detail::clip<float_type>(*arg1++, arg2, *arg3++);
@@ -181,7 +185,7 @@ inline void clip_vec_simd(float_type * out, const float_type * arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -196,6 +200,7 @@ inline void clip_vec(float_type * out, const float_type * arg1, const float_type
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, arg3);
         float_type out1 = detail::clip<float_type>(*arg1++, arg2, arg3);
@@ -214,7 +219,7 @@ inline void clip_vec_simd(float_type * out, const float_type * arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -230,6 +235,7 @@ inline void clip_vec_r3(float_type * out, const float_type * arg1, const float_t
 template <typename float_type>
 inline void clip_vec_simd_r3(float_type * out, const float_type * arg1, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, arg3);
         arg3 += arg3_slope;
@@ -256,7 +262,7 @@ inline void clip_vec_simd_r3(float_type * out, const float_type * arg1, const fl
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -272,6 +278,7 @@ inline void clip_vec_r2(float_type * out, const float_type * arg1, float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r2(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, *arg3++);
         arg2 += arg2_slope;
@@ -298,7 +305,7 @@ inline void clip_vec_simd_r2(float_type * out, const float_type * arg1, float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -314,6 +321,7 @@ inline void clip_vec_r2(float_type * out, const float_type * arg1, float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r2(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, arg3);
         arg2 += arg2_slope;
@@ -340,7 +348,7 @@ inline void clip_vec_simd_r2(float_type * out, const float_type * arg1, float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -357,6 +365,7 @@ inline void clip_vec_r2r3(float_type * out, const float_type * arg1, float_type 
 template <typename float_type>
 inline void clip_vec_simd_r2r3(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(*arg1++, arg2, arg3);
         arg2 += arg2_slope;
@@ -391,7 +400,7 @@ inline void clip_vec_simd_r2r3(float_type * out, const float_type * arg1, float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -406,6 +415,7 @@ inline void clip_vec(float_type * out, const float_type arg1, const float_type *
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, *arg3++);
         float_type out1 = detail::clip<float_type>(arg1, *arg2++, *arg3++);
@@ -424,7 +434,7 @@ inline void clip_vec_simd(float_type * out, const float_type arg1, const float_t
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -439,6 +449,7 @@ inline void clip_vec(float_type * out, const float_type arg1, const float_type *
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, arg3);
         float_type out1 = detail::clip<float_type>(arg1, *arg2++, arg3);
@@ -457,7 +468,7 @@ inline void clip_vec_simd(float_type * out, const float_type arg1, const float_t
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -473,6 +484,7 @@ inline void clip_vec_r3(float_type * out, const float_type arg1, const float_typ
 template <typename float_type>
 inline void clip_vec_simd_r3(float_type * out, const float_type arg1, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, arg3);
         arg3 += arg3_slope;
@@ -499,7 +511,7 @@ inline void clip_vec_simd_r3(float_type * out, const float_type arg1, const floa
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -514,6 +526,7 @@ inline void clip_vec(float_type * out, const float_type arg1, const float_type a
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type arg1, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, *arg3++);
         float_type out1 = detail::clip<float_type>(arg1, arg2, *arg3++);
@@ -532,7 +545,7 @@ inline void clip_vec_simd(float_type * out, const float_type arg1, const float_t
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -547,6 +560,7 @@ inline void clip_vec(float_type * out, const float_type arg1, const float_type a
 template <typename float_type>
 inline void clip_vec_simd(float_type * out, const float_type arg1, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         float_type out1 = detail::clip<float_type>(arg1, arg2, arg3);
@@ -565,7 +579,7 @@ inline void clip_vec_simd(float_type * out, const float_type arg1, const float_t
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -581,6 +595,7 @@ inline void clip_vec_r3(float_type * out, const float_type arg1, const float_typ
 template <typename float_type>
 inline void clip_vec_simd_r3(float_type * out, const float_type arg1, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg3 += arg3_slope;
@@ -607,7 +622,7 @@ inline void clip_vec_simd_r3(float_type * out, const float_type arg1, const floa
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -623,6 +638,7 @@ inline void clip_vec_r2(float_type * out, const float_type arg1, float_type arg2
 template <typename float_type>
 inline void clip_vec_simd_r2(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, *arg3++);
         arg2 += arg2_slope;
@@ -649,7 +665,7 @@ inline void clip_vec_simd_r2(float_type * out, const float_type arg1, float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -665,6 +681,7 @@ inline void clip_vec_r2(float_type * out, const float_type arg1, float_type arg2
 template <typename float_type>
 inline void clip_vec_simd_r2(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg2 += arg2_slope;
@@ -691,7 +708,7 @@ inline void clip_vec_simd_r2(float_type * out, const float_type arg1, float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -708,6 +725,7 @@ inline void clip_vec_r2r3(float_type * out, const float_type arg1, float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r2r3(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg2 += arg2_slope;
@@ -742,7 +760,7 @@ inline void clip_vec_simd_r2r3(float_type * out, const float_type arg1, float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -758,6 +776,7 @@ inline void clip_vec_r1(float_type * out, float_type arg1, const float_type arg1
 template <typename float_type>
 inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, *arg3++);
         arg1 += arg1_slope;
@@ -784,7 +803,7 @@ inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -800,6 +819,7 @@ inline void clip_vec_r1(float_type * out, float_type arg1, const float_type arg1
 template <typename float_type>
 inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, arg3);
         arg1 += arg1_slope;
@@ -826,7 +846,7 @@ inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -843,6 +863,7 @@ inline void clip_vec_r1r3(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r1r3(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, *arg2++, arg3);
         arg1 += arg1_slope;
@@ -877,7 +898,7 @@ inline void clip_vec_simd_r1r3(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -893,6 +914,7 @@ inline void clip_vec_r1(float_type * out, float_type arg1, const float_type arg1
 template <typename float_type>
 inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, *arg3++);
         arg1 += arg1_slope;
@@ -919,7 +941,7 @@ inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -935,6 +957,7 @@ inline void clip_vec_r1(float_type * out, float_type arg1, const float_type arg1
 template <typename float_type>
 inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -961,7 +984,7 @@ inline void clip_vec_simd_r1(float_type * out, float_type arg1, const float_type
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -978,6 +1001,7 @@ inline void clip_vec_r1r3(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r1r3(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -1012,7 +1036,7 @@ inline void clip_vec_simd_r1r3(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1029,6 +1053,7 @@ inline void clip_vec_r1r2(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r1r2(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, *arg3++);
         arg1 += arg1_slope;
@@ -1063,7 +1088,7 @@ inline void clip_vec_simd_r1r2(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1080,6 +1105,7 @@ inline void clip_vec_r1r2(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void clip_vec_simd_r1r2(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -1114,7 +1140,7 @@ inline void clip_vec_simd_r1r2(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1132,6 +1158,7 @@ inline void clip_vec_r1r2r3(float_type * out, float_type arg1, const float_type 
 template <typename float_type>
 inline void clip_vec_simd_r1r2r3(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::clip<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -1174,7 +1201,7 @@ inline void clip_vec_simd_r1r2r3(float_type * out, float_type arg1, const float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1189,6 +1216,7 @@ inline void muladd_vec(float_type * out, const float_type * arg1, const float_ty
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, *arg2++, *arg3++);
         float_type out1 = detail::muladd<float_type>(*arg1++, *arg2++, *arg3++);
@@ -1207,7 +1235,7 @@ inline void muladd_vec_simd(float_type * out, const float_type * arg1, const flo
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1222,6 +1250,7 @@ inline void muladd_vec(float_type * out, const float_type * arg1, const float_ty
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, *arg2++, arg3);
         float_type out1 = detail::muladd<float_type>(*arg1++, *arg2++, arg3);
@@ -1240,7 +1269,7 @@ inline void muladd_vec_simd(float_type * out, const float_type * arg1, const flo
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1256,6 +1285,7 @@ inline void muladd_vec_r3(float_type * out, const float_type * arg1, const float
 template <typename float_type>
 inline void muladd_vec_simd_r3(float_type * out, const float_type * arg1, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, *arg2++, arg3);
         arg3 += arg3_slope;
@@ -1282,7 +1312,7 @@ inline void muladd_vec_simd_r3(float_type * out, const float_type * arg1, const 
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1297,6 +1327,7 @@ inline void muladd_vec(float_type * out, const float_type * arg1, const float_ty
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, *arg3++);
         float_type out1 = detail::muladd<float_type>(*arg1++, arg2, *arg3++);
@@ -1315,7 +1346,7 @@ inline void muladd_vec_simd(float_type * out, const float_type * arg1, const flo
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1330,6 +1361,7 @@ inline void muladd_vec(float_type * out, const float_type * arg1, const float_ty
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, arg3);
         float_type out1 = detail::muladd<float_type>(*arg1++, arg2, arg3);
@@ -1348,7 +1380,7 @@ inline void muladd_vec_simd(float_type * out, const float_type * arg1, const flo
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1364,6 +1396,7 @@ inline void muladd_vec_r3(float_type * out, const float_type * arg1, const float
 template <typename float_type>
 inline void muladd_vec_simd_r3(float_type * out, const float_type * arg1, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, arg3);
         arg3 += arg3_slope;
@@ -1390,7 +1423,7 @@ inline void muladd_vec_simd_r3(float_type * out, const float_type * arg1, const 
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1406,6 +1439,7 @@ inline void muladd_vec_r2(float_type * out, const float_type * arg1, float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r2(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, *arg3++);
         arg2 += arg2_slope;
@@ -1432,7 +1466,7 @@ inline void muladd_vec_simd_r2(float_type * out, const float_type * arg1, float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1448,6 +1482,7 @@ inline void muladd_vec_r2(float_type * out, const float_type * arg1, float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r2(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, arg3);
         arg2 += arg2_slope;
@@ -1474,7 +1509,7 @@ inline void muladd_vec_simd_r2(float_type * out, const float_type * arg1, float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1491,6 +1526,7 @@ inline void muladd_vec_r2r3(float_type * out, const float_type * arg1, float_typ
 template <typename float_type>
 inline void muladd_vec_simd_r2r3(float_type * out, const float_type * arg1, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(*arg1++, arg2, arg3);
         arg2 += arg2_slope;
@@ -1525,7 +1561,7 @@ inline void muladd_vec_simd_r2r3(float_type * out, const float_type * arg1, floa
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1540,6 +1576,7 @@ inline void muladd_vec(float_type * out, const float_type arg1, const float_type
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, *arg3++);
         float_type out1 = detail::muladd<float_type>(arg1, *arg2++, *arg3++);
@@ -1558,7 +1595,7 @@ inline void muladd_vec_simd(float_type * out, const float_type arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1573,6 +1610,7 @@ inline void muladd_vec(float_type * out, const float_type arg1, const float_type
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, arg3);
         float_type out1 = detail::muladd<float_type>(arg1, *arg2++, arg3);
@@ -1591,7 +1629,7 @@ inline void muladd_vec_simd(float_type * out, const float_type arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1607,6 +1645,7 @@ inline void muladd_vec_r3(float_type * out, const float_type arg1, const float_t
 template <typename float_type>
 inline void muladd_vec_simd_r3(float_type * out, const float_type arg1, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, arg3);
         arg3 += arg3_slope;
@@ -1633,7 +1672,7 @@ inline void muladd_vec_simd_r3(float_type * out, const float_type arg1, const fl
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1648,6 +1687,7 @@ inline void muladd_vec(float_type * out, const float_type arg1, const float_type
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type arg1, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, *arg3++);
         float_type out1 = detail::muladd<float_type>(arg1, arg2, *arg3++);
@@ -1666,7 +1706,7 @@ inline void muladd_vec_simd(float_type * out, const float_type arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1681,6 +1721,7 @@ inline void muladd_vec(float_type * out, const float_type arg1, const float_type
 template <typename float_type>
 inline void muladd_vec_simd(float_type * out, const float_type arg1, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         float_type out1 = detail::muladd<float_type>(arg1, arg2, arg3);
@@ -1699,7 +1740,7 @@ inline void muladd_vec_simd(float_type * out, const float_type arg1, const float
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1715,6 +1756,7 @@ inline void muladd_vec_r3(float_type * out, const float_type arg1, const float_t
 template <typename float_type>
 inline void muladd_vec_simd_r3(float_type * out, const float_type arg1, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg3 += arg3_slope;
@@ -1741,7 +1783,7 @@ inline void muladd_vec_simd_r3(float_type * out, const float_type arg1, const fl
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1757,6 +1799,7 @@ inline void muladd_vec_r2(float_type * out, const float_type arg1, float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r2(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, *arg3++);
         arg2 += arg2_slope;
@@ -1783,7 +1826,7 @@ inline void muladd_vec_simd_r2(float_type * out, const float_type arg1, float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1799,6 +1842,7 @@ inline void muladd_vec_r2(float_type * out, const float_type arg1, float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r2(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg2 += arg2_slope;
@@ -1825,7 +1869,7 @@ inline void muladd_vec_simd_r2(float_type * out, const float_type arg1, float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1842,6 +1886,7 @@ inline void muladd_vec_r2r3(float_type * out, const float_type arg1, float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r2r3(float_type * out, const float_type arg1, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg2 += arg2_slope;
@@ -1876,7 +1921,7 @@ inline void muladd_vec_simd_r2r3(float_type * out, const float_type arg1, float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1892,6 +1937,7 @@ inline void muladd_vec_r1(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, *arg3++);
         arg1 += arg1_slope;
@@ -1918,7 +1964,7 @@ inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1934,6 +1980,7 @@ inline void muladd_vec_r1(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, arg3);
         arg1 += arg1_slope;
@@ -1960,7 +2007,7 @@ inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -1977,6 +2024,7 @@ inline void muladd_vec_r1r3(float_type * out, float_type arg1, const float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r1r3(float_type * out, float_type arg1, const float_type arg1_slope, const float_type * arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, *arg2++, arg3);
         arg1 += arg1_slope;
@@ -2011,7 +2059,7 @@ inline void muladd_vec_simd_r1r3(float_type * out, float_type arg1, const float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2027,6 +2075,7 @@ inline void muladd_vec_r1(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, *arg3++);
         arg1 += arg1_slope;
@@ -2053,7 +2102,7 @@ inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2069,6 +2118,7 @@ inline void muladd_vec_r1(float_type * out, float_type arg1, const float_type ar
 template <typename float_type>
 inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -2095,7 +2145,7 @@ inline void muladd_vec_simd_r1(float_type * out, float_type arg1, const float_ty
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2112,6 +2162,7 @@ inline void muladd_vec_r1r3(float_type * out, float_type arg1, const float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r1r3(float_type * out, float_type arg1, const float_type arg1_slope, const float_type arg2, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -2146,7 +2197,7 @@ inline void muladd_vec_simd_r1r3(float_type * out, float_type arg1, const float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2163,6 +2214,7 @@ inline void muladd_vec_r1r2(float_type * out, float_type arg1, const float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r1r2(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, const float_type * arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, *arg3++);
         arg1 += arg1_slope;
@@ -2197,7 +2249,7 @@ inline void muladd_vec_simd_r1r2(float_type * out, float_type arg1, const float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2214,6 +2266,7 @@ inline void muladd_vec_r1r2(float_type * out, float_type arg1, const float_type 
 template <typename float_type>
 inline void muladd_vec_simd_r1r2(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, const float_type arg3, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -2248,7 +2301,7 @@ inline void muladd_vec_simd_r1r2(float_type * out, float_type arg1, const float_
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 template <typename float_type>
@@ -2266,6 +2319,7 @@ inline void muladd_vec_r1r2r3(float_type * out, float_type arg1, const float_typ
 template <typename float_type>
 inline void muladd_vec_simd_r1r2r3(float_type * out, float_type arg1, const float_type arg1_slope, float_type arg2, const float_type arg2_slope, float_type arg3, const float_type arg3_slope, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = detail::muladd<float_type>(arg1, arg2, arg3);
         arg1 += arg1_slope;
@@ -2308,7 +2362,7 @@ inline void muladd_vec_simd_r1r2r3(float_type * out, float_type arg1, const floa
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 
 } /* namespace nova */

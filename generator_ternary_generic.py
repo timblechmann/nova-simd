@@ -110,6 +110,7 @@ inline void $${label}_vec$fnsuffix(float_type * out, $fnargs, unsigned int n)
 template <typename float_type>
 inline void $${label}_vec_simd$fnsuffix(float_type * out, $fnargs, unsigned int n)
 {
+    unsigned int loops = n / 8;
     do {
         float_type out0 = $$operation($callargs);$increments
         float_type out1 = $$operation($callargs);$increments
@@ -128,7 +129,7 @@ inline void $${label}_vec_simd$fnsuffix(float_type * out, $fnargs, unsigned int 
         *out++ = out6;
         *out++ = out7;
     }
-    while (--n);
+    while (--loops);
 }
 """)
 

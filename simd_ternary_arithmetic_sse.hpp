@@ -89,7 +89,7 @@ inline void clip_vec_simd(float * out, const float * arg1, const float * arg2, c
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -136,7 +136,7 @@ inline void clip_vec_simd(float * out, const float * arg1, const float * arg2, c
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -187,7 +187,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float * arg2
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -238,7 +238,7 @@ inline void clip_vec_simd(float * out, const float * arg1, const float arg2, con
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -285,7 +285,7 @@ inline void clip_vec_simd(float * out, const float * arg1, const float arg2, con
         detail::clip_vec_simd_mp_vss<samples_per_loop>(out, arg1, a2, a3);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -337,7 +337,7 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float arg2, 
         detail::clip_vec_simd_mp_vsr<samples_per_loop>(out, arg1, a2, a3, a3_slope);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -393,7 +393,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -447,7 +447,7 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
         detail::clip_vec_simd_mp_vrs<samples_per_loop>(out, arg1, a2, a2_slope, a3);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -506,7 +506,7 @@ inline void clip_vec_simd_r2r3(float * out, const float * arg1, const float arg2
         detail::clip_vec_simd_mp_vrr<samples_per_loop>(out, arg1, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -561,7 +561,7 @@ inline void clip_vec_simd(float * out, const float arg1, const float * arg2, con
         out += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -608,7 +608,7 @@ inline void clip_vec_simd(float * out, const float arg1, const float * arg2, con
         detail::clip_vec_simd_mp_svs<samples_per_loop>(out, a1, arg2, a3);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -660,7 +660,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float * arg2, 
         detail::clip_vec_simd_mp_svr<samples_per_loop>(out, a1, arg2, a3, a3_slope);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -712,7 +712,7 @@ inline void clip_vec_simd(float * out, const float arg1, const float arg2, const
         detail::clip_vec_simd_mp_ssv<samples_per_loop>(out, a1, a2, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -761,7 +761,7 @@ inline void clip_vec_simd(float * out, const float arg1, const float arg2, const
         detail::clip_vec_simd_mp_sss<samples_per_loop>(out, a1, a2, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -815,7 +815,7 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float arg2, co
         detail::clip_vec_simd_mp_ssr<samples_per_loop>(out, a1, a2, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -872,7 +872,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
         detail::clip_vec_simd_mp_srv<samples_per_loop>(out, a1, a2, a2_slope, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -928,7 +928,7 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
         detail::clip_vec_simd_mp_srs<samples_per_loop>(out, a1, a2, a2_slope, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -989,7 +989,7 @@ inline void clip_vec_simd_r2r3(float * out, const float arg1, const float arg2, 
         detail::clip_vec_simd_mp_srr<samples_per_loop>(out, a1, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1049,7 +1049,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         out += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1103,7 +1103,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         detail::clip_vec_simd_mp_rvs<samples_per_loop>(out, a1, a1_slope, arg2, a3);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1162,7 +1162,7 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
         detail::clip_vec_simd_mp_rvr<samples_per_loop>(out, a1, a1_slope, arg2, a3, a3_slope);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1220,7 +1220,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         detail::clip_vec_simd_mp_rsv<samples_per_loop>(out, a1, a1_slope, a2, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1275,7 +1275,7 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         detail::clip_vec_simd_mp_rss<samples_per_loop>(out, a1, a1_slope, a2, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1336,7 +1336,7 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
         detail::clip_vec_simd_mp_rsr<samples_per_loop>(out, a1, a1_slope, a2, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1400,7 +1400,7 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
         detail::clip_vec_simd_mp_rrv<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1463,7 +1463,7 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
         detail::clip_vec_simd_mp_rrs<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1531,7 +1531,7 @@ inline void clip_vec_simd_r1r2r3(float * out, const float arg1, const float arg1
         detail::clip_vec_simd_mp_rrr<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1591,7 +1591,7 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float * arg2,
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1638,7 +1638,7 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float * arg2,
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1689,7 +1689,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float * ar
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1740,7 +1740,7 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float arg2, c
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1787,7 +1787,7 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float arg2, c
         detail::muladd_vec_simd_mp_vss<samples_per_loop>(out, arg1, a2, a3);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1839,7 +1839,7 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float arg2
         detail::muladd_vec_simd_mp_vsr<samples_per_loop>(out, arg1, a2, a3, a3_slope);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1895,7 +1895,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
         out += samples_per_loop;
         arg1 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -1949,7 +1949,7 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
         detail::muladd_vec_simd_mp_vrs<samples_per_loop>(out, arg1, a2, a2_slope, a3);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2008,7 +2008,7 @@ inline void muladd_vec_simd_r2r3(float * out, const float * arg1, const float ar
         detail::muladd_vec_simd_mp_vrr<samples_per_loop>(out, arg1, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
         arg1 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2063,7 +2063,7 @@ inline void muladd_vec_simd(float * out, const float arg1, const float * arg2, c
         out += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2110,7 +2110,7 @@ inline void muladd_vec_simd(float * out, const float arg1, const float * arg2, c
         detail::muladd_vec_simd_mp_svs<samples_per_loop>(out, a1, arg2, a3);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2162,7 +2162,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float * arg2
         detail::muladd_vec_simd_mp_svr<samples_per_loop>(out, a1, arg2, a3, a3_slope);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2214,7 +2214,7 @@ inline void muladd_vec_simd(float * out, const float arg1, const float arg2, con
         detail::muladd_vec_simd_mp_ssv<samples_per_loop>(out, a1, a2, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2263,7 +2263,7 @@ inline void muladd_vec_simd(float * out, const float arg1, const float arg2, con
         detail::muladd_vec_simd_mp_sss<samples_per_loop>(out, a1, a2, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2317,7 +2317,7 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float arg2, 
         detail::muladd_vec_simd_mp_ssr<samples_per_loop>(out, a1, a2, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2374,7 +2374,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
         detail::muladd_vec_simd_mp_srv<samples_per_loop>(out, a1, a2, a2_slope, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2430,7 +2430,7 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
         detail::muladd_vec_simd_mp_srs<samples_per_loop>(out, a1, a2, a2_slope, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2491,7 +2491,7 @@ inline void muladd_vec_simd_r2r3(float * out, const float arg1, const float arg2
         detail::muladd_vec_simd_mp_srr<samples_per_loop>(out, a1, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2551,7 +2551,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         out += samples_per_loop;
         arg2 += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2605,7 +2605,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         detail::muladd_vec_simd_mp_rvs<samples_per_loop>(out, a1, a1_slope, arg2, a3);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2664,7 +2664,7 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
         detail::muladd_vec_simd_mp_rvr<samples_per_loop>(out, a1, a1_slope, arg2, a3, a3_slope);
         out += samples_per_loop;
         arg2 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2722,7 +2722,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         detail::muladd_vec_simd_mp_rsv<samples_per_loop>(out, a1, a1_slope, a2, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2777,7 +2777,7 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         detail::muladd_vec_simd_mp_rss<samples_per_loop>(out, a1, a1_slope, a2, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2838,7 +2838,7 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
         detail::muladd_vec_simd_mp_rsr<samples_per_loop>(out, a1, a1_slope, a2, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2902,7 +2902,7 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
         detail::muladd_vec_simd_mp_rrv<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, arg3);
         out += samples_per_loop;
         arg3 += samples_per_loop;
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -2965,7 +2965,7 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
         detail::muladd_vec_simd_mp_rrs<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
@@ -3033,7 +3033,7 @@ inline void muladd_vec_simd_r1r2r3(float * out, const float arg1, const float ar
         detail::muladd_vec_simd_mp_rrr<samples_per_loop>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
         out += samples_per_loop;
 
-    } while (--n);
+    } while (--loops);
 }
 
 template<unsigned int n>
