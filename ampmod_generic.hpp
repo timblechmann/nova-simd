@@ -65,7 +65,6 @@ inline void amp_mod_simd(float_type * out, const float_type * in1, const float_t
         in1 += 4;
         in2 += 4;
     }
-    amp_mod(out, in1, in2, amount, n);
 }
 
 template <typename float_type>
