@@ -227,9 +227,9 @@ def gen_prefix_(index, arg):
         return 4*" " + "__m128 a%d = _mm_set_ps1(arg%d);\n" % (index, index)
     if arg == 2:
         ret = Template("""
-    __m128 a$i = _mm_set_ps(arg$i, arg$i + arg${i}_slope,
-                           arg$i + arg${i}_slope + arg${i}_slope,
-                           arg$i + arg${i}_slope + arg${i}_slope + arg${i}_slope);
+    __m128 a$i = _mm_setr_ps(arg$i, arg$i + arg${i}_slope,
+                            arg$i + arg${i}_slope + arg${i}_slope,
+                            arg$i + arg${i}_slope + arg${i}_slope + arg${i}_slope);
     __m128 a${i}_slope = _mm_set_ps1(arg${i}_slope + arg${i}_slope + arg${i}_slope + arg${i}_slope);
    """)
 

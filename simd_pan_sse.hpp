@@ -55,10 +55,10 @@ void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, 
 {
     n /= 8;
 
-    __m128 f0 = _mm_set_ps(factor0, factor0 + slope0,
-                           factor0 + 2*slope0, factor0 + 3*slope0);
-    __m128 f1 = _mm_set_ps(factor1, factor1 + slope1,
-                           factor1 + 2*slope1, factor1 + 3*slope1);
+    __m128 f0 = _mm_setr_ps(factor0, factor0 + slope0,
+                            factor0 + 2*slope0, factor0 + 3*slope0);
+    __m128 f1 = _mm_setr_ps(factor1, factor1 + slope1,
+                            factor1 + 2*slope1, factor1 + 3*slope1);
 
     const __m128 vslope0 = _mm_set_ps1(4*slope0);
     const __m128 vslope1 = _mm_set_ps1(4*slope1);

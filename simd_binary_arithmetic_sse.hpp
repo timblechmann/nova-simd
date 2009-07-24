@@ -177,11 +177,11 @@ inline void plus_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -207,11 +207,11 @@ inline void plus_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -374,11 +374,11 @@ inline void minus_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -404,11 +404,11 @@ inline void minus_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -571,11 +571,11 @@ inline void times_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -601,11 +601,11 @@ inline void times_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -768,11 +768,11 @@ inline void over_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -798,11 +798,11 @@ inline void over_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -965,11 +965,11 @@ inline void min_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -995,11 +995,11 @@ inline void min_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -1162,11 +1162,11 @@ inline void max_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
 
     do {
         __m128 in1 = _mm_load_ps(arg1);
@@ -1192,11 +1192,11 @@ inline void max_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
 
     do {
         __m128 in2 = _mm_load_ps(arg2);
@@ -1362,11 +1362,11 @@ inline void less_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1393,11 +1393,11 @@ inline void less_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1564,11 +1564,11 @@ inline void less_equal_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1595,11 +1595,11 @@ inline void less_equal_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1766,11 +1766,11 @@ inline void greater_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1797,11 +1797,11 @@ inline void greater_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1968,11 +1968,11 @@ inline void greater_equal_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -1999,11 +1999,11 @@ inline void greater_equal_vec_simd(float * out, float arg1, const float arg1_slo
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -2170,11 +2170,11 @@ inline void equal_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -2201,11 +2201,11 @@ inline void equal_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -2372,11 +2372,11 @@ inline void notequal_vec_simd(float * out, const float * arg1, float arg2,
                               float arg2_slope, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in2   = _mm_set_ps(arg2,
-                              arg2 +   arg2_slope,
-                              arg2 + 2*arg2_slope,
-                              arg2 + 3*arg2_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg2_slope);
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    const __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
     const __m128 one = detail::gen_one();
 
     do {
@@ -2403,11 +2403,11 @@ inline void notequal_vec_simd(float * out, float arg1, const float arg1_slope,
                               const float * arg2, unsigned int n)
 {
     unsigned int loops = n / 8;
-    __m128 in1   = _mm_set_ps(arg1,
-                              arg1 +   arg1_slope,
-                              arg1 + 2*arg1_slope,
-                              arg1 + 3*arg1_slope);
-    const __m128 vslope = _mm_set_ps1(4*arg1_slope);
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    const __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
     const __m128 one = detail::gen_one();
 
     do {

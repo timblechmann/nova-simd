@@ -71,11 +71,11 @@ inline void amp_mod_simd(float * out, const float * in1, const float * in2,
     std::size_t loops = n >> 2;
     const __m128 one = detail::gen_one();
 
-    __m128 amnt = _mm_set_ps(amount,
-                             amount + amount_slope,
-                             amount + amount_slope + amount_slope,
-                             amount + amount_slope + amount_slope + amount_slope);
-    const __m128 slope = _mm_set_ps1(4 * amount_slope);
+    __m128 amnt = _mm_setr_ps(amount,
+                              amount + amount_slope,
+                              amount + amount_slope + amount_slope,
+                              amount + amount_slope + amount_slope + amount_slope);
+    const __m128 slope = _mm_set_ps1(amount_slope + amount_slope + amount_slope + amount_slope);
 
     do
     {
