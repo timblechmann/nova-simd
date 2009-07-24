@@ -85,3 +85,43 @@ BOOST_AUTO_TEST_CASE( add_test )
     add_tests<float>();
     add_tests<double>();
 }
+
+template <typename float_type>
+void slope_tests(void)
+{
+    aligned_array<float_type, size> out, out_simd, out_mp;
+
+    float_type base = randomize_float<float_type>();
+    float_type slope = randomize_float<float_type>() * 0.01;
+
+    set_slope_vec<float_type>(out.c_array(), base, slope, size);
+    set_slope_vec_simd<float_type>(out_simd.c_array(), base, slope, size);
+
+    compare_buffers_relative(out.c_array(), out_simd.c_array(), size);
+}
+
+BOOST_AUTO_TEST_CASE( slope_test )
+{
+    slope_tests<float>();
+    slope_tests<double>();
+}
+
+template <typename float_type>
+void exp_tests(void)
+{
+    aligned_array<float_type, size> out, out_simd, out_mp;
+
+    float_type base = std::abs(randomize_float<float_type>());
+    float_type slope = std::abs(randomize_float<float_type>() * 0.01);
+
+    set_exp_vec<float_type>(out.c_array(), base, slope, size);
+    set_exp_vec_simd<float_type>(out_simd.c_array(), base, slope, size);
+
+    compare_buffers_relative(out.c_array(), out_simd.c_array(), size);
+}
+
+BOOST_AUTO_TEST_CASE( exp_test )
+{
+    exp_tests<float>();
+    exp_tests<double>();
+}
