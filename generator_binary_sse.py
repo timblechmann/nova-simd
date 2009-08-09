@@ -31,7 +31,7 @@ binary_sse_prolog = """
 #define always_inline inline
 #endif
 
-#define samples_per_loop 8
+#define samples_per_loop nova::unroll_constraints<float>::samples_per_loop
 
 """
 

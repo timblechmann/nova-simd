@@ -23,7 +23,9 @@
 
 #include <xmmintrin.h>
 
+#include "simd_unroll_constraints.hpp"
 #include "simd_utils.hpp"
+
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -31,7 +33,7 @@
 #define always_inline inline
 #endif
 
-#define samples_per_loop 8
+#define samples_per_loop nova::unroll_constraints<float>::samples_per_loop
 
 namespace nova {
 

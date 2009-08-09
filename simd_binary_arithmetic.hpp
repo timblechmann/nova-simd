@@ -19,6 +19,7 @@
 #ifndef SIMD_BINARY_ARITHMETIC_HPP
 #define SIMD_BINARY_ARITHMETIC_HPP
 
+#include "simd_unroll_constraints.hpp"
 #include "simd_binary_arithmetic_generic.hpp"
 
 #ifdef __SSE__

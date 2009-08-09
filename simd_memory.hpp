@@ -20,6 +20,8 @@
 #ifndef SIMD_MEMORY_HPP
 #define SIMD_MEMORY_HPP
 
+#include "simd_unroll_constraints.hpp"
+
 #include "simd_memory_generic.hpp"
 
 #ifdef __SSE__
