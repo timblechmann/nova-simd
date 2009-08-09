@@ -21,7 +21,7 @@
 
 #include "simd_math_generic.hpp"
 
-#ifdef __GNUC__
+#if !defined(NO_GPL3_CODE) && defined(__GNUC__)
 #include "simd_math_vec.hpp"
 #endif
 
