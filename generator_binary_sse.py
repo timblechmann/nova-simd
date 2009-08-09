@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # code generation system for simd framework
-# Copyright (C) 2008 Tim Blechmann
+# Copyright (C) 2008, 2009 Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -303,12 +303,16 @@ always_inline void ${label}_vec_simd_mp_iteration<0>(float * out, const __m128 &
 
 
 /* vector/vector */
-using detail::${label}_vec_simd_mp;
+template <int n>
+always_inline void ${label}_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::${label}_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void ${label}_vec_simd(float * out, const float * src1, const float * src2)
 {
-    ${label}_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    ${label}_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */

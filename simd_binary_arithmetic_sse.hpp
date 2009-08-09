@@ -1278,12 +1278,16 @@ always_inline void less_vec_simd_mp_iteration<0>(float * out, const __m128 & src
 
 
 /* vector/vector */
-using detail::less_vec_simd_mp;
+template <int n>
+always_inline void less_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::less_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void less_vec_simd(float * out, const float * src1, const float * src2)
 {
-    less_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    less_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
@@ -1480,12 +1484,16 @@ always_inline void less_equal_vec_simd_mp_iteration<0>(float * out, const __m128
 
 
 /* vector/vector */
-using detail::less_equal_vec_simd_mp;
+template <int n>
+always_inline void less_equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::less_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void less_equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    less_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    less_equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
@@ -1682,12 +1690,16 @@ always_inline void greater_vec_simd_mp_iteration<0>(float * out, const __m128 & 
 
 
 /* vector/vector */
-using detail::greater_vec_simd_mp;
+template <int n>
+always_inline void greater_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::greater_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void greater_vec_simd(float * out, const float * src1, const float * src2)
 {
-    greater_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    greater_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
@@ -1884,12 +1896,16 @@ always_inline void greater_equal_vec_simd_mp_iteration<0>(float * out, const __m
 
 
 /* vector/vector */
-using detail::greater_equal_vec_simd_mp;
+template <int n>
+always_inline void greater_equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::greater_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void greater_equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    greater_equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    greater_equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
@@ -2086,12 +2102,16 @@ always_inline void equal_vec_simd_mp_iteration<0>(float * out, const __m128 & sr
 
 
 /* vector/vector */
-using detail::equal_vec_simd_mp;
+template <int n>
+always_inline void equal_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void equal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    equal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    equal_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
@@ -2288,12 +2308,16 @@ always_inline void notequal_vec_simd_mp_iteration<0>(float * out, const __m128 &
 
 
 /* vector/vector */
-using detail::notequal_vec_simd_mp;
+template <int n>
+always_inline void notequal_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    detail::notequal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+}
 
 template <int n>
 void notequal_vec_simd(float * out, const float * src1, const float * src2)
 {
-    notequal_vec_simd_mp<n>(out, src1, src2, detail::gen_one());
+    notequal_vec_simd_mp<n>(out, src1, src2);
 }
 
 /* vector/scalar */
