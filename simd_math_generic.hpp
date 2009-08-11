@@ -136,49 +136,6 @@ inline void exp4(F * out, const F * in)
     RUN_UNARY(in, out, std::exp);
 }
 
-template<typename F>
-inline void round4(F * out, const F * in)
-{
-#if defined(__GXX_EXPERIMENTAL_CXX0X__)
-    RUN_UNARY(in, out, std::round);
-#else
-    F out0 = std::floor(in[0] + 0.5);
-    F out1 = std::floor(in[1] + 0.5);
-    F out2 = std::floor(in[2] + 0.5);
-    F out3 = std::floor(in[3] + 0.5);
-    out[0] = out0;
-    out[1] = out1;
-    out[2] = out2;
-    out[3] = out3;
-#endif
-}
-
-template<typename F>
-inline void floor4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::floor);
-}
-
-template<typename F>
-inline void ceil4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::ceil);
-}
-
-template<typename F>
-inline void frac4(F * out, const F * in)
-{
-    F out0 = in[0] - std::floor(in[0] + 0.5);
-    F out1 = in[1] - std::floor(in[1] + 0.5);
-    F out2 = in[2] - std::floor(in[2] + 0.5);
-    F out3 = in[3] - std::floor(in[3] + 0.5);
-    out[0] = out0;
-    out[1] = out1;
-    out[2] = out2;
-    out[3] = out3;
-}
-
-
 /** pow */
 /* @{ */
 template<typename F>

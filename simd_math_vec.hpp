@@ -119,39 +119,6 @@ inline void exp4(float * out, const float * in)
     *op = _expf4(*ip);
 }
 
-template<>
-inline void round4(float * out, const float * in)
-{
-    const vec_float4 * ip = (const vec_float4*)in;
-    vec_float4 * op = (vec_float4*)out;
-    *op = _roundf4(*ip);
-}
-
-template<>
-inline void floor4(float * out, const float * in)
-{
-    const vec_float4 * ip = (const vec_float4*)in;
-    vec_float4 * op = (vec_float4*)out;
-    *op = _floorf4(*ip);
-}
-
-template<>
-inline void ceil4(float * out, const float * in)
-{
-    const vec_float4 * ip = (const vec_float4*)in;
-    vec_float4 * op = (vec_float4*)out;
-    *op = _ceilf4(*ip);
-}
-
-template<>
-inline void frac4(float * out, const float * in)
-{
-    const vec_float4 * ip = (const vec_float4*)in;
-    vec_float4 * op = (vec_float4*)out;
-    *op = *ip - _floorf4(*ip);
-}
-
-
 /** pow */
 /* @{ */
 template<>
