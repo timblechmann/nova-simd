@@ -25,7 +25,7 @@ void vv_tests(void)
     amp_mod<float_type>(out.c_array(), in0.c_array(), in1.c_array(), amount.c_array(), size);
     amp_mod_simd<float_type>(out_simd.c_array(), in0.c_array(), in1.c_array(), amount.c_array(), size);
 
-    compare_buffers(out.c_array(), out_simd.c_array(), size);
+    compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE( vv_test )
@@ -46,7 +46,7 @@ void vs_tests(void)
     amp_mod<float_type>(out.c_array(), in0.c_array(), in1.c_array(), amount, size);
     amp_mod_simd<float_type>(out_simd.c_array(), in0.c_array(), in1.c_array(), amount, size);
 
-    compare_buffers(out.c_array(), out_simd.c_array(), size);
+    compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE( vs_test )

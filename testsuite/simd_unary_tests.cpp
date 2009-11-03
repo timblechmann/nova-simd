@@ -24,10 +24,10 @@ static const unsigned int size = 64;
                                                                         \
         nova::function##_vec<float_type>(out.c_array(), in.c_array(), size); \
         nova::function##_vec_simd<float_type>(out_simd.c_array(), in.c_array(), size); \
-        nova::function##_vec_simd<size>(out_mp.c_array(), in.c_array()); \
+        nova::function##_vec_simd<size>(out_mp.c_array(), in.c_array());\
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size);       \
-        compare_buffers(out.c_array(), out_mp.c_array(), size);         \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6f);\
+        compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-6f);  \
     }                                                                   \
                                                                         \
     BOOST_AUTO_TEST_CASE( function##_comparer )                         \
