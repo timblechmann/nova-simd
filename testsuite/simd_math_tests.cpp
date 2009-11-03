@@ -17,7 +17,7 @@ static const int size = 10000;
 /* test range: -1.5, 1.5 */
 BOOST_AUTO_TEST_CASE( tan_tests_float )
 {
-    aligned_array<float, size> sseval, libmval, args;
+    aligned_array<float, size> ALIGNED sseval, libmval, args;
 
     float init = -1.5;
     for (int i = 0; i != size; ++i)
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( pow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> sseval, libmval, args;
+        aligned_array<float, size> ALIGNED sseval, libmval, args;
 
         float init = 0;
         for (int i = 0; i != size; ++i)
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> sseval, libmval, args;
+        aligned_array<float, size> ALIGNED sseval, libmval, args;
 
         aligned_array<float, 4> exparray;
         exparray.assign(exponent);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
 /* test range: 0, 20 */
 BOOST_AUTO_TEST_CASE( sqrt_tests_float_1 )
 {
-    aligned_array<float, size> sseval, libmval, args;
+    aligned_array<float, size> ALIGNED sseval, libmval, args;
 
     float init = 0;
     for (int i = 0; i != size; ++i)
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( sqrt_tests_float_1 )
 /* test range: -2.5, 2.5 */
 BOOST_AUTO_TEST_CASE( tanh_tests_float )
 {
-    aligned_array<float, size> sseval, libmval, args;
+    aligned_array<float, size> ALIGNED sseval, libmval, args;
 
     float init = -2.5;
     for (int i = 0; i != size; ++i)
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( tanh_tests_float )
 /* test range: -25, 25 */
 BOOST_AUTO_TEST_CASE( tanh_tests_float_2 )
 {
-    aligned_array<float, size> sseval, libmval, args;
+    aligned_array<float, size> ALIGNED sseval, libmval, args;
 
     float init = -25;
     for (int i = 0; i != size; ++i)
@@ -190,7 +190,7 @@ inline void fabsf4(float * out, const float * in)
 /* test range: -1.5, 1.5 */
 BOOST_AUTO_TEST_CASE( fabs_tests_float )
 {
-    aligned_array<float, size> sseval, libmval, args;
+    aligned_array<float, size> ALIGNED sseval, libmval, args;
 
     float init = -1.5;
     for (int i = 0; i != size; ++i)
