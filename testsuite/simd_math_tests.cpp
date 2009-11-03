@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( tanh_tests_float_2 )
         BOOST_CHECK_CLOSE( sseval[i], libmval[i], 0.0001 );
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined (__SSE__) && defined (__SSE2__)
 namespace {
 inline void fabsf4(float * out, const float * in)
 {
