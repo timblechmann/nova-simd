@@ -24,6 +24,10 @@
 #if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
     && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 1))) && defined(__SSE__)
 #include "simd_math_vec.hpp"
+#else
+#include "simd_math_fallback_float.hpp"
 #endif
+
+#include "simd_math_fallback_double.hpp"
 
 #endif /* SIMD_MATH_HPP */
