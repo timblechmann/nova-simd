@@ -1,4 +1,4 @@
-//  simd functions for panning
+//  simd functions for panning, fallback implementation for float
 //  Copyright (C) 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -17,17 +17,26 @@
 //  Boston, MA 02111-1307, USA.
 
 
-#ifndef SIMD_PAN_HPP
-#define SIMD_PAN_HPP
+#ifndef SIMD_PAN_FALLBACKS_FLOAT_HPP
+#define SIMD_PAN_FALLBACKS_FLOAT_HPP
 
-#include "simd_pan_generic.hpp"
+namespace nova
+{
 
-#ifdef __SSE__
-#include "simd_pan_sse.hpp"
-#else
-#include "simd_pan_fallbacks_float.hpp"
-#endif
+template <unsigned int n>
+void pan2_vec_simd(float * out0, float * out1, const float * in,
+                   float factor0, float factor1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, factor1, n);
+}
 
-#include "simd_pan_fallbacks_double.hpp"
+template <unsigned int n>
+void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
+                   float factor1, float slope1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
+}
 
-#endif /* SIMD_PAN_HPP */
+} /* namespace nova */
+
+#endif /* SIMD_PAN_FALLBACKS_FLOAT_HPP */
