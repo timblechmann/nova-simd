@@ -3,6 +3,7 @@ set(tests
   simd_binary_tests.cpp
   simd_math_tests.cpp
   simd_memory_tests.cpp
+  simd_mix_tests.cpp
   simd_pan_tests.cpp
   simd_round_tests.cpp
   simd_tests.cpp
