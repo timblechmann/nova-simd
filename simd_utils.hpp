@@ -100,6 +100,42 @@ inline __m128 gen_025(void)
 }
 #endif
 
+inline float extract_0(__m128 arg)
+{
+    float r;
+    _mm_store_ss(&r, arg);
+    return r;
+}
+
+inline float extract_3(__m128 arg)
+{
+    __m128 last = _mm_shuffle_ps(arg, arg, _MM_SHUFFLE(2, 1, 0, 3));
+    float r;
+    _mm_store_ss(&r, last);
+    return r;
+}
+
+inline float horizontal_min(__m128 args)
+{
+    __m128 xmm0, xmm1;
+    xmm0 = args;
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+    xmm0 = _mm_min_ps(xmm0, xmm1);
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+    xmm0 = _mm_min_ss(xmm0, xmm1);
+    return extract_0(xmm0);
+}
+
+inline float horizontal_max(__m128 args)
+{
+    __m128 xmm0, xmm1;
+    xmm0 = args;
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+    xmm0 = _mm_max_ps(xmm0, xmm1);
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+    xmm0 = _mm_max_ss(xmm0, xmm1);
+    return extract_0(xmm0);
+}
 
 inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
 {
