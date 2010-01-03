@@ -25,6 +25,11 @@
 #include <emmintrin.h>
 #endif /* __SSE2__ */
 
+#ifdef __SSE4_1__
+#include <smmintrin.h>
+#endif /* __SSE41__ */
+
+
 namespace nova
 {
 namespace detail
@@ -137,6 +142,16 @@ inline float horizontal_max(__m128 args)
     return extract_0(xmm0);
 }
 
+#ifdef __SSE4_1__
+
+inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
+{
+    /* if bitmask is set, return value in val1, else value in val0 */
+    return _mm_blendv_ps(val0, val1, sel);
+}
+
+#else
+
 inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
 {
     /* if bitmask is set, return value in val1, else value in val0 */
@@ -144,6 +159,7 @@ inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
                      _mm_and_ps(val1, sel));
 }
 
+#endif
 
 } /* namespace detail */
 } /* namespace nova */
