@@ -8,6 +8,7 @@ set(tests
   simd_peak_tests.cpp
   simd_round_tests.cpp
   simd_ternary_tests.cpp
+  simd_tests.cpp
   simd_unary_tests.cpp
   softclip_test.cpp
 )
