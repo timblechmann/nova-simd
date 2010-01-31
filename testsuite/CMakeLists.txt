@@ -10,6 +10,7 @@ set(tests
   simd_ternary_tests.cpp
   simd_tests.cpp
   simd_unary_tests.cpp
+  simd_unit_conversion_tests.cpp
   softclip_test.cpp
 )
 
