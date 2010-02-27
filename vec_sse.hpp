@@ -37,6 +37,11 @@ public:
     vec(void)
     {}
 
+    vec(float f)
+    {
+        set_vec(f);
+    }
+
     vec(vec const & rhs)
     {
         data_ = rhs.data_;
@@ -119,18 +124,31 @@ public:
     /* @} */
 
     /* @{ */
-    /** vector arithmetics */
-    vec & operator+=(vec const & rhs)
-    {
-        data_ = _mm_add_ps(data_, rhs.data_);
-        return *this;
+    /** arithmetic operators */
+#define OPERATOR_ASSIGNMENT(op, opcode) \
+    vec & operator op(vec const & rhs) \
+    { \
+        data_ = opcode(data_, rhs.data_);\
+        return *this;\
     }
 
-    vec & operator*=(vec const & rhs)
-    {
-        data_ = _mm_mul_ps(data_, rhs.data_);
-        return *this;
+    OPERATOR_ASSIGNMENT(+=, _mm_add_ps)
+    OPERATOR_ASSIGNMENT(-=, _mm_sub_ps)
+    OPERATOR_ASSIGNMENT(*=, _mm_mul_ps)
+    OPERATOR_ASSIGNMENT(/=, _mm_div_ps)
+
+#define ARITHMETIC_OPERATOR(op, opcode) \
+    vec operator op(vec const & rhs) \
+    { \
+        vec ret; \
+        ret.data_ = opcode(data_, rhs.data_); \
+        return ret; \
     }
+
+    ARITHMETIC_OPERATOR(+, _mm_add_ps)
+    ARITHMETIC_OPERATOR(-, _mm_sub_ps)
+    ARITHMETIC_OPERATOR(*, _mm_mul_ps)
+    ARITHMETIC_OPERATOR(/, _mm_div_ps)
     /* @} */
 
 private:
@@ -144,5 +162,8 @@ private:
 };
 
 } /* namespace nova */
+
+#undef OPERATOR_ASSIGNMENT
+#undef ARITHMETIC_OPERATOR
 
 #endif /* VEC_SSE_HPP */

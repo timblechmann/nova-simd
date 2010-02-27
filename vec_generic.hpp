@@ -20,6 +20,8 @@
 #ifndef VEC_GENERIC_HPP
 #define VEC_GENERIC_HPP
 
+#include <cmath>
+
 namespace nova
 {
 
@@ -34,6 +36,11 @@ public:
     /** constructors */
     vec(void)
     {}
+
+    vec(float_type f)
+    {
+        set_vec(f);
+    }
 
     vec(vec const & rhs)
     {
@@ -119,27 +126,42 @@ public:
     /* @} */
 
     /* @{ */
-    /** vector arithmetics */
-    vec & operator+=(vec const & rhs)
-    {
-        for (int i = 0; i != size; ++i)
-            data_[i] += rhs.data_[i];
-        return *this;
+    /** arithmetic operators */
+#define OPERATOR_ASSIGNMENT(op) \
+    vec & operator op(vec const & rhs) \
+    { \
+        for (int i = 0; i != size; ++i) \
+            data_[i] op rhs.data_[i]; \
+        return *this; \
     }
 
-    vec & operator*=(vec const & rhs)
-    {
-        for (int i = 0; i != size; ++i)
-            data_[i] *= rhs.data_[i];
-        return *this;
+    OPERATOR_ASSIGNMENT(+=)
+    OPERATOR_ASSIGNMENT(-=)
+    OPERATOR_ASSIGNMENT(*=)
+    OPERATOR_ASSIGNMENT(/=)
+
+#define ARITHMETIC_OPERATOR(op) \
+    vec operator op(vec const & rhs) \
+    { \
+        vec ret; \
+        for (int i = 0; i != size; ++i) \
+            ret.data_[i] = data_[i] op rhs.data_[i]; \
+        return ret; \
     }
+
+    ARITHMETIC_OPERATOR(+)
+    ARITHMETIC_OPERATOR(-)
+    ARITHMETIC_OPERATOR(*)
+    ARITHMETIC_OPERATOR(/)
 
     /* @} */
-
 private:
     float_type data_[size];
 };
 
 } /* namespace nova */
+
+#undef OPERATOR_ASSIGNMENT
+#undef ARITHMETIC_OPERATOR
 
 #endif /* VEC_GENERIC_HPP */
