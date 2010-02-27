@@ -23,6 +23,14 @@
 #include <cassert>
 #include <cstring>
 
+#include "vec.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 namespace nova {
 
 template <typename F>
@@ -31,17 +39,83 @@ inline void zerovec(F * dest, unsigned int n)
     std::memset(dest, 0, n*sizeof(F));
 }
 
+
+namespace detail {
+
+template <bool aligned, typename F>
+inline void store_aligned(vec<F> const & value, F * dest)
+{
+    if (aligned)
+        value.store_aligned(dest);
+    else
+        value.store(dest);
+}
+
+template <typename F, bool aligned>
+inline void zerovec_simd(F * dest, unsigned int n)
+{
+    vec<F> zero;
+    zero.clear();
+
+    unsigned int unroll = n / vec<F>::size;
+
+    do
+    {
+        store_aligned<aligned>(zero, dest);
+        dest += 4;
+    }
+    while (--unroll);
+}
+
+template <typename F, unsigned int n, bool aligned>
+struct setvec
+{
+    static const int offset = vec<F>::size;
+
+    static always_inline void mp_iteration(F * dst, vec<F> const & val)
+    {
+        store_aligned<aligned>(val, dst);
+        setvec<F, n-offset, aligned>::mp_iteration(dst+offset, val);
+    }
+};
+
+template <typename F, bool aligned>
+struct setvec<F, 0, aligned>
+{
+    static always_inline void mp_iteration(F * dst, vec<F> const & val)
+    {}
+};
+
+} /* namespace detail */
+
 template <typename F>
 inline void zerovec_simd(F * dest, unsigned int n)
 {
-    std::memset(dest, 0, n*sizeof(F));
+    detail::zerovec_simd<F, true>(dest, n);
+}
+
+template <typename F, unsigned int n>
+inline void zerovec_simd(F *dest)
+{
+    vec<F> zero; zero.clear();
+
+    detail::setvec<F, n, true>::mp_iteration(dest, zero);
 }
 
 template <typename F>
 inline void zerovec_na_simd(F * dest, unsigned int n)
 {
-    std::memset(dest, 0, n*sizeof(F));
+    detail::zerovec_simd<F, false>(dest, n);
 }
+
+template <typename F, unsigned int n>
+inline void zerovec_na_simd(F *dest)
+{
+    vec<F> zero; zero.clear();
+
+    detail::setvec<F, n, false>::mp_iteration(dest, zero);
+}
+
 
 template <typename F>
 inline void setvec(F * dest, F f, uint n)
@@ -271,7 +345,8 @@ inline void addvec_simd(F * out, const F in, const F slope, unsigned int n)
     while (--n);
 }
 
-
 } /* namespace nova */
+
+#undef always_inline
 
 #endif /* SIMD_MEMORY_GENERIC_HPP */

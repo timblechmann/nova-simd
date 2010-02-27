@@ -1,5 +1,6 @@
-//  memory simd functions, fallbacks for double
-//  Copyright (C) 2009 Tim Blechmann <tim@klingt.org>
+//  generic vector class
+//
+//  Copyright (C) 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,36 +17,12 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#ifndef VEC_HPP
+#define VEC_HPP
 
-#ifndef SIMD_MEMORY_FALLBACK_DOUBLE_HPP
-#define SIMD_MEMORY_FALLBACK_DOUBLE_HPP
+#include "vec_generic.hpp"
+#ifdef __SSE__
+#include "vec_sse.hpp"
+#endif
 
-namespace nova {
-
-template <unsigned int n>
-inline void setvec_simd(double * dest, double f)
-{
-    setvec_simd(dest, f, n);
-}
-
-template <unsigned int n>
-inline void setvec_simd_mp(double * dest, double f)
-{
-    setvec_simd(dest, f, n);
-}
-
-template <unsigned int n>
-inline void copyvec_simd(double * dest, const double * src)
-{
-    copyvec_simd(dest, src, n);
-}
-
-template <unsigned int n>
-inline void copyvec_simd_mp(double * dest, const double * src)
-{
-    copyvec_simd(dest, src, n);
-}
-
-} /* namespace nova */
-
-#endif /* SIMD_MEMORY_FALLBACK_DOUBLE_HPP */
+#endif /* VEC_HPP */

@@ -60,50 +60,6 @@ always_inline void setvec_na_simd_mp_iteration<0>(float *dst, __m128 const & val
 
 } /* namespace detail */
 
-template <unsigned int n>
-always_inline void zerovec_simd_mp(float *dest)
-{
-    const __m128 zero = _mm_setzero_ps();
-    detail::setvec_simd_mp_iteration<n>(dest, zero);
-}
-
-inline void zerovec_simd(float *dest, uint n)
-{
-    n = n / samples_per_loop;
-    const __m128 zero = _mm_setzero_ps();
-
-    do
-    {
-        detail::setvec_simd_mp_iteration<samples_per_loop>(dest, zero);
-        dest += samples_per_loop;
-    }
-    while (--n);
-}
-
-template <unsigned int n>
-always_inline void zerovec_simd_mp(double *dest)
-{
-    const __m128 zero = _mm_setzero_ps();
-    detail::setvec_simd_mp_iteration<n*2>((float*)dest, zero);
-}
-
-template <unsigned int n>
-void zerovec_simd(float *dest)
-{
-    zerovec_simd_mp<n>(dest);
-}
-
-template <unsigned int n>
-void zerovec_simd(double *dest)
-{
-    zerovec_simd_mp<n>(dest);
-}
-
-
-inline void zerovec_simd(double *dest, uint n)
-{
-    zerovec_simd((float*)dest, n*2);
-}
 
 /* memset seems to be more efficient than nonaligned set operations, so don't implement */
 

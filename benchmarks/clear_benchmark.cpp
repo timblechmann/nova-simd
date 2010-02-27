@@ -112,12 +112,12 @@ using namespace nova;
 
 void __noinline__ bench_11(float * out, unsigned int numSamples)
 {
-    zerovec_simd<64>(out);
+    zerovec_simd<float, 64>(out);
 }
 
 void __noinline__ bench_12(float * out, unsigned int numSamples)
 {
-    zerovec_simd<64>(out);
+    zerovec_simd<float, 64>(out);
     if (numSamples-64)
         zerovec(out+64, numSamples-64);
 }
@@ -174,7 +174,7 @@ void __noinline__ bench_18(float * out, unsigned int numSamples)
     unsigned int unrolled = numSamples & ~8;
     unsigned int remain = numSamples - unrolled;
     if (unrolled)
-        zerovec_na_simd(out, unrolled);
+        zerovec_na_simd<float>(out, unrolled);
     if (remain)
         zerovec(out, remain);
 }
