@@ -28,6 +28,12 @@ namespace nova
 template <>
 struct vec<float>
 {
+
+
+    vec(__m128 const & arg):
+        data_(arg)
+    {}
+
 public:
     static const int size = 4;
     static const int objects_per_cacheline = 64/sizeof(float);
@@ -140,9 +146,7 @@ public:
 #define ARITHMETIC_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) \
     { \
-        vec ret; \
-        ret.data_ = opcode(data_, rhs.data_); \
-        return ret; \
+        return opcode(data_, rhs.data_); \
     }
 
     ARITHMETIC_OPERATOR(+, _mm_add_ps)
