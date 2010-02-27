@@ -22,13 +22,75 @@
 
 #include <xmmintrin.h>
 
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif
+
 namespace nova
 {
 
 template <>
 struct vec<float>
 {
+#ifdef __SSE2__
+    static inline __m128 gen_sign_mask(void)
+    {
+        __m128i x = _mm_setzero_si128();
+        __m128i ones = _mm_cmpeq_epi32(x, x);
+        return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 31), 31);
+    }
 
+    static inline __m128 gen_abs_mask(void)
+    {
+        __m128i x = _mm_setzero_si128();
+        __m128i ones = _mm_cmpeq_epi32(x, x);
+        return (__m128)_mm_srli_epi32 (_mm_slli_epi32(ones, 1), 1);
+    }
+
+    static inline __m128 gen_one(void)
+    {
+        __m128i x = _mm_setzero_si128();
+        __m128i ones = _mm_cmpeq_epi32(x, x);
+        return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 25), 23);
+    }
+
+    static inline __m128 gen_05(void)
+    {
+        __m128i x = _mm_setzero_si128();
+        __m128i ones = _mm_cmpeq_epi32(x, x);
+        return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 26), 24);
+    }
+#else
+    /* SSE fallback */
+    static inline __m128 gen_sign_mask(void)
+    {
+        static const int sign_mask = 0x80000000;
+        float * casted = (float*)(&sign_mask);
+        return _mm_set_ps1(*casted);
+    }
+
+    static inline __m128 gen_abs_mask(void)
+    {
+        static const int abs_mask = 0x7fffffff;
+        float * casted = (float*)(&abs_mask);
+        return _mm_set_ps1(*casted);
+    }
+
+    static inline __m128 gen_one(void)
+    {
+        return _mm_set_ps1(1.f);
+    }
+
+    static inline __m128 gen_05(void)
+    {
+        return _mm_set_ps1(0.5f);
+    }
+#endif
+
+    static inline __m128 gen_zero(void)
+    {
+        return _mm_set_ps1(0.5f);
+    }
 
     vec(__m128 const & arg):
         data_(arg)
@@ -154,6 +216,38 @@ public:
     ARITHMETIC_OPERATOR(*, _mm_mul_ps)
     ARITHMETIC_OPERATOR(/, _mm_div_ps)
     /* @} */
+
+    /* @{ */
+    /** unary functions */
+    friend vec abs(vec const & arg)
+    {
+        return _mm_and_ps(gen_abs_mask(), arg.data_);
+    }
+
+    friend vec sign(vec const & arg)
+    {
+        const __m128 zero = _mm_setzero_ps();
+        const __m128 one = gen_one();
+        const __m128 sign_mask = gen_sign_mask();
+
+        const __m128 nonzero = _mm_cmpneq_ps(arg.data_, zero);
+        const __m128 sign = _mm_and_ps(arg.data_, sign_mask);
+
+        __m128 abs_ret = _mm_and_ps(nonzero, one);
+        return _mm_or_ps(sign, abs_ret);
+    }
+
+    friend vec square(vec const & arg)
+    {
+        return _mm_mul_ps(arg.data_, arg.data_);
+    }
+
+    friend vec cube(vec const & arg)
+    {
+        return _mm_mul_ps(arg.data_, _mm_mul_ps(arg.data_, arg.data_));
+    }
+    /* @} */
+
 
 private:
     typedef union

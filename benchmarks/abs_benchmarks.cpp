@@ -38,7 +38,7 @@ using namespace nova;
 
 void __noinline__ bench_4(unsigned int numSamples)
 {
-    abs_vec_simd<64>(out.begin(), in.begin());
+    abs_vec_simd<float, 64>(out.begin(), in.begin());
 }
 
 void __noinline__ bench_5(unsigned int numSamples)

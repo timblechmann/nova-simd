@@ -155,6 +155,49 @@ public:
     ARITHMETIC_OPERATOR(/)
 
     /* @} */
+
+    /* @{ */
+    /** unary functions */
+    friend vec abs(vec const & arg)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+            ret.data_[i] = std::fabs(arg.data_[i]);
+        return ret;
+    }
+
+    friend vec sign(vec const & arg)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+        {
+            if (arg.data_[i] > 0)
+                ret.data_[i] = 1;
+            else if (arg.data_[i] < 0)
+                ret.data_[i] = -1;
+            else ret.data_[i] = 0;
+        }
+        return ret;
+    }
+
+    friend vec square(vec const & arg)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+            ret.data_[i] = arg.data_[i] * arg.data_[i];
+        return ret;
+    }
+
+    friend vec cube(vec const & arg)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+            ret.data_[i] = arg.data_[i] * arg.data_[i] * arg.data_[i];
+        return ret;
+    }
+    /* @} */
+
+
 private:
     float_type data_[size];
 };
