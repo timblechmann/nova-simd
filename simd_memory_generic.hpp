@@ -278,59 +278,89 @@ inline void copyvec_na_simd(F * dest, const F * src, uint n)
 template <typename F>
 inline void addvec(F * out, const F * in, unsigned int n)
 {
-    do
-    {
+    do {
         *out++ += *in++;
-    }
-    while (--n);
+    } while (--n);
 }
 
 template <typename F>
 inline void addvec(F * out, const F in, unsigned int n)
 {
-    do
-    {
+    do {
         *out++ += in;
-    }
-    while (--n);
+    } while (--n);
 }
 
 template <typename F>
 inline void addvec(F * out, const F in, const F slope, unsigned int n)
 {
-    do
-    {
+    do {
         *out++ += in; in += slope;
+    } while (--n);
+}
+
+namespace detail
+{
+
+template <typename F, unsigned int n>
+struct addvec
+{
+    static const int offset = vec<F>::size;
+
+    static always_inline void mp_iteration(F * dst, const F * src)
+    {
+        vec<F> v1, v2;
+        v1.load_aligned(dst);
+        v2.load_aligned(src);
+        v1 += v2;
+        v1.store_aligned(dst);
+        addvec<F, n-offset>::mp_iteration(dst+offset, src+offset);
     }
-    while (--n);
+
+    static always_inline void mp_iteration(F * dst, vec<F> const & in)
+    {
+        vec<F> v1;
+        v1.load_aligned(dst);
+        v1 += in;
+        v1.store_aligned(dst);
+        addvec<F, n-offset>::mp_iteration(dst+offset, in);
+    }
+
+    static always_inline void mp_iteration(F * dst, vec<F> & in, vec<F> const & vslope)
+    {
+        vec<F> v1;
+        v1.load_aligned(dst);
+        v1 += in;
+        v1.store_aligned(dst);
+        in += vslope;
+        addvec<F, n-offset>::mp_iteration(dst+offset, in, vslope);
+    }
+};
+
+template <typename F>
+struct addvec<F, 0>
+{
+    static always_inline void mp_iteration(F * dst, const F * src)
+    {}
+
+    static always_inline void mp_iteration(F * dst, vec<F> const & in)
+    {}
+
+    static always_inline void mp_iteration(F * dst, vec<F> & in, vec<F> const & vslope)
+    {}
+};
+
 }
 
 template <typename F>
 inline void addvec_simd(F * out, const F * in, unsigned int n)
 {
-    n /= 8;
+    const int per_loop = vec<F>::objects_per_cacheline;
+    n /= per_loop;
     do
     {
-        F out0 = out[0] + in[0];
-        F out1 = out[1] + in[1];
-        F out2 = out[2] + in[2];
-        F out3 = out[3] + in[3];
-        F out4 = out[4] + in[4];
-        F out5 = out[5] + in[5];
-        F out6 = out[6] + in[6];
-        F out7 = out[7] + in[7];
-
-        out[0] = out0;
-        out[1] = out1;
-        out[2] = out2;
-        out[3] = out3;
-        out[4] = out4;
-        out[5] = out5;
-        out[6] = out6;
-        out[7] = out7;
-
-        out += 8;
-        in += 8;
+        detail::addvec<F, per_loop>::mp_iteration(out, in);
+        out += per_loop; in += per_loop;
     }
     while (--n);
 }
@@ -338,28 +368,13 @@ inline void addvec_simd(F * out, const F * in, unsigned int n)
 template <typename F>
 inline void addvec_simd(F * out, const F in, unsigned int n)
 {
-    n /= 8;
+    const int per_loop = vec<F>::objects_per_cacheline;
+    vec<F> vin; vin.set_vec(in);
+    n /= per_loop;
     do
     {
-        F out0 = out[0] + in;
-        F out1 = out[1] + in;
-        F out2 = out[2] + in;
-        F out3 = out[3] + in;
-        F out4 = out[4] + in;
-        F out5 = out[5] + in;
-        F out6 = out[6] + in;
-        F out7 = out[7] + in;
-
-        out[0] = out0;
-        out[1] = out1;
-        out[2] = out2;
-        out[3] = out3;
-        out[4] = out4;
-        out[5] = out5;
-        out[6] = out6;
-        out[7] = out7;
-
-        out += 8;
+        detail::addvec<F, per_loop>::mp_iteration(out, vin);
+        out += per_loop;
     }
     while (--n);
 }
@@ -367,31 +382,39 @@ inline void addvec_simd(F * out, const F in, unsigned int n)
 template <typename F>
 inline void addvec_simd(F * out, const F in, const F slope, unsigned int n)
 {
-    n /= 8;
+    const int per_loop = vec<F>::objects_per_cacheline;
+    vec<F> vin; vin.set_slope(in, slope);
+    vec<F> vslope; vslope.set(slope+slope+slope+slope);
+    n /= per_loop;
     do
     {
-        F out0 = out[0] + in; in += slope;
-        F out1 = out[1] + in; in += slope;
-        F out2 = out[2] + in; in += slope;
-        F out3 = out[3] + in; in += slope;
-        F out4 = out[4] + in; in += slope;
-        F out5 = out[5] + in; in += slope;
-        F out6 = out[6] + in; in += slope;
-        F out7 = out[7] + in; in += slope;
-
-        out[0] = out0;
-        out[1] = out1;
-        out[2] = out2;
-        out[3] = out3;
-        out[4] = out4;
-        out[5] = out5;
-        out[6] = out6;
-        out[7] = out7;
-
-        out += 8;
+        detail::addvec<F, per_loop>::mp_iteration(out, vin, vslope);
+        out += per_loop;
     }
     while (--n);
 }
+
+template <typename F, unsigned int n>
+inline void addvec_simd(F * out, const F * in)
+{
+    detail::addvec<F, n>::mp_iteration(out, in);
+}
+
+template <typename F, unsigned int n>
+inline void addvec_simd(F * out, const F in)
+{
+    vec<F> vin; vin.set_vec(in);
+    detail::addvec<F, n>::mp_iteration(out, vin);
+}
+
+template <typename F, unsigned int n>
+inline void addvec_simd(F * out, const F in, const F slope)
+{
+    vec<F> vin; vin.set_slope(in, slope);
+    vec<F> vslope; vslope.set(slope+slope+slope+slope);
+    detail::addvec<F, n>::mp_iteration(out, vin, vslope);
+}
+
 
 } /* namespace nova */
 

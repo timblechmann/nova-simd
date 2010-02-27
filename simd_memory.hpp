@@ -77,37 +77,6 @@ inline void addvec_simd(float * dest, const float * in)
     addvec_simd(dest, in, n);
 }
 
-template <unsigned int n>
-inline void addvec_simd(float * dest, const float in)
-{
-    addvec_simd(dest, in, n);
-}
-
-template <unsigned int n>
-inline void addvec_simd(float * dest, const float in, const float slope)
-{
-    addvec_simd(dest, in, slope, n);
-}
-
-
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double * in)
-{
-    addvec_simd(dest, in, n);
-}
-
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double in)
-{
-    addvec_simd(dest, in, n);
-}
-
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double in, const double slope)
-{
-    addvec_simd(dest, in, slope, n);
-}
-
 
 } /* namespace nova */
 
