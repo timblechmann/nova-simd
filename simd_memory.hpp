@@ -128,28 +128,28 @@ inline void zerovec_na_simd(F *dest)
 template <typename F>
 inline void setvec_simd(F * dest, F f, unsigned int n)
 {
-    vec<F> val; val.set_vec(f);
+    vec<F> val(f);
     detail::setvec_simd<F, true>(dest, val, n);
 }
 
 template <typename F, unsigned int n>
 inline void setvec_simd(F *dest, F f)
 {
-    vec<F> val; val.set_vec(f);
+    vec<F> val(f);
     detail::setvec<F, n, true>::mp_iteration(dest, val);
 }
 
 template <typename F>
 inline void setvec_na_simd(F * dest, F f, unsigned int n)
 {
-    vec<F> val; val.set_vec(f);
+    vec<F> val(f);
     detail::setvec_simd<F, false>(dest, val, n);
 }
 
 template <typename F, unsigned int n>
 inline void setvec_na_simd(F *dest, F f)
 {
-    vec<F> val; val.set_vec(f);
+    vec<F> val(f);
     detail::setvec<F, n, false>::mp_iteration(dest, val);
 }
 
@@ -225,9 +225,8 @@ inline void set_exp_vec(F * dest, F f, F curve, uint n)
 template <typename F>
 inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
 {
-    vec<F> vbase, vcurve;
+    vec<F> vbase, vcurve(curve * curve * curve * curve);
     vbase.set_exp(f, curve);
-    vcurve.set_vec(curve * curve * curve * curve);
 
     unsigned int unroll = n / vec<F>::objects_per_cacheline;
     do
@@ -394,7 +393,7 @@ template <typename F>
 inline void addvec_simd(F * out, const F in, unsigned int n)
 {
     const int per_loop = vec<F>::objects_per_cacheline;
-    vec<F> vin; vin.set_vec(in);
+    vec<F> vin(in);
     n /= per_loop;
     do
     {
@@ -428,7 +427,7 @@ inline void addvec_simd(F * out, const F * in)
 template <typename F, unsigned int n>
 inline void addvec_simd(F * out, const F in)
 {
-    vec<F> vin; vin.set_vec(in);
+    vec<F> vin(in);
     detail::addvec<F, n>::mp_iteration(out, vin);
 }
 
