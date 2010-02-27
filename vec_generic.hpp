@@ -37,7 +37,7 @@ public:
     vec(void)
     {}
 
-    vec(float_type f)
+    explicit vec(float_type f)
     {
         set_vec(f);
     }
@@ -99,13 +99,13 @@ public:
 
     float_type set_slope(float_type start, float_type slope)
     {
-        float_type value = start;
+        float_type diff = 0;
         for (int i = 0; i != size; ++i)
         {
-            data_[i] = value;
-            value += slope;
+            data_[i] = start + diff;
+            diff += slope;
         }
-        return value;
+        return diff;
     }
 
     float_type set_exp(float_type start, float_type curve)

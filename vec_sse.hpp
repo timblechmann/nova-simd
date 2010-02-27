@@ -37,7 +37,7 @@ public:
     vec(void)
     {}
 
-    vec(float f)
+    explicit vec(float f)
     {
         set_vec(f);
     }
@@ -98,10 +98,10 @@ public:
     float set_slope(float start, float slope)
     {
         float v1 = start + slope;
-        float v2 = v1 + slope;
-        float v3 = v2 + slope;
+        float v2 = start + slope + slope;
+        float v3 = start + slope + slope + slope;
         data_ = _mm_set_ps(v3, v2, v1, start);
-        return v3 + slope;
+        return slope + slope + slope + slope;
     }
 
     float set_exp(float start, float curve)
