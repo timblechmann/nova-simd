@@ -28,6 +28,7 @@ struct vec
 {
 public:
     static const int size = 4;
+    static const int objects_per_cacheline = 64/sizeof(float_type);
 
     /* @{ */
     /** constructors */
@@ -74,7 +75,6 @@ public:
     {
         set_vec(0);
     }
-
     /* @} */
 
     /* @{ */
@@ -90,10 +90,32 @@ public:
             data_[i] = value;
     }
 
+    float_type set_slope(float_type start, float_type slope)
+    {
+        float_type value = start;
+        for (int i = 0; i != size; ++i)
+        {
+            data_[i] = value;
+            value += slope;
+        }
+        return value;
+    }
+
     float_type get (std::size_t index)
     {
         return data_[index];
     }
+    /* @} */
+
+    /* @{ */
+    /** vector arithmetics */
+    vec & operator+=(vec const & rhs)
+    {
+        for (int i = 0; i != size; ++i)
+            data_[i] += rhs.data_[i];
+        return *this;
+    }
+
     /* @} */
 
 private:

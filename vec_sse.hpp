@@ -30,6 +30,7 @@ struct vec<float>
 {
 public:
     static const int size = 4;
+    static const int objects_per_cacheline = 64/sizeof(float);
 
     /* @{ */
     /** constructors */
@@ -89,6 +90,15 @@ public:
         data_ = _mm_set_ps1(value);
     }
 
+    float set_slope(float start, float slope)
+    {
+        float v1 = start + slope;
+        float v2 = v1 + slope;
+        float v3 = v2 + slope;
+        data_ = _mm_set_ps(v3, v2, v1, start);
+        return v3 + slope;
+    }
+
     float get (std::size_t index)
     {
         if (index == 0)
@@ -96,6 +106,15 @@ public:
 
         __m128 ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(index, index, index, index));
         return _mm_cvtss_f32(ret);
+    }
+    /* @} */
+
+    /* @{ */
+    /** vector arithmetics */
+    vec & operator+=(vec const & rhs)
+    {
+        data_ = _mm_add_ps(data_, rhs.data_);
+        return *this;
     }
     /* @} */
 

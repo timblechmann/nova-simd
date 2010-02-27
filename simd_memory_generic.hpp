@@ -60,19 +60,6 @@ inline void store_aligned(vec<F> const & value, F * dest)
         value.store(dest);
 }
 
-template <typename F, bool aligned>
-inline void setvec_simd(F * dest, vec<F> const & val, unsigned int n)
-{
-    unsigned int unroll = n / vec<F>::size;
-
-    do
-    {
-        store_aligned<aligned>(val, dest);
-        dest += 4;
-    }
-    while (--unroll);
-}
-
 template <typename F, unsigned int n, bool aligned>
 struct setvec
 {
@@ -91,6 +78,21 @@ struct setvec<F, 0, aligned>
     static always_inline void mp_iteration(F * dst, vec<F> const & val)
     {}
 };
+
+template <typename F, bool aligned>
+inline void setvec_simd(F * dest, vec<F> const & val, unsigned int n)
+{
+    const unsigned int offset = vec<F>::objects_per_cacheline;
+    unsigned int unroll = n / offset;
+
+    do
+    {
+        setvec<F, offset, aligned>::mp_iteration(dest, val);
+        dest += offset;
+    }
+    while (--unroll);
+}
+
 
 } /* namespace detail */
 
@@ -153,32 +155,54 @@ inline void setvec_na_simd(F *dest, F f)
 }
 
 
+namespace detail
+{
+
+template <typename F, unsigned int n>
+struct setslope
+{
+    static const int offset = vec<F>::size;
+
+    static always_inline void mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
+    {
+        vbase.store_aligned(dst);
+        vbase += vslope;
+        setslope<F, n-offset>::mp_iteration(dst+offset, vbase, vslope);
+    }
+};
 
 template <typename F>
-inline void set_slope_vec(F * dest, F f, F slope, uint n)
+struct setslope<F, 0>
+{
+    static always_inline void mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
+    {}
+};
+
+} /* namespace detail */
+
+
+template <typename F>
+inline void set_slope_vec(F * dest, F f, F slope, unsigned int n)
 {
     assert(n);
-    do
-    {
+    do {
         *dest++ = f; f += slope;
-    }
-    while (--n);
+    } while (--n);
 }
 
 template <typename F>
-inline void set_slope_vec_simd(F * dest, F f, F slope, uint n)
+inline void set_slope_vec_simd(F * dest, F f, F slope, unsigned int n)
 {
-    for (uint i = 0; i != n; i+=8)
+    vec<F> vbase, vslope;
+    vbase.set_slope(f, slope);
+    vslope.set_vec(vec<F>::size * slope);
+
+    unsigned int unroll = n / vec<F>::objects_per_cacheline;
+    do
     {
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-        *dest++ = f; f += slope;
-    }
+        detail::setslope<F, vec<F>::objects_per_cacheline>::mp_iteration(dest, vbase, vslope);
+        dest += vec<F>::objects_per_cacheline;
+    } while(--unroll);
 }
 
 template <typename F>
