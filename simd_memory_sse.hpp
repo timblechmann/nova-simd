@@ -32,28 +32,6 @@
 
 namespace nova {
 
-template <>
-inline void set_exp_vec_simd(float * dest, float f, float curve, uint n)
-{
-    n = n / 8;
-
-    __m128 val = _mm_setr_ps(f, f * curve, f * curve * curve,
-                             f * curve * curve * curve);
-    const __m128 vcurve =_mm_set_ps1(curve * curve * curve * curve);
-
-    do
-    {
-        _mm_store_ps(dest, val);
-        val = _mm_mul_ps(val, vcurve);
-
-        _mm_store_ps(dest+4, val);
-        val = _mm_mul_ps(val, vcurve);
-
-        dest += 8;
-    }
-    while (--n);
-}
-
 
 namespace detail
 {

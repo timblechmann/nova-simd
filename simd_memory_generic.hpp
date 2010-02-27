@@ -159,22 +159,31 @@ namespace detail
 {
 
 template <typename F, unsigned int n>
-struct setslope
+struct set_ramp
 {
     static const int offset = vec<F>::size;
 
-    static always_inline void mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
+    static always_inline void slope_mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
     {
         vbase.store_aligned(dst);
         vbase += vslope;
-        setslope<F, n-offset>::mp_iteration(dst+offset, vbase, vslope);
+        set_ramp<F, n-offset>::slope_mp_iteration(dst+offset, vbase, vslope);
+    }
+
+    static always_inline void exp_mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vcurve)
+    {
+        vbase.store_aligned(dst);
+        vbase *= vcurve;
+        set_ramp<F, n-offset>::exp_mp_iteration(dst+offset, vbase, vcurve);
     }
 };
 
 template <typename F>
-struct setslope<F, 0>
+struct set_ramp<F, 0>
 {
-    static always_inline void mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
+    static always_inline void slope_mp_iteration(F * dst, vec<F> & vbase, vec<F> const & vslope)
+    {}
+    static always_inline void exp_mp_iteration(F * dst, vec<F> & vbase, vec<F> const & curve)
     {}
 };
 
@@ -200,7 +209,7 @@ inline void set_slope_vec_simd(F * dest, F f, F slope, unsigned int n)
     unsigned int unroll = n / vec<F>::objects_per_cacheline;
     do
     {
-        detail::setslope<F, vec<F>::objects_per_cacheline>::mp_iteration(dest, vbase, vslope);
+        detail::set_ramp<F, vec<F>::objects_per_cacheline>::slope_mp_iteration(dest, vbase, vslope);
         dest += vec<F>::objects_per_cacheline;
     } while(--unroll);
 }
@@ -209,27 +218,24 @@ template <typename F>
 inline void set_exp_vec(F * dest, F f, F curve, uint n)
 {
     assert(n);
-    do
-    {
+    do {
         *dest++ = f; f *= curve;
-    }
-    while (--n);
+    } while (--n);
 }
 
 template <typename F>
 inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
 {
-    for (uint i = 0; i != n; i+=8)
+    vec<F> vbase, vcurve;
+    vbase.set_exp(f, curve);
+    vcurve.set_vec(curve * curve * curve * curve);
+
+    unsigned int unroll = n / vec<F>::objects_per_cacheline;
+    do
     {
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-        *dest++ = f; f *= curve;
-    }
+        detail::set_ramp<F, vec<F>::objects_per_cacheline>::exp_mp_iteration(dest, vbase, vcurve);
+        dest += vec<F>::objects_per_cacheline;
+    } while(--unroll);
 }
 
 

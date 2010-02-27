@@ -101,6 +101,17 @@ public:
         return value;
     }
 
+    float_type set_exp(float_type start, float_type curve)
+    {
+        float_type value = start;
+        for (int i = 0; i != size; ++i)
+        {
+            data_[i] = value;
+            value *= curve;
+        }
+        return value;
+    }
+
     float_type get (std::size_t index)
     {
         return data_[index];
@@ -113,6 +124,13 @@ public:
     {
         for (int i = 0; i != size; ++i)
             data_[i] += rhs.data_[i];
+        return *this;
+    }
+
+    vec & operator*=(vec const & rhs)
+    {
+        for (int i = 0; i != size; ++i)
+            data_[i] *= rhs.data_[i];
         return *this;
     }
 

@@ -99,6 +99,15 @@ public:
         return v3 + slope;
     }
 
+    float set_exp(float start, float curve)
+    {
+        float v1 = start * curve;
+        float v2 = v1 * curve;
+        float v3 = v2 * curve;
+        data_ = _mm_set_ps(v3, v2, v1, start);
+        return v3 * curve;
+    }
+
     float get (std::size_t index)
     {
         if (index == 0)
@@ -114,6 +123,12 @@ public:
     vec & operator+=(vec const & rhs)
     {
         data_ = _mm_add_ps(data_, rhs.data_);
+        return *this;
+    }
+
+    vec & operator*=(vec const & rhs)
+    {
+        data_ = _mm_mul_ps(data_, rhs.data_);
         return *this;
     }
     /* @} */
