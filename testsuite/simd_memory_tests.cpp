@@ -50,7 +50,7 @@ void set_tests(void)
 
     setvec<float_type>(out.c_array(), f, size);
     setvec_simd<float_type>(out_simd.c_array(), f, size);
-    setvec_simd<size>(out_mp.c_array(), f);
+    setvec_simd<float_type, size>(out_mp.c_array(), f);
 
     compare_buffers(out.c_array(), out_simd.c_array(), size);
     compare_buffers(out.c_array(), out_mp.c_array(), size);

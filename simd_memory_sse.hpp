@@ -32,63 +32,6 @@
 
 namespace nova {
 
-namespace detail {
-
-template <unsigned int n>
-always_inline void setvec_simd_mp_iteration(float *dst, __m128 const & val)
-{
-    _mm_store_ps(dst, val);
-
-    setvec_simd_mp_iteration<n-4>(dst+4, val);
-}
-
-template <>
-always_inline void setvec_simd_mp_iteration<0>(float *dst, __m128 const & val)
-{}
-
-template <unsigned int n>
-always_inline void setvec_na_simd_mp_iteration(float *dst, __m128 const & val)
-{
-    _mm_storeu_ps(dst, val);
-
-    setvec_na_simd_mp_iteration<n-4>(dst+4, val);
-}
-
-template <>
-always_inline void setvec_na_simd_mp_iteration<0>(float *dst, __m128 const & val)
-{}
-
-} /* namespace detail */
-
-
-/* memset seems to be more efficient than nonaligned set operations, so don't implement */
-
-template <unsigned int n>
-always_inline void setvec_simd_mp(float *dest, float v)
-{
-    __m128 val =_mm_set_ps1(v);
-    detail::setvec_simd_mp_iteration<n>(dest, val);
-}
-
-template <unsigned int n>
-void setvec_simd(float *dest, float v)
-{
-    setvec_simd_mp<n>(dest, v);
-}
-
-inline void setvec_simd(float *dest, float v, uint n)
-{
-    n = n / samples_per_loop;
-
-    __m128 val =_mm_set_ps1(v);
-    do
-    {
-        detail::setvec_simd_mp_iteration<samples_per_loop>(dest, val);
-        dest += samples_per_loop;
-    }
-    while(--n);
-}
-
 
 template <>
 inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
@@ -190,15 +133,6 @@ inline void copyvec_aa_simd(double * dest, const double * src, uint n)
     }
     while(--n);
 }
-
-
-/* double fallback */
-template <unsigned int n>
-void setvec_simd(double *dest, double v)
-{
-    setvec(dest, v, n);
-}
-
 
 } /* namespace nova */
 

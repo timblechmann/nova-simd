@@ -23,18 +23,6 @@
 namespace nova {
 
 template <unsigned int n>
-inline void setvec_simd(double * dest, double f)
-{
-    setvec_simd(dest, f, n);
-}
-
-template <unsigned int n>
-inline void setvec_simd_mp(double * dest, double f)
-{
-    setvec_simd(dest, f, n);
-}
-
-template <unsigned int n>
 inline void copyvec_simd(double * dest, const double * src)
 {
     copyvec_simd(dest, src, n);

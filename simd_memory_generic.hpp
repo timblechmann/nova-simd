@@ -39,8 +39,17 @@ inline void zerovec(F * dest, unsigned int n)
     std::memset(dest, 0, n*sizeof(F));
 }
 
+template <typename F>
+inline void setvec(F * dest, F f, unsigned int n)
+{
+    assert(n);
+    do
+        *dest++ = f;
+    while (--n);
+}
 
-namespace detail {
+namespace detail
+{
 
 template <bool aligned, typename F>
 inline void store_aligned(vec<F> const & value, F * dest)
@@ -52,16 +61,13 @@ inline void store_aligned(vec<F> const & value, F * dest)
 }
 
 template <typename F, bool aligned>
-inline void zerovec_simd(F * dest, unsigned int n)
+inline void setvec_simd(F * dest, vec<F> const & val, unsigned int n)
 {
-    vec<F> zero;
-    zero.clear();
-
     unsigned int unroll = n / vec<F>::size;
 
     do
     {
-        store_aligned<aligned>(zero, dest);
+        store_aligned<aligned>(val, dest);
         dest += 4;
     }
     while (--unroll);
@@ -91,50 +97,62 @@ struct setvec<F, 0, aligned>
 template <typename F>
 inline void zerovec_simd(F * dest, unsigned int n)
 {
-    detail::zerovec_simd<F, true>(dest, n);
+    vec<F> zero; zero.clear();
+    detail::setvec_simd<F, true>(dest, zero, n);
 }
 
 template <typename F, unsigned int n>
 inline void zerovec_simd(F *dest)
 {
     vec<F> zero; zero.clear();
-
     detail::setvec<F, n, true>::mp_iteration(dest, zero);
 }
 
 template <typename F>
 inline void zerovec_na_simd(F * dest, unsigned int n)
 {
-    detail::zerovec_simd<F, false>(dest, n);
+    vec<F> zero; zero.clear();
+    detail::setvec_simd<F, false>(dest, zero, n);
 }
 
 template <typename F, unsigned int n>
 inline void zerovec_na_simd(F *dest)
 {
     vec<F> zero; zero.clear();
-
     detail::setvec<F, n, false>::mp_iteration(dest, zero);
 }
 
 
+
 template <typename F>
-inline void setvec(F * dest, F f, uint n)
+inline void setvec_simd(F * dest, F f, unsigned int n)
 {
-    assert(n);
-    do
-        *dest++ = f;
-    while (--n);
+    vec<F> val; val.set_vec(f);
+    detail::setvec_simd<F, true>(dest, val, n);
+}
+
+template <typename F, unsigned int n>
+inline void setvec_simd(F *dest, F f)
+{
+    vec<F> val; val.set_vec(f);
+    detail::setvec<F, n, true>::mp_iteration(dest, val);
 }
 
 template <typename F>
-inline void setvec_simd(F * dest, F f, uint n)
+inline void setvec_na_simd(F * dest, F f, unsigned int n)
 {
-    for (uint i = 0; i != n; i+=8)
-    {
-        dest[i+0] = dest[i+1] = dest[i+2] = dest[i+3] = dest[i+4] =
-            dest[i+5] = dest[i+6] = dest[i+7] = f;
-    }
+    vec<F> val; val.set_vec(f);
+    detail::setvec_simd<F, false>(dest, val, n);
 }
+
+template <typename F, unsigned int n>
+inline void setvec_na_simd(F *dest, F f)
+{
+    vec<F> val; val.set_vec(f);
+    detail::setvec<F, n, false>::mp_iteration(dest, val);
+}
+
+
 
 template <typename F>
 inline void set_slope_vec(F * dest, F f, F slope, uint n)
