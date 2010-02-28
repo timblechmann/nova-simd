@@ -26,6 +26,12 @@
 #include <emmintrin.h>
 #endif
 
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 namespace nova
 {
 
@@ -89,7 +95,8 @@ struct vec<float>
 
     static inline __m128 gen_zero(void)
     {
-        return _mm_set_ps1(0.5f);
+        volatile __m128 x;
+        return _mm_xor_ps(x, x);
     }
 
     vec(__m128 const & arg):
@@ -219,12 +226,12 @@ public:
 
     /* @{ */
     /** unary functions */
-    friend vec abs(vec const & arg)
+    friend inline vec abs(vec const & arg)
     {
         return _mm_and_ps(gen_abs_mask(), arg.data_);
     }
 
-    friend vec sign(vec const & arg)
+    friend always_inline vec sign(vec const & arg)
     {
         const __m128 zero = _mm_setzero_ps();
         const __m128 one = gen_one();
@@ -237,12 +244,12 @@ public:
         return _mm_or_ps(sign, abs_ret);
     }
 
-    friend vec square(vec const & arg)
+    friend inline vec square(vec const & arg)
     {
         return _mm_mul_ps(arg.data_, arg.data_);
     }
 
-    friend vec cube(vec const & arg)
+    friend inline vec cube(vec const & arg)
     {
         return _mm_mul_ps(arg.data_, _mm_mul_ps(arg.data_, arg.data_));
     }
@@ -263,5 +270,6 @@ private:
 
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
+#undef always_inline
 
 #endif /* VEC_SSE_HPP */

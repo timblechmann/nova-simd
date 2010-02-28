@@ -158,7 +158,7 @@ public:
 
     /* @{ */
     /** unary functions */
-    friend vec abs(vec const & arg)
+    friend inline vec abs(vec const & arg)
     {
         vec ret;
         for (int i = 0; i != size; ++i)
@@ -166,7 +166,7 @@ public:
         return ret;
     }
 
-    friend vec sign(vec const & arg)
+    friend inline vec sign(vec const & arg)
     {
         vec ret;
         for (int i = 0; i != size; ++i)
@@ -180,7 +180,7 @@ public:
         return ret;
     }
 
-    friend vec square(vec const & arg)
+    friend inline vec square(vec const & arg)
     {
         vec ret;
         for (int i = 0; i != size; ++i)
@@ -188,7 +188,7 @@ public:
         return ret;
     }
 
-    friend vec cube(vec const & arg)
+    friend inline vec cube(vec const & arg)
     {
         vec ret;
         for (int i = 0; i != size; ++i)
