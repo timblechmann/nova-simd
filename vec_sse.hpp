@@ -227,6 +227,21 @@ public:
     ARITHMETIC_OPERATOR(-, _mm_sub_ps)
     ARITHMETIC_OPERATOR(*, _mm_mul_ps)
     ARITHMETIC_OPERATOR(/, _mm_div_ps)
+
+#define RELATIONAL_OPERATOR(op, opcode) \
+    vec operator op(vec const & rhs) \
+    { \
+        const __m128 one = gen_one(); \
+        return _mm_and_ps(opcode(data_, rhs.data_), one); \
+    }
+
+    RELATIONAL_OPERATOR(<, _mm_cmplt_ps)
+    RELATIONAL_OPERATOR(<=, _mm_cmple_ps)
+    RELATIONAL_OPERATOR(>, _mm_cmpgt_ps)
+    RELATIONAL_OPERATOR(>=, _mm_cmpge_ps)
+    RELATIONAL_OPERATOR(==, _mm_cmpeq_ps)
+    RELATIONAL_OPERATOR(!=, _mm_cmpneq_ps)
+
     /* @} */
 
     /* @{ */
@@ -312,6 +327,7 @@ private:
 
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
+#undef RELATIONAL_OPERATOR
 #undef always_inline
 
 #endif /* VEC_SSE_HPP */
