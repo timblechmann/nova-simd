@@ -21,6 +21,7 @@
 #define VEC_GENERIC_HPP
 
 #include <cmath>
+#include <algorithm>
 
 namespace nova
 {
@@ -55,6 +56,14 @@ public:
     {
         for (int i = 0; i != size; ++i)
             data_[i] = data[i];
+    }
+
+    void load_first(const float_type * data)
+    {
+        data_[0] = *data;
+
+        for (int i = 1; i != size; ++i)
+            data_[i] = 0;
     }
 
     void load_aligned(const float_type * data)
@@ -197,6 +206,37 @@ public:
     }
     /* @} */
 
+    /* @{ */
+    /** binary functions */
+    friend inline vec max(vec const & lhs, vec const & rhs)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+            ret.data_[i] = std::max(lhs.data_[i], rhs.data_[i]);
+        return ret;
+    }
+
+    friend inline vec min(vec const & lhs, vec const & rhs)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i)
+            ret.data_[i] = std::min(lhs.data_[i], rhs.data_[i]);
+        return ret;
+    }
+    /* @} */
+
+    /* @{ */
+    /** horizontal functions */
+    inline float horizontal_min(void) const
+    {
+        return *std::min_element(data_, data_ + size);
+    }
+
+    inline float horizontal_max(void) const
+    {
+        return *std::max_element(data_, data_ + size);
+    }
+    /* @} */
 
 private:
     float_type data_[size];

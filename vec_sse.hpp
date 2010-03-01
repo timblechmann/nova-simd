@@ -135,6 +135,11 @@ public:
         data_ = _mm_load_ps(data);
     }
 
+    void load_first(const float * data)
+    {
+        data_ = _mm_load_ss(data);
+    }
+
     void store(float * dest) const
     {
         _mm_storeu_ps(dest, data_);
@@ -255,6 +260,43 @@ public:
     }
     /* @} */
 
+    /* @{ */
+    /** binary functions */
+    friend inline vec max(vec const & lhs, vec const & rhs)
+    {
+        return _mm_max_ps(lhs.data_, rhs.data_);
+    }
+
+    friend inline vec min(vec const & lhs, vec const & rhs)
+    {
+        return _mm_min_ps(lhs.data_, rhs.data_);
+    }
+    /* @} */
+
+    /* @{ */
+    /** horizontal functions */
+    inline float horizontal_min(void) const
+    {
+        __m128 xmm0, xmm1;
+        xmm0 = data_;
+        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+        xmm0 = _mm_min_ps(xmm0, xmm1);
+        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+        xmm0 = _mm_min_ss(xmm0, xmm1);
+        return _mm_cvtss_f32(xmm0);
+    }
+
+    inline float horizontal_max(void) const
+    {
+        __m128 xmm0, xmm1;
+        xmm0 = data_;
+        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+        xmm0 = _mm_max_ps(xmm0, xmm1);
+        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+        xmm0 = _mm_max_ss(xmm0, xmm1);
+        return _mm_cvtss_f32(xmm0);
+    }
+    /* @} */
 
 private:
     typedef union
