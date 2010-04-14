@@ -150,7 +150,7 @@ public:
     OPERATOR_ASSIGNMENT(/=)
 
 #define ARITHMETIC_OPERATOR(op) \
-    vec operator op(vec const & rhs) \
+    vec operator op(vec const & rhs) const \
     { \
         vec ret; \
         for (int i = 0; i != size; ++i) \

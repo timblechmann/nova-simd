@@ -111,7 +111,7 @@ void __noinline__ bench_5(float * out, float * in, float f, unsigned int n)
     while (--n);
 }
 
-void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
+/*void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
 {
     n /= 8;
 
@@ -123,14 +123,14 @@ void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
     }
     while (--n);
 }
-
+*/
 void __noinline__ bench_7(float * out, float * in, float f, unsigned int n)
 {
     n /= 16;
 
     do
     {
-        nova::plus_vec_simd<16>(out, in, f);
+        nova::plus_vec_simd<float, 16>(out, in, f);
         in += 16;
         out += 16;
     }
@@ -143,7 +143,7 @@ void __noinline__ bench_8(float * out, float * in, float f, unsigned int n)
 
     do
     {
-        nova::plus_vec_simd<32>(out, in, f);
+        nova::plus_vec_simd<float, 32>(out, in, f);
         in += 32;
         out += 32;
     }
@@ -163,7 +163,7 @@ int main(void)
     run_bench(boost::bind(bench_3, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_4, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_5, out.begin(), in.begin(), 1.f, 64), iterations);
-    run_bench(boost::bind(bench_6, out.begin(), in.begin(), 1.f, 64), iterations);
+ /*   run_bench(boost::bind(bench_6, out.begin(), in.begin(), 1.f, 64), iterations);*/
     run_bench(boost::bind(bench_7, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_8, out.begin(), in.begin(), 1.f, 64), iterations);
 }

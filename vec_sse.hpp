@@ -238,7 +238,7 @@ public:
     OPERATOR_ASSIGNMENT(/=, _mm_div_ps)
 
 #define ARITHMETIC_OPERATOR(op, opcode) \
-    vec operator op(vec const & rhs) \
+    vec operator op(vec const & rhs) const \
     { \
         return opcode(data_, rhs.data_); \
     }
@@ -249,7 +249,7 @@ public:
     ARITHMETIC_OPERATOR(/, _mm_div_ps)
 
 #define RELATIONAL_OPERATOR(op, opcode) \
-    vec operator op(vec const & rhs) \
+    vec operator op(vec const & rhs) const \
     { \
         const __m128 one = gen_one(); \
         return _mm_and_ps(opcode(data_, rhs.data_), one); \
