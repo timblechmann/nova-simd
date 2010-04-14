@@ -361,6 +361,54 @@ public:
     /* @} */
 
     /* @{ */
+    /** rounding functions */
+    friend inline vec round(vec const & arg)
+    {
+#ifdef __SSE4_1__
+        return _mm_round_ps(arg.data_, _MM_FROUND_TO_NEAREST_INT);
+#else
+        const __m128 sign = _mm_and_ps(arg.data_, gen_sign_mask());
+        const __m128 abs_arg = _mm_xor_ps(sign, arg.data_);
+        const __m128 two_to_23_ps = _mm_set1_ps(0x1.0p23f);
+        const __m128 rounded = _mm_sub_ps( _mm_add_ps( abs_arg, two_to_23_ps ), two_to_23_ps );
+        return _mm_xor_ps(sign, rounded);
+#endif
+    }
+
+    friend inline vec frac(vec const & arg)
+    {
+        return arg - floor(arg);
+    }
+
+    friend inline vec floor(vec const & arg)
+    {
+#ifdef __SSE4_1__
+        return _mm_round_ps(arg.data_, _MM_FROUND_TO_NEG_INF);
+#else
+        vec rounded = round(arg);
+
+        __m128 rounded_larger = _mm_cmpgt_ps(rounded.data_, arg.data_);
+        __m128 add = _mm_and_ps(rounded_larger, gen_one());
+        return _mm_sub_ps(rounded.data_, add);
+#endif
+    }
+
+    friend inline vec ceil(vec const & arg)
+    {
+#ifdef __SSE4_1__
+        return _mm_round_ps(arg.data_, _MM_FROUND_TO_POS_INF);
+#else
+        vec rounded = round(arg);
+
+        __m128 rounded_smaller = _mm_cmplt_ps(rounded.data_, arg.data_);
+        __m128 add = _mm_and_ps(rounded_smaller, gen_one());
+        return _mm_add_ps(rounded.data_, add);
+#endif
+    }
+    /* @} */
+
+
+    /* @{ */
     /** horizontal functions */
     inline float horizontal_min(void) const
     {

@@ -25,6 +25,37 @@
 
 namespace nova
 {
+namespace helper
+{
+
+template <typename float_type>
+float_type round(float_type arg)
+{
+    return std::floor(arg + float_type(0.5));
+}
+
+template <>
+double round<double>(double arg)
+{
+    return ::round(arg);
+}
+
+#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
+template <>
+float round<float>(float arg)
+{
+    return roundf(arg);
+}
+#endif
+
+template <typename float_type>
+inline float_type frac(float_type arg)
+{
+    return arg - floor(arg);
+}
+
+} /* namespace */
+
 
 template <typename float_type>
 struct vec
@@ -214,7 +245,6 @@ public:
     /* @} */
 
     /* @{ */
-    /** binary functions */
     friend inline vec max(vec const & lhs, vec const & rhs)
     {
         vec ret;
@@ -230,6 +260,24 @@ public:
             ret.data_[i] = std::min(lhs.data_[i], rhs.data_[i]);
         return ret;
     }
+    /* @} */
+
+
+    /* @{ */
+    /** rounding functions */
+#define APPLY_UNARY(NAME, FUNCTION)                 \
+    friend inline vec NAME(vec const & arg)         \
+    {                                               \
+        vec ret;                                    \
+        for (int i = 0; i != size; ++i)             \
+            ret.data_[i] = FUNCTION(arg.data_[i]);  \
+        return ret;                                 \
+    }
+
+    APPLY_UNARY(round, helper::round<float_type>)
+    APPLY_UNARY(frac, helper::frac<float_type>)
+    APPLY_UNARY(floor, std::floor)
+    APPLY_UNARY(ceil, std::ceil)
     /* @} */
 
     /* @{ */
