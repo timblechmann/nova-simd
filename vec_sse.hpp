@@ -26,6 +26,11 @@
 #include <emmintrin.h>
 #endif
 
+#ifdef __SSE4_1__
+#include <smmintrin.h>
+#endif
+
+
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
 #else
@@ -166,8 +171,13 @@ public:
     /** element access */
     void set (std::size_t index, float value)
     {
+#ifdef __SSE4_1__
+        __m128 tmp = _mm_set_ss(value);
+        data_ = _mm_insert_ps(data_, tmp, index << 4);
+#else
         float * data = (float*)&data_;
         data[index] = value;
+#endif
     }
 
     void set_vec (float value)
@@ -195,11 +205,21 @@ public:
 
     float get (std::size_t index)
     {
+#ifdef __SSE4_1__
+        union {
+            int32_t i;
+            float f;
+        } cu;
+
+        cu.i = _mm_extract_ps(data_, index);
+        return cu.f;
+#else
         if (index == 0)
             return _mm_cvtss_f32(data_);
 
         __m128 ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(index, index, index, index));
         return _mm_cvtss_f32(ret);
+#endif
     }
     /* @} */
 
