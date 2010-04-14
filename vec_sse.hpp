@@ -173,7 +173,25 @@ public:
     {
 #ifdef __SSE4_1__
         __m128 tmp = _mm_set_ss(value);
-        data_ = _mm_insert_ps(data_, tmp, index << 4);
+
+        switch (index)
+        {
+        case 0:
+            data_ = _mm_insert_ps(data_, tmp, 0 << 4);
+            break;
+
+        case 1:
+            data_ = _mm_insert_ps(data_, tmp, 1 << 4);
+            break;
+
+        case 2:
+            data_ = _mm_insert_ps(data_, tmp, 2 << 4);
+            break;
+
+        case 3:
+            data_ = _mm_insert_ps(data_, tmp, 3 << 4);
+            break;
+        }
 #else
         float * data = (float*)&data_;
         data[index] = value;
@@ -211,13 +229,47 @@ public:
             float f;
         } cu;
 
-        cu.i = _mm_extract_ps(data_, index);
+        switch (index)
+        {
+        case 0:
+            cu.i = _mm_extract_ps(data_, 0);
+            break;
+
+        case 1:
+            cu.i = _mm_extract_ps(data_, 1);
+            break;
+
+        case 2:
+            cu.i = _mm_extract_ps(data_, 2);
+            break;
+
+        case 3:
+            cu.i = _mm_extract_ps(data_, 3);
+            break;
+        }
+
         return cu.f;
 #else
-        if (index == 0)
-            return _mm_cvtss_f32(data_);
+        __m128 ret;
+        switch (index)
+        {
+        case 0:
+            ret = data_;
+            break;
 
-        __m128 ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(index, index, index, index));
+        case 1:
+            ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(1, 1, 1, 1));
+            break;
+
+        case 2:
+            ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(2, 2, 2, 2));
+            break;
+
+        case 3:
+            ret = _mm_shuffle_ps(data_, data_, _MM_SHUFFLE(3, 3, 3, 3));
+            break;
+        }
+
         return _mm_cvtss_f32(ret);
 #endif
     }
