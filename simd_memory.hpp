@@ -214,7 +214,7 @@ inline void set_slope_vec_simd(F * dest, F f, F slope, unsigned int n)
 }
 
 template <typename F>
-inline void set_exp_vec(F * dest, F f, F curve, uint n)
+inline void set_exp_vec(F * dest, F f, F curve, unsigned int n)
 {
     assert(n);
     do {
@@ -223,7 +223,7 @@ inline void set_exp_vec(F * dest, F f, F curve, uint n)
 }
 
 template <typename F>
-inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
+inline void set_exp_vec_simd(F * dest, F f, F curve, unsigned int n)
 {
     vec<F> vbase, vcurve(curve * curve * curve * curve);
     vbase.set_exp(f, curve);
@@ -238,7 +238,7 @@ inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
 
 
 template <typename F>
-inline void copyvec(F * dest, const F * src, uint n)
+inline void copyvec(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
