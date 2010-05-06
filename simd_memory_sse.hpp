@@ -67,7 +67,7 @@ always_inline void zerovec_simd_mp(float *dest)
     detail::setvec_simd_mp_iteration<n>(dest, zero);
 }
 
-inline void zerovec_simd(float *dest, uint n)
+inline void zerovec_simd(float *dest, unsigned int n)
 {
     n = n / samples_per_loop;
     const __m128 zero = _mm_setzero_ps();
@@ -100,7 +100,7 @@ void zerovec_simd(double *dest)
 }
 
 
-inline void zerovec_simd(double *dest, uint n)
+inline void zerovec_simd(double *dest, unsigned int n)
 {
     zerovec_simd((float*)dest, n*2);
 }
@@ -120,7 +120,7 @@ void setvec_simd(float *dest, float v)
     setvec_simd_mp<n>(dest, v);
 }
 
-inline void setvec_simd(float *dest, float v, uint n)
+inline void setvec_simd(float *dest, float v, unsigned int n)
 {
     n = n / samples_per_loop;
 
@@ -135,7 +135,7 @@ inline void setvec_simd(float *dest, float v, uint n)
 
 
 template <>
-inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
+inline void set_slope_vec_simd(float * dest, float v, float slope, unsigned int n)
 {
     n = n / 8;
 
@@ -158,7 +158,7 @@ inline void set_slope_vec_simd(float * dest, float v, float slope, uint n)
 }
 
 template <>
-inline void set_exp_vec_simd(float * dest, float f, float curve, uint n)
+inline void set_exp_vec_simd(float * dest, float f, float curve, unsigned int n)
 {
     n = n / 8;
 
@@ -207,7 +207,7 @@ void copyvec_simd(float *dest, const float *src)
 }
 
 template <>
-inline void copyvec_aa_simd(float * dest, const float * src, uint n)
+inline void copyvec_aa_simd(float * dest, const float * src, unsigned int n)
 {
     n = n / samples_per_loop;
 
@@ -222,7 +222,7 @@ inline void copyvec_aa_simd(float * dest, const float * src, uint n)
 
 
 template <>
-inline void copyvec_aa_simd(double * dest, const double * src, uint n)
+inline void copyvec_aa_simd(double * dest, const double * src, unsigned int n)
 {
     n = n / samples_per_loop * 2;
 

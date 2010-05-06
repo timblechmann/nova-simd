@@ -44,7 +44,7 @@ inline void zerovec_na_simd(F * dest, unsigned int n)
 }
 
 template <typename F>
-inline void setvec(F * dest, F f, uint n)
+inline void setvec(F * dest, F f, unsigned int n)
 {
     assert(n);
     do
@@ -53,9 +53,9 @@ inline void setvec(F * dest, F f, uint n)
 }
 
 template <typename F>
-inline void setvec_simd(F * dest, F f, uint n)
+inline void setvec_simd(F * dest, F f, unsigned int n)
 {
-    for (uint i = 0; i != n; i+=8)
+    for (unsigned int i = 0; i != n; i+=8)
     {
         dest[i+0] = dest[i+1] = dest[i+2] = dest[i+3] = dest[i+4] =
             dest[i+5] = dest[i+6] = dest[i+7] = f;
@@ -63,7 +63,7 @@ inline void setvec_simd(F * dest, F f, uint n)
 }
 
 template <typename F>
-inline void set_slope_vec(F * dest, F f, F slope, uint n)
+inline void set_slope_vec(F * dest, F f, F slope, unsigned int n)
 {
     assert(n);
     do
@@ -74,9 +74,9 @@ inline void set_slope_vec(F * dest, F f, F slope, uint n)
 }
 
 template <typename F>
-inline void set_slope_vec_simd(F * dest, F f, F slope, uint n)
+inline void set_slope_vec_simd(F * dest, F f, F slope, unsigned int n)
 {
-    for (uint i = 0; i != n; i+=8)
+    for (unsigned int i = 0; i != n; i+=8)
     {
         *dest++ = f; f += slope;
         *dest++ = f; f += slope;
@@ -90,7 +90,7 @@ inline void set_slope_vec_simd(F * dest, F f, F slope, uint n)
 }
 
 template <typename F>
-inline void set_exp_vec(F * dest, F f, F curve, uint n)
+inline void set_exp_vec(F * dest, F f, F curve, unsigned int n)
 {
     assert(n);
     do
@@ -101,9 +101,9 @@ inline void set_exp_vec(F * dest, F f, F curve, uint n)
 }
 
 template <typename F>
-inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
+inline void set_exp_vec_simd(F * dest, F f, F curve, unsigned int n)
 {
-    for (uint i = 0; i != n; i+=8)
+    for (unsigned int i = 0; i != n; i+=8)
     {
         *dest++ = f; f *= curve;
         *dest++ = f; f *= curve;
@@ -118,37 +118,37 @@ inline void set_exp_vec_simd(F * dest, F f, F curve, uint n)
 
 
 template <typename F>
-inline void copyvec(F * dest, const F * src, uint n)
+inline void copyvec(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
 
 template <typename F>
-inline void copyvec_aa_simd(F * dest, const F * src, uint n)
+inline void copyvec_aa_simd(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
 
 template <typename F>
-inline void copyvec_simd(F * dest, const F * src, uint n)
+inline void copyvec_simd(F * dest, const F * src, unsigned int n)
 {
     copyvec_aa_simd(dest, src, n);
 }
 
 template <typename F>
-inline void copyvec_nn_simd(F * dest, const F * src, uint n)
+inline void copyvec_nn_simd(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
 
 template <typename F>
-inline void copyvec_an_simd(F * dest, const F * src, uint n)
+inline void copyvec_an_simd(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
 
 template <typename F>
-inline void copyvec_na_simd(F * dest, const F * src, uint n)
+inline void copyvec_na_simd(F * dest, const F * src, unsigned int n)
 {
     std::memcpy(dest, src, n*sizeof(F));
 }
