@@ -23,6 +23,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "detail/math.hpp"
+
 namespace nova
 {
 namespace helper
@@ -63,6 +65,9 @@ struct vec
 public:
     static const int size = 4;
     static const int objects_per_cacheline = 64/sizeof(float_type);
+
+    typedef float_type (*unary_fn)(float_type);
+    typedef float_type (*binary_fn)(float_type, float_type);
 
     /* @{ */
     /** constructors */
@@ -205,59 +210,34 @@ public:
 
     /* @{ */
     /** unary functions */
-    friend inline vec abs(vec const & arg)
-    {
-        vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.data_[i] = std::fabs(arg.data_[i]);
-        return ret;
+#define APPLY_UNARY(NAME, FUNCTION)                 \
+    friend inline vec NAME(vec const & arg)         \
+    {                                               \
+        vec ret;                                    \
+        detail::apply_on_vector<float_type, size> (ret.data_, arg.data_,                \
+                                                   FUNCTION);    \
+        return ret;                                 \
     }
 
-    friend inline vec sign(vec const & arg)
-    {
-        vec ret;
-        for (int i = 0; i != size; ++i)
-        {
-            if (arg.data_[i] > 0)
-                ret.data_[i] = 1;
-            else if (arg.data_[i] < 0)
-                ret.data_[i] = -1;
-            else ret.data_[i] = 0;
-        }
-        return ret;
-    }
-
-    friend inline vec square(vec const & arg)
-    {
-        vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.data_[i] = arg.data_[i] * arg.data_[i];
-        return ret;
-    }
-
-    friend inline vec cube(vec const & arg)
-    {
-        vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.data_[i] = arg.data_[i] * arg.data_[i] * arg.data_[i];
-        return ret;
-    }
+    APPLY_UNARY(abs, static_cast<unary_fn>(detail::fabs<float_type>))
+    APPLY_UNARY(sign, detail::sign<float_type>)
+    APPLY_UNARY(square, detail::square<float_type>)
+    APPLY_UNARY(cube, detail::cube<float_type>)
     /* @} */
 
     /* @{ */
-    friend inline vec max(vec const & lhs, vec const & rhs)
+    friend inline vec max_(vec const & lhs, vec const & rhs)
     {
         vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.data_[i] = std::max(lhs.data_[i], rhs.data_[i]);
+        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_, detail::max<float_type>);
         return ret;
     }
 
-    friend inline vec min(vec const & lhs, vec const & rhs)
+    friend inline vec min_(vec const & lhs, vec const & rhs)
     {
         vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.data_[i] = std::min(lhs.data_[i], rhs.data_[i]);
+        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_, detail::min<float_type>);
+
         return ret;
     }
     /* @} */
@@ -265,19 +245,10 @@ public:
 
     /* @{ */
     /** rounding functions */
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        for (int i = 0; i != size; ++i)             \
-            ret.data_[i] = FUNCTION(arg.data_[i]);  \
-        return ret;                                 \
-    }
-
     APPLY_UNARY(round, helper::round<float_type>)
     APPLY_UNARY(frac, helper::frac<float_type>)
-    APPLY_UNARY(floor, std::floor)
-    APPLY_UNARY(ceil, std::ceil)
+    APPLY_UNARY(floor, detail::floor<float_type>)
+    APPLY_UNARY(ceil, detail::ceil<float_type>)
     /* @} */
 
     /* @{ */

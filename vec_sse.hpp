@@ -349,12 +349,12 @@ public:
 
     /* @{ */
     /** binary functions */
-    friend inline vec max(vec const & lhs, vec const & rhs)
+    friend inline vec max_(vec const & lhs, vec const & rhs)
     {
         return _mm_max_ps(lhs.data_, rhs.data_);
     }
 
-    friend inline vec min(vec const & lhs, vec const & rhs)
+    friend inline vec min_(vec const & lhs, vec const & rhs)
     {
         return _mm_min_ps(lhs.data_, rhs.data_);
     }

@@ -36,9 +36,6 @@ namespace nova {
 namespace detail
 {
 
-using std::max;
-using std::min;
-
 template<typename float_type>
 struct clip2:
     public std::binary_function<float_type, float_type, float_type>
@@ -47,7 +44,7 @@ struct clip2:
     {
         float_type zero(0);
         float_type neg = zero - float_type(limit);
-        return max(neg, min(f, limit));
+        return max_(neg, min_(f, limit));
     }
 };
 
@@ -57,7 +54,7 @@ struct min_functor:
 {
     float_type operator()(float_type const & x, float_type const & y)
     {
-        return min(x, y);
+        return min_(x, y);
     }
 };
 
@@ -67,7 +64,7 @@ struct max_functor:
 {
     float_type operator()(float_type const & x, float_type const & y)
     {
-        return max(x, y);
+        return max_(x, y);
     }
 };
 

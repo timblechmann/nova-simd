@@ -71,10 +71,10 @@ inline float peak_vec_simd(const F * in, F * peak, unsigned int n)
         vec<F> abs2 = abs(in2);
         abs3 = abs(in3);
 
-        vec<F> local_max = max(max(abs0, abs1),
-                               max(abs2, abs3));
+        vec<F> local_max = max_(max_(abs0, abs1),
+                               max_(abs2, abs3));
 
-        maximum = max(maximum, local_max);
+        maximum = max_(maximum, local_max);
         in += 16;
     } while(--n);
 

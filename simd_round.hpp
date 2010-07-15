@@ -37,7 +37,7 @@ template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg, unsigned int n) \
 {                                                                       \
     do                                                                  \
-        *out++ = FUNCTION(*arg++);                                      \
+        *out++ = FUNCTION<float_type>(*arg++);                        \
     while (--n);                                                        \
 }                                                                       \
                                                                         \
@@ -87,10 +87,10 @@ inline void NAME##_vec_simd(float_type * out, const float_type * arg)   \
 }
 
 
-DEFINE_ROUND_FUNCTION(round, helper::round<float_type>, round)
-DEFINE_ROUND_FUNCTION(frac, helper::frac<float_type>, frac)
-DEFINE_ROUND_FUNCTION(ceil, std::ceil, ceil)
-DEFINE_ROUND_FUNCTION(floor, std::floor, floor)
+DEFINE_ROUND_FUNCTION(round, detail::round, round)
+DEFINE_ROUND_FUNCTION(frac, detail::frac, frac)
+DEFINE_ROUND_FUNCTION(ceil, detail::ceil, ceil)
+DEFINE_ROUND_FUNCTION(floor, detail::floor, floor)
 
 #undef always_inline
 

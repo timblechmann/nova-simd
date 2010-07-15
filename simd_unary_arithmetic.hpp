@@ -30,33 +30,6 @@
 namespace nova
 {
 
-namespace detail {
-
-template <typename float_type>
-inline float_type sgn(float_type arg)
-{
-    if (arg > 0)
-        return float_type(1);
-    if (arg == 0)
-        return float_type(0);
-    else
-        return float_type(-1);
-}
-
-template <typename float_type>
-inline float_type square(float_type arg)
-{
-    return arg * arg;
-}
-
-template <typename float_type>
-inline float_type cube(float_type arg)
-{
-    return arg * arg * arg;
-}
-
-} /* namespace detail */
-
 
 template <typename float_type>
 inline void abs_vec(float_type * out, const float_type * arg, unsigned int n)
@@ -70,7 +43,7 @@ template <typename float_type>
 inline void sgn_vec(float_type * out, const float_type * arg, unsigned int n)
 {
     do {
-        *out++ = detail::sgn<float_type>(*arg++);
+        *out++ = detail::sign<float_type>(*arg++);
     } while (--n);
 }
 

@@ -25,4 +25,21 @@
 #include "vec_sse.hpp"
 #endif
 
+namespace nova
+{
+
+template <typename T>
+T max_(T const & left, T const & right)
+{
+    return std::max(left, right);
+}
+
+template <typename T>
+T min_(T const & left, T const & right)
+{
+    return std::min(left, right);
+}
+
+}
+
 #endif /* VEC_HPP */
