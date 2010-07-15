@@ -30,6 +30,7 @@
 #include <smmintrin.h>
 #endif
 
+#include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -43,6 +44,8 @@ namespace nova
 template <>
 struct vec<float>
 {
+    typedef __m128 internal_vector_type;
+
 #ifdef __SSE2__
     static inline __m128 gen_sign_mask(void)
     {
@@ -314,6 +317,30 @@ public:
     RELATIONAL_OPERATOR(==, _mm_cmpeq_ps)
     RELATIONAL_OPERATOR(!=, _mm_cmpneq_ps)
 
+    /* @{ */
+#define BITWISE_OPERATOR(op, opcode) \
+    vec operator op(vec const & rhs) const \
+    { \
+        return opcode(data_, rhs.data_); \
+    }
+
+    BITWISE_OPERATOR(&, _mm_and_ps)
+    BITWISE_OPERATOR(|, _mm_or_ps)
+    BITWISE_OPERATOR(^, _mm_xor_ps)
+
+    #define RELATIONAL_MASK_OPERATOR(op, opcode) \
+    friend vec mask_##op(vec const & lhs, vec const & rhs) \
+    { \
+        return opcode(lhs.data_, rhs.data_); \
+    }
+
+    RELATIONAL_MASK_OPERATOR(lt, _mm_cmplt_ps)
+    RELATIONAL_MASK_OPERATOR(le, _mm_cmple_ps)
+    RELATIONAL_MASK_OPERATOR(gt, _mm_cmpgt_ps)
+    RELATIONAL_MASK_OPERATOR(ge, _mm_cmpge_ps)
+    RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
+    RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
+
     /* @} */
 
     /* @{ */
@@ -325,15 +352,7 @@ public:
 
     friend always_inline vec sign(vec const & arg)
     {
-        const __m128 zero = _mm_setzero_ps();
-        const __m128 one = gen_one();
-        const __m128 sign_mask = gen_sign_mask();
-
-        const __m128 nonzero = _mm_cmpneq_ps(arg.data_, zero);
-        const __m128 sign = _mm_and_ps(arg.data_, sign_mask);
-
-        __m128 abs_ret = _mm_and_ps(nonzero, one);
-        return _mm_or_ps(sign, abs_ret);
+        return detail::vec_sign(arg);
     }
 
     friend inline vec square(vec const & arg)
@@ -367,11 +386,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_ps(arg.data_, _MM_FROUND_TO_NEAREST_INT);
 #else
-        const __m128 sign = _mm_and_ps(arg.data_, gen_sign_mask());
-        const __m128 abs_arg = _mm_xor_ps(sign, arg.data_);
-        const __m128 two_to_23_ps = _mm_set1_ps(0x1.0p23f);
-        const __m128 rounded = _mm_sub_ps( _mm_add_ps( abs_arg, two_to_23_ps ), two_to_23_ps );
-        return _mm_xor_ps(sign, rounded);
+        return detail::vec_round_float(arg);
 #endif
     }
 
@@ -385,11 +400,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_ps(arg.data_, _MM_FROUND_TO_NEG_INF);
 #else
-        vec rounded = round(arg);
-
-        __m128 rounded_larger = _mm_cmpgt_ps(rounded.data_, arg.data_);
-        __m128 add = _mm_and_ps(rounded_larger, gen_one());
-        return _mm_sub_ps(rounded.data_, add);
+        return detail::vec_floor_float(arg);
 #endif
     }
 
@@ -398,11 +409,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_ps(arg.data_, _MM_FROUND_TO_POS_INF);
 #else
-        vec rounded = round(arg);
-
-        __m128 rounded_smaller = _mm_cmplt_ps(rounded.data_, arg.data_);
-        __m128 add = _mm_and_ps(rounded_smaller, gen_one());
-        return _mm_add_ps(rounded.data_, add);
+        return detail::vec_ceil_float(arg);
 #endif
     }
     /* @} */
