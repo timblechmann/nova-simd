@@ -34,33 +34,25 @@ namespace nova
 template <typename float_type>
 inline void abs_vec(float_type * out, const float_type * arg, unsigned int n)
 {
-    do {
-        *out++ = std::fabs(*arg++);
-    } while (--n);
+    detail::apply_on_vector(out, arg, n, detail::fabs<float_type>);
 }
 
 template <typename float_type>
 inline void sgn_vec(float_type * out, const float_type * arg, unsigned int n)
 {
-    do {
-        *out++ = detail::sign<float_type>(*arg++);
-    } while (--n);
+    detail::apply_on_vector(out, arg, n, detail::sign<float_type>);
 }
 
 template <typename float_type>
 inline void square_vec(float_type * out, const float_type * arg, unsigned int n)
 {
-    do {
-        *out++ = detail::square<float_type>(*arg++);
-    } while (--n);
+    detail::apply_on_vector(out, arg, n, detail::square<float_type>);
 }
 
 template <typename float_type>
 inline void cube_vec(float_type * out, const float_type * arg, unsigned int n)
 {
-    do {
-        *out++ = detail::cube<float_type>(*arg++);
-    } while (--n);
+    detail::apply_on_vector(out, arg, n, detail::cube<float_type>);
 }
 
 #define DEFINE_UNARY_FUNCTIONS(NAME, VEC_NAME)                          \

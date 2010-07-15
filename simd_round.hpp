@@ -36,16 +36,14 @@ namespace nova
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg, unsigned int n) \
 {                                                                       \
-    do                                                                  \
-        *out++ = FUNCTION<float_type>(*arg++);                        \
-    while (--n);                                                        \
+    detail::apply_on_vector(out, arg, n, FUNCTION<float_type>);         \
 }                                                                       \
                                                                         \
 namespace detail                                                        \
 {                                                                       \
                                                                         \
 template <typename float_type, int n>                                   \
-inline void NAME##_vec_simd_mp(float_type * out, const float_type * src) \
+inline void NAME##_vec_simd_mp(float_type * out, const float_type * src)\
 {                                                                       \
     const unsigned int size = vec<float_type>::size;                    \
                                                                         \
@@ -59,7 +57,7 @@ inline void NAME##_vec_simd_mp(float_type * out, const float_type * src) \
 }                                                                       \
                                                                         \
 template <>                                                             \
-inline void NAME##_vec_simd_mp<float, 0>(float * out, const float * src) \
+inline void NAME##_vec_simd_mp<float, 0>(float * out, const float * src)\
 {}                                                                      \
                                                                         \
 template <>                                                             \

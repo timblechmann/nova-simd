@@ -136,45 +136,33 @@ struct not_equal_to:
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n) \
 {                                                                       \
-    do                                                                  \
-        *out++ = FUNCTOR<float_type>()(*arg1++, *arg2++);               \
-    while (--n);                                                        \
+    detail::apply_on_vector(out, arg1, arg2, n, FUNCTOR<float_type>()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n) \
 {                                                                       \
-    do                                                                  \
-        *out++ = FUNCTOR<float_type>()(*arg1++, arg2);                  \
-    while (--n);                                                        \
+    detail::apply_on_vector(out, arg1, arg2, n, FUNCTOR<float_type>()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n) \
 {                                                                       \
-    do                                                                  \
-        *out++ = FUNCTOR<float_type>()(arg1, *arg2++);                  \
-    while (--n);                                                        \
+    detail::apply_on_vector(out, arg1, arg2, n, FUNCTOR<float_type>()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg1, float_type arg2, \
                       const float_type arg2_slope, unsigned int n)      \
 {                                                                       \
-    do {                                                                \
-        *out++ = FUNCTOR<float_type>()(*arg1++, arg2);                  \
-        arg2 += arg2_slope;                                             \
-    } while (--n);                                                      \
+    detail::apply_on_vector(out, arg1, arg2, arg2_slope, n, FUNCTOR<float_type>()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, float_type arg1, const float_type arg1_slope, \
                       const float_type * arg2, unsigned int n)          \
 {                                                                       \
-    do {                                                                \
-        *out++ = FUNCTOR<float_type>()(arg1, *arg2++);                  \
-        arg1 += arg1_slope;                                             \
-    } while (--n);                                                      \
+    detail::apply_on_vector(out, arg1, arg1_slope, arg2, n, FUNCTOR<float_type>()); \
 }
 
 

@@ -27,6 +27,7 @@
 namespace nova {
 namespace detail {
 
+///@{
 template <typename FloatType,
           int VectorSize,
           typename Functor
@@ -46,6 +47,71 @@ inline void apply_on_vector(FloatType * out, const FloatType * in1, const FloatT
     for (int i = 0; i != VectorSize; ++i)
         out[i] = f(in1[i], in2[i]);
 }
+///@}
+
+///@{
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, const FloatType * in, unsigned int n, Functor f)
+{
+    do
+        *out++ = f(*in++);
+    while (--n);
+}
+
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, const FloatType * in1, const FloatType * in2, unsigned int n, Functor f)
+{
+    do
+        *out++ = f(*in1++, *in2++);
+    while (--n);
+}
+
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, FloatType in1, const FloatType * in2, unsigned int n, Functor f)
+{
+    do
+        *out++ = f(in1, *in2++);
+    while (--n);
+}
+
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, const FloatType * in1, FloatType in2, unsigned int n, Functor f)
+{
+    do
+        *out++ = f(*in1++, in2);
+    while (--n);
+}
+
+
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, FloatType in1, FloatType in1_slope, const FloatType * in2, unsigned int n, Functor f)
+{
+    do {
+        *out++ = f(in1, *in2++); in1 += in1_slope;
+    } while (--n);
+}
+
+template <typename FloatType,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, const FloatType * in1, FloatType in2, FloatType in2_slope, unsigned int n, Functor f)
+{
+    do {
+        *out++ = f(*in1++, in2); in2 += in2_slope;
+    } while (--n);
+}
+///@}
+
 
 template<typename float_type>
 float_type sign(float_type const & f)
