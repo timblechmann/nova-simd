@@ -228,6 +228,8 @@ public:
     APPLY_UNARY(acos, detail::acos<float_type>)
     APPLY_UNARY(atan, detail::atan<float_type>)
 
+    APPLY_UNARY(tanh, detail::tanh<float_type>)
+
     APPLY_UNARY(log, detail::log<float_type>)
     APPLY_UNARY(log2, detail::log2<float_type>)
     APPLY_UNARY(log10, detail::log10<float_type>)
@@ -261,5 +263,6 @@ private:
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
 #undef APPLY_UNARY
+#undef APPLY_BINARY
 
 #endif /* VEC_GENERIC_HPP */

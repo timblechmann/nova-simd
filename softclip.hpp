@@ -111,4 +111,6 @@ inline void softclip_vec_simd<float>(float_type * out, const float_type * in, un
 
 } /* namespace nova */
 
+#undef always_inline
+
 #endif /* SIMD_SOFTCLIP_HPP */
