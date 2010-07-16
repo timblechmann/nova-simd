@@ -102,7 +102,7 @@ inline void zerovec_simd(F * dest, unsigned int n)
     detail::setvec_simd<F, true>(dest, zero, n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void zerovec_simd(F *dest)
 {
     vec<F> zero; zero.clear();
@@ -116,7 +116,7 @@ inline void zerovec_na_simd(F * dest, unsigned int n)
     detail::setvec_simd<F, false>(dest, zero, n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void zerovec_na_simd(F *dest)
 {
     vec<F> zero; zero.clear();
@@ -132,7 +132,7 @@ inline void setvec_simd(F * dest, F f, unsigned int n)
     detail::setvec_simd<F, true>(dest, val, n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void setvec_simd(F *dest, F f)
 {
     vec<F> val(f);
@@ -146,7 +146,7 @@ inline void setvec_na_simd(F * dest, F f, unsigned int n)
     detail::setvec_simd<F, false>(dest, val, n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void setvec_na_simd(F *dest, F f)
 {
     vec<F> val(f);
@@ -287,7 +287,7 @@ inline void name##_simd(F * dest, const F * src, unsigned int n)        \
     while (--n);                                                        \
 }                                                                       \
                                                                         \
-template <typename F, unsigned int n>                                   \
+template <unsigned int n, typename F>                                   \
 inline void name##_simd(F * dest, const F * src)                        \
 {                                                                       \
     detail::copyvec<F, src_aligned, dst_aligned, n>::mp_iteration(dest, src); \
@@ -298,6 +298,17 @@ COPYVEC_FUNCTION(copyvec_na, false, true)
 COPYVEC_FUNCTION(copyvec_an, true, false)
 COPYVEC_FUNCTION(copyvec_nn, false, false)
 
+template <typename F>
+inline void copyvec_simd(F * dest, const F * src, unsigned int n)
+{
+    copyvec_aa_simd(dest, src, n);
+}
+
+template <unsigned int n, typename F>
+inline void copyvec_simd(F * dest, const F * src)
+{
+    copyvec_aa_simd<n, F>(dest, src);
+}
 
 template <typename F>
 inline void addvec(F * out, const F * in, unsigned int n)
@@ -418,20 +429,20 @@ inline void addvec_simd(F * out, const F in, const F slope, unsigned int n)
     while (--n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void addvec_simd(F * out, const F * in)
 {
     detail::addvec<F, n>::mp_iteration(out, in);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void addvec_simd(F * out, const F in)
 {
     vec<F> vin(in);
     detail::addvec<F, n>::mp_iteration(out, vin);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void addvec_simd(F * out, const F in, const F slope)
 {
     vec<F> vin; vin.set_slope(in, slope);

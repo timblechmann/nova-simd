@@ -122,7 +122,7 @@ inline void pan2_vec_simd(F * out0, F * out1, const F * in, F factor0, F factor1
     } while(--n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void pan2_vec_simd(F * out0, F * out1, const F * in, F factor0, F factor1)
 {
     vec<F> vf0(factor0), vf1(factor1);
@@ -146,7 +146,7 @@ inline void pan2_vec_simd(F * out0, F * out1, const F * in, F factor0, F slope0,
     } while(--n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 inline void pan2_vec_simd(F * out0, F * out1, const F * in, F factor0, F slope0, F factor1, F slope1)
 {
     vec<F> vf0, vf1, vslope0, vslope1;

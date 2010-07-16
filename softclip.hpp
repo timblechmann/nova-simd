@@ -99,6 +99,12 @@ inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned 
     softclip_vec(out, in, n);
 }
 
+template <unsigned int n, typename float_type>
+inline void softclip_vec_simd(float_type * out, const float_type * in)
+{
+    softclip_vec_simd(out, in, n);
+}
+
 #ifdef SSE
 
 template <>

@@ -100,7 +100,7 @@ void mix_vec_simd(F * out, const F * in0, F factor0, const F * in1, F factor1, u
     } while(--n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 void mix_vec_simd(F * out, const F * in0, F factor0, const F * in1, F factor1)
 {
     vec<F> vf0(factor0), vf1(factor1);
@@ -137,7 +137,7 @@ void mix_vec_simd(F * out, const F * in0, F factor0, F slope0,
     } while(--n);
 }
 
-template <typename F, unsigned int n>
+template <unsigned int n, typename F>
 void mix_vec_simd(F * out, const F * in0, F factor0, F slope0,
                   const F * in1, F factor1, F slope1)
 {
