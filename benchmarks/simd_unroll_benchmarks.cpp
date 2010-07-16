@@ -130,7 +130,7 @@ void __noinline__ bench_7(float * out, float * in, float f, unsigned int n)
 
     do
     {
-        nova::plus_vec_simd<float, 16>(out, in, f);
+        nova::plus_vec_simd<16>(out, in, f);
         in += 16;
         out += 16;
     }
@@ -143,7 +143,7 @@ void __noinline__ bench_8(float * out, float * in, float f, unsigned int n)
 
     do
     {
-        nova::plus_vec_simd<float, 32>(out, in, f);
+        nova::plus_vec_simd<32>(out, in, f);
         in += 32;
         out += 32;
     }

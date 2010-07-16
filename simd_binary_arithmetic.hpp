@@ -349,20 +349,20 @@ inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float
 }                                                                       \
                                                                         \
                                                                         \
-template <typename float_type, unsigned int n>                          \
+template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2) \
 {                                                                       \
     detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, arg2);         \
 }                                                                       \
                                                                         \
-template <typename float_type, unsigned int n>                          \
+template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2) \
 {                                                                       \
     vec<float_type> in2(arg2);                                          \
     detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, in2);          \
 }                                                                       \
                                                                         \
-template <typename float_type, unsigned int n>                          \
+template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
                             const float_type arg2_slope)                \
 {                                                                       \
@@ -372,14 +372,14 @@ inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const flo
     detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, in2, offset);  \
 }                                                                       \
                                                                         \
-template <typename float_type, unsigned int n>                          \
+template <unsigned int n,typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type * arg2) \
 {                                                                       \
     vec<float_type> in1(arg1);                                          \
     detail::NAME##_vec_simd_mp<float_type, n>(out, in1, arg2);          \
 }                                                                       \
                                                                         \
-template <typename float_type, unsigned int n>                          \
+template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
                             const float_type * arg2)                    \
 {                                                                       \

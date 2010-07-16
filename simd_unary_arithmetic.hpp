@@ -94,10 +94,10 @@ inline void NAME##_vec_simd(F * out, const F * arg, unsigned int n)     \
     while (--unroll);                                                   \
 }                                                                       \
                                                                         \
-template <typename F, unsigned int n>                                   \
-inline void NAME##_vec_simd(F * out, const F * arg)                     \
+template <unsigned int n, typename FloatType>                                   \
+inline void NAME##_vec_simd(FloatType * out, const FloatType * arg)     \
 {                                                                       \
-    detail::NAME##_arithmetic<F, n>::mp_iteration(out, arg);            \
+    detail::NAME##_arithmetic<FloatType, n>::mp_iteration(out, arg);            \
 }
 
 DEFINE_UNARY_FUNCTIONS(abs, abs)

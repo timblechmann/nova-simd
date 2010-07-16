@@ -23,7 +23,7 @@ void __noinline__ bench_1(unsigned int n)
 
 void __noinline__ bench_2(unsigned int n)
 {
-    plus_vec_simd<float, 64>(out.begin(), in.begin(), in2.begin());
+    plus_vec_simd<64>(out.begin(), in.begin(), in2.begin());
 }
 
 // void __noinline__ bench_2a(unsigned int n)
@@ -50,7 +50,7 @@ void __noinline__ bench_2b(unsigned int n)
     float * o = out.begin();
     do
     {
-        plus_vec_simd<float, 16>(o, i, i2);
+        plus_vec_simd<16>(o, i, i2);
         i += 16;
         i2 += 16;
         o += 16;
@@ -60,7 +60,7 @@ void __noinline__ bench_2b(unsigned int n)
 
 void __noinline__ bench_2c(unsigned int n)
 {
-    plus_vec_simd<float, 64>(out.begin(), in.begin(), 1.f);
+    plus_vec_simd<64>(out.begin(), in.begin(), 1.f);
 }
 
 void __noinline__ bench_2d(unsigned int n)
@@ -70,7 +70,7 @@ void __noinline__ bench_2d(unsigned int n)
     float * o = out.begin();
     do
     {
-        plus_vec_simd<float, 32>(o, i, 1.f);
+        plus_vec_simd<32>(o, i, 1.f);
         i += 32;
         o += 32;
     }
@@ -84,7 +84,7 @@ void __noinline__ bench_2e(unsigned int n)
     float * o = out.begin();
     do
     {
-        plus_vec_simd<float, 16>(o, i, 1.f);
+        plus_vec_simd<16>(o, i, 1.f);
         i += 16;
         o += 16;
     }

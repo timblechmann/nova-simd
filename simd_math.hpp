@@ -205,20 +205,14 @@ inline void NAME##_vec_simd(F * out, const F * arg1, const F * arg2)    \
     detail::NAME##_arithmetic<F, n>::mp_iteration(out, arg1, arg2);     \
 }                                                                       \
                                                                         \
-template <typename float_type, typename arg1_type, typename arg2_type>                                          \
+template <typename float_type, typename arg1_type, typename arg2_type>  \
 inline void NAME##_vec(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
 {                                                                       \
     detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, detail::VEC_NAME<float_type>); \
 }                                                                       \
                                                                         \
-template <unsigned int n>                                               \
-inline void NAME##_vec_simd(float * out, const float * in1, const float * in2) \
-{                                                                       \
-    NAME##_vec_simd(out, in1, in2, n);                                  \
-}                                                                       \
-                                                                        \
-template <unsigned int n>                                               \
-inline void NAME##_vec_simd(double * out, const double * in1, const double * in2) \
+template <unsigned int n, typename FloatType>                           \
+inline void NAME##_vec_simd(FloatType * out, const FloatType * in1, const FloatType * in2) \
 {                                                                       \
     NAME##_vec_simd(out, in1, in2, n);                                  \
 }
