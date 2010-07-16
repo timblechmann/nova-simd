@@ -163,35 +163,24 @@ inline void NAME##_vec(float_type * out, float_type arg1, const float_type arg1_
 
 #define DEFINE_SIMD_FUNCTIONS(NAME, FUNCTOR)                            \
                                                                         \
-template <typename float_type, typename arg1_type, typename arg2_type>  \
-inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
+template <typename float_type, typename Arg1Type, typename Arg2Type>    \
+inline void NAME##_vec_simd(float_type * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
 {                                                                       \
-    const unsigned int per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= per_loop;                                                      \
-    do {                                                                \
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, FUNCTOR<vec<float_type> >()); \
-        out += per_loop;                                                \
-    } while (--n);                                                      \
-}                                                                       \
-                                                                        \
-template <typename F, typename Arg1Type, typename Arg2Type>             \
-inline void NAME##_vec_simd(F * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
-{                                                                       \
-    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n); \
+    detail::generate_simd_loop(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n, FUNCTOR<vec<float_type> >()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
                             const float_type arg2_slope, unsigned int n) \
 {                                                                       \
-    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope), n); \
+    detail::generate_simd_loop(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope), n, FUNCTOR<vec<float_type> >()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
                             const float_type * arg2, unsigned int n)    \
 {                                                                       \
-    NAME##_vec_simd_(out, wrap_arg_vector(arg1_slope), wrap_arg_vector(arg2), n); \
+    detail::generate_simd_loop(out, wrap_arg_vector(arg1, arg1_slope), wrap_arg_vector(arg2), n, FUNCTOR<vec<float_type> >()); \
 }                                                                       \
                                                                         \
 template <unsigned int n, typename float_type, typename arg1_type, typename arg2_type> \
@@ -217,7 +206,7 @@ template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
                             const float_type * arg2)                    \
 {                                                                       \
-    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1_slope), wrap_arg_vector(arg2)); \
+    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1, arg1_slope), wrap_arg_vector(arg2)); \
 }
 
 

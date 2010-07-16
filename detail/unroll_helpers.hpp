@@ -146,6 +146,53 @@ struct compile_time_unroller<FloatType, 0>
     {}
 };
 
+
+template <typename float_type,
+          typename Arg1,
+          typename Functor
+         >
+always_inline void generate_simd_loop(float_type * out, Arg1 arg1, unsigned int n, Functor const & f)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, f);
+        out += per_loop;
+    } while (--n);
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Functor
+         >
+always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, unsigned int n, Functor const & f)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, f);
+        out += per_loop;
+    } while (--n);
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3,
+          typename Functor
+         >
+always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n, Functor const & f)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, f);
+        out += per_loop;
+    } while (--n);
+}
+
+
 }
 }
 

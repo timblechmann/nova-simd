@@ -81,13 +81,7 @@ template <typename float_type,                                          \
          >                                                              \
 inline void NAME##_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
 {                                                                       \
-    const unsigned int per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= per_loop;                                                      \
-    do {                                                                \
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, \
-                                                                          FUNCTOR<vec<float_type> >()); \
-        out += per_loop;                                                \
-    } while (--n);                                                      \
+    detail::generate_simd_loop(out, arg1, arg2, arg3, n, FUNCTOR<vec<float_type> >()); \
 }                                                                       \
                                                                         \
 template <int N,                                                        \

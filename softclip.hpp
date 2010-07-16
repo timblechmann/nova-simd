@@ -104,13 +104,7 @@ inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned 
 template <>
 inline void softclip_vec_simd<float>(float_type * out, const float_type * in, unsigned int n)
 {
-    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
-    n /= per_loop;
-    do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, wrap_arg_vector(arg1),
-                                                                          detail::softclip<vec<float> >());
-        out += per_loop;
-    } while (--n);
+    detail::generate_simd_loop(out, in, n, detail::softclip<vec<float> >());
 }
 
 #endif
