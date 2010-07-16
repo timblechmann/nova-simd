@@ -30,6 +30,7 @@
 #include <smmintrin.h>
 #endif
 
+#ifndef NO_GPL3_CODE
 #include "libsimdmath/lib/sincosf4.h"
 #include "libsimdmath/lib/asinf4.h"
 #include "libsimdmath/lib/atanf4.h"
@@ -122,6 +123,8 @@ inline vec_float4 _signed_powf4(vec_float4 arg1, vec_float4 arg2)
 #undef vec_xor
 
 }
+
+#endif
 
 #include "detail/vec_math.hpp"
 
@@ -521,6 +524,8 @@ public:
 
     /* @{ */
     /** mathematical functions */
+#ifndef NO_GPL3_CODE
+
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
     friend inline vec NAME(vec const & arg) \
     {                                   \
@@ -551,6 +556,55 @@ public:
 
     LIBSIMDMATH_WRAPPER_BINARY(pow)
     LIBSIMDMATH_WRAPPER_BINARY(signed_pow)
+
+#undef LIBSIMDMATH_WRAPPER_UNARY
+#undef LIBSIMDMATH_WRAPPER_BINARY
+
+#else
+
+#define APPLY_UNARY(NAME, FUNCTION)                 \
+    friend inline vec NAME(vec const & arg)         \
+    {                                               \
+        vec ret;                                    \
+        detail::apply_on_vector<float, size> ((float*)&ret.data_, (float*)&arg.data_,                \
+                                                   FUNCTION);    \
+        return ret;                                 \
+    }
+
+#define APPLY_BINARY(NAME, FUNCTION)                            \
+    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
+    {                                                           \
+        vec ret;                                                \
+        detail::apply_on_vector<float, size> ((float*)&ret.data_,\
+                                              wrap_arg_signal((float*)&lhs.data_), \
+                                              wrap_arg_signal((float*)&rhs.data_),  \
+                                              FUNCTION);   \
+        return ret;                                 \
+    }
+
+    APPLY_UNARY(sin, detail::sin<float>)
+    APPLY_UNARY(cos, detail::cos<float>)
+    APPLY_UNARY(tan, detail::tan<float>)
+    APPLY_UNARY(asin, detail::asin<float>)
+    APPLY_UNARY(acos, detail::acos<float>)
+    APPLY_UNARY(atan, detail::atan<float>)
+
+    APPLY_UNARY(tanh, detail::tanh<float>)
+
+    APPLY_UNARY(log, detail::log<float>)
+    APPLY_UNARY(log2, detail::log2<float>)
+    APPLY_UNARY(log10, detail::log10<float>)
+    APPLY_UNARY(exp, detail::exp<float>)
+
+    APPLY_UNARY(signed_sqrt, detail::signed_sqrt<float>)
+
+    APPLY_BINARY(pow, detail::pow<float>)
+    APPLY_BINARY(signed_pow, detail::signed_pow<float>)
+
+#undef APPLY_UNARY
+#undef APPLY_BINARY
+
+#endif
 
     /* @} */
 
@@ -594,7 +648,6 @@ private:
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
 #undef RELATIONAL_OPERATOR
-#undef LIBSIMDMATH_WRAPPER_UNARY
 #undef always_inline
 
 #endif /* VEC_SSE_HPP */
