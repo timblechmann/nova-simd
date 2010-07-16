@@ -24,30 +24,6 @@
 namespace nova
 {
 
-
-#define WRAP_MATH_FUNCTION(name, function)                              \
-    template <typename float_type>                                      \
-    inline void name##_vec(float_type * out, const float_type * in, unsigned int n) \
-    {                                                                   \
-        do {                                                            \
-            *out++ = function(*in++);                                   \
-        }                                                               \
-        while (--n);                                                    \
-    }                                                                   \
-                                                                        \
-    template <typename float_type>                                      \
-    inline void name##_vec_simd(float_type * out, const float_type * in, unsigned int n) \
-    {                                                                   \
-        unsigned int loops = n/4;                                       \
-        do {                                                            \
-            *out++ = function(*in++);                                   \
-            *out++ = function(*in++);                                   \
-            *out++ = function(*in++);                                   \
-            *out++ = function(*in++);                                   \
-        }                                                               \
-        while (--loops);                                                \
-    }
-
 #define WRAP_MATH_FUNCTION_BINARY(name, function)                       \
     template <typename float_type>                                      \
     inline void name##_vec(float_type * out, const float_type * in0, const float_type * in1, unsigned int n) \
@@ -115,66 +91,6 @@ namespace nova
         while (--loops);                                                \
     }
 
-
-namespace detail
-{
-
-template <typename float_type>
-inline float_type log2(float_type arg)
-{
-#if defined(__GXX_EXPERIMENTAL_CXX0X__)
-    return std::log2(arg);
-#else
-    const float rlog2 = 1.f/std::log(2.f);
-    return std::log(arg) * rlog2;
-#endif
-}
-
-#if !defined(__GXX_EXPERIMENTAL_CXX0X__)
-
-#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
-template <>
-inline float log2(float arg)
-{
-    return ::log2f(arg);
-}
-
-template <>
-inline double log2(double arg)
-{
-    return ::log2(arg);
-}
-#endif
-
-#endif /* __GXX_EXPERIMENTAL_CXX0X__ */
-
-/** signed sqrt */
-template <typename F>
-inline F ssqrt(F in0)
-{
-    if (in0 >= 0)
-        return std::sqrt(in0);
-    else
-        return -std::sqrt(-in0);
-}
-
-} /* namespace detail */
-
-WRAP_MATH_FUNCTION(sin, std::sin)
-WRAP_MATH_FUNCTION(cos, std::cos)
-WRAP_MATH_FUNCTION(tan, std::tan)
-WRAP_MATH_FUNCTION(asin, std::asin)
-WRAP_MATH_FUNCTION(acos, std::acos)
-WRAP_MATH_FUNCTION(atan, std::atan)
-WRAP_MATH_FUNCTION(log, std::log)
-WRAP_MATH_FUNCTION(log2, detail::log2)
-WRAP_MATH_FUNCTION(log10, std::log10)
-WRAP_MATH_FUNCTION(exp, std::exp)
-WRAP_MATH_FUNCTION(ssqrt, detail::ssqrt)
-WRAP_MATH_FUNCTION(tanh, std::tanh)
-
-
-
 namespace detail
 {
 
@@ -194,7 +110,6 @@ WRAP_MATH_FUNCTION_BINARY(spow, detail::spow)
 
 } /* namespace nova */
 
-#undef WRAP_MATH_FUNCTION
 #undef WRAP_MATH_FUNCTION_BINARY
 
 

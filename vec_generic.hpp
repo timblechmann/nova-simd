@@ -219,7 +219,7 @@ public:
         return ret;                                 \
     }
 
-    APPLY_UNARY(abs, static_cast<unary_fn>(detail::fabs<float_type>))
+    APPLY_UNARY(abs, detail::fabs<float_type>)
     APPLY_UNARY(sign, detail::sign<float_type>)
     APPLY_UNARY(square, detail::square<float_type>)
     APPLY_UNARY(cube, detail::cube<float_type>)
@@ -245,10 +245,27 @@ public:
 
     /* @{ */
     /** rounding functions */
-    APPLY_UNARY(round, helper::round<float_type>)
-    APPLY_UNARY(frac, helper::frac<float_type>)
+    APPLY_UNARY(round, detail::round<float_type>)
+    APPLY_UNARY(frac, detail::frac<float_type>)
     APPLY_UNARY(floor, detail::floor<float_type>)
     APPLY_UNARY(ceil, detail::ceil<float_type>)
+    /* @} */
+
+    /* @{ */
+    /** mathematical functions */
+    APPLY_UNARY(sin, detail::sin<float_type>)
+    APPLY_UNARY(cos, detail::cos<float_type>)
+    APPLY_UNARY(tan, detail::tan<float_type>)
+    APPLY_UNARY(asin, detail::asin<float_type>)
+    APPLY_UNARY(acos, detail::acos<float_type>)
+    APPLY_UNARY(atan, detail::atan<float_type>)
+
+    APPLY_UNARY(log, detail::log<float_type>)
+    APPLY_UNARY(log2, detail::log2<float_type>)
+    APPLY_UNARY(log10, detail::log10<float_type>)
+    APPLY_UNARY(exp, detail::exp<float_type>)
+
+    APPLY_UNARY(signed_sqrt, detail::signed_sqrt<float_type>)
     /* @} */
 
     /* @{ */
@@ -272,5 +289,6 @@ private:
 
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
+#undef APPLY_UNARY
 
 #endif /* VEC_GENERIC_HPP */

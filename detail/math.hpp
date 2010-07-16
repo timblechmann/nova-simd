@@ -113,8 +113,33 @@ inline void apply_on_vector(FloatType * out, const FloatType * in1, FloatType in
 ///@}
 
 
+#define DEFINE_STD_UNARY_WRAPPER(NAME)          \
+template<typename float_type>                   \
+inline float_type NAME(float_type const & x)    \
+{                                               \
+    return std::NAME(x);                        \
+}
+
+DEFINE_STD_UNARY_WRAPPER(fabs)
+DEFINE_STD_UNARY_WRAPPER(floor)
+DEFINE_STD_UNARY_WRAPPER(ceil)
+
+DEFINE_STD_UNARY_WRAPPER(sin)
+DEFINE_STD_UNARY_WRAPPER(cos)
+DEFINE_STD_UNARY_WRAPPER(tan)
+DEFINE_STD_UNARY_WRAPPER(asin)
+DEFINE_STD_UNARY_WRAPPER(acos)
+DEFINE_STD_UNARY_WRAPPER(atan)
+
+DEFINE_STD_UNARY_WRAPPER(tanh)
+
+DEFINE_STD_UNARY_WRAPPER(log)
+DEFINE_STD_UNARY_WRAPPER(log10)
+DEFINE_STD_UNARY_WRAPPER(exp)
+
+
 template<typename float_type>
-float_type sign(float_type const & f)
+inline float_type sign(float_type const & f)
 {
     if (f > 0)
         return 1;
@@ -125,73 +150,92 @@ float_type sign(float_type const & f)
 }
 
 template<typename float_type>
-float_type square(float_type const & f)
+inline float_type square(float_type const & f)
 {
     return f*f;
 }
 
 template<typename float_type>
-float_type cube(float_type const & f)
+inline float_type cube(float_type const & f)
 {
     return f*f*f;
 }
 
 
 template<typename float_type>
-float_type fabs(float_type f)
-{
-    return std::fabs(f);
-}
-
-template<typename float_type>
-float_type floor(float_type const & f)
-{
-    return std::floor(f);
-}
-
-template<typename float_type>
-float_type ceil(float_type const & f)
-{
-    return std::ceil(f);
-}
-
-
-template<typename float_type>
-float_type min(float_type const & x, float_type const & y)
+inline float_type min(float_type const & x, float_type const & y)
 {
     return std::min(x, y);
 }
 
 template<typename float_type>
-float_type max(float_type const & x, float_type const & y)
+inline float_type max(float_type const & x, float_type const & y)
 {
     return std::max(x, y);
 }
 
 template<typename float_type>
-float_type round(float_type const & arg)
+inline float_type round(float_type const & arg)
 {
     return std::floor(arg + float_type(0.5));
 }
 
 template<>
-double round<double>(double const & arg)
+inline double round<double>(double const & arg)
 {
     return ::round(arg);
 }
 
 #if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
 template<>
-float round<float>(float const & arg)
+inline float round<float>(float const & arg)
 {
     return ::roundf(arg);
 }
 #endif
 
 template<typename float_type>
-float_type frac(float_type const & arg)
+inline float_type frac(float_type const & arg)
 {
     return arg - floor<float_type>(arg);
+}
+
+template <typename float_type>
+inline float_type log2(float_type arg)
+{
+#if defined(__GXX_EXPERIMENTAL_CXX0X__)
+    return std::log2(arg);
+#else
+    const float rlog2 = 1.f/std::log(2.f);
+    return std::log(arg) * rlog2;
+#endif
+}
+
+#if !defined(__GXX_EXPERIMENTAL_CXX0X__)
+
+#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
+template <>
+inline float log2(float arg)
+{
+    return ::log2f(arg);
+}
+
+template <>
+inline double log2(double arg)
+{
+    return ::log2(arg);
+}
+#endif
+
+#endif /* __GXX_EXPERIMENTAL_CXX0X__ */
+
+template <typename float_type>
+inline float_type signed_sqrt(float_type in0)
+{
+    if (in0 >= 0)
+        return std::sqrt(in0);
+    else
+        return -std::sqrt(-in0);
 }
 
 }

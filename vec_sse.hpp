@@ -30,6 +30,88 @@
 #include <smmintrin.h>
 #endif
 
+#include "libsimdmath/lib/sincosf4.h"
+#include "libsimdmath/lib/asinf4.h"
+#include "libsimdmath/lib/atanf4.h"
+#include "libsimdmath/lib/logf4.h"
+#include "libsimdmath/lib/expf4.h"
+
+namespace {
+
+inline vec_float4 _log2f4(vec_float4 arg)
+{
+    const float rlog2 = 1.f/std::log(2.f);
+    const vec_float4 rlog2v= {rlog2, rlog2, rlog2, rlog2};
+    return _logf4(arg) * rlog2v;
+}
+
+inline vec_float4 _log10f4(vec_float4 arg)
+{
+    const float rlog10 = 1.f/std::log(10.f);
+    const vec_float4 rlog10v= {rlog10, rlog10, rlog10, rlog10};
+    return _logf4(arg) * rlog10v;
+}
+
+#define vec_xor(a,b)           ((a)^(b))
+
+inline vec_float4 _signed_sqrtf4(vec_float4 arg)
+{
+    const vec_int4   sign_in = _signf4(arg);
+    const vec_float4 abs_in = (vec_float4)vec_xor((vec_int4)arg, sign_in);
+
+    vec_float4 result = _sqrtf4(abs_in);
+
+    return (vec_float4)(sign_in | (vec_int4)result);
+}
+
+inline vec_float4 _tanhf4(vec_float4 arg)
+{
+    /* this order of computation (large->small->medium) seems to be the most efficient */
+
+    const vec_int4   sign_arg = _signf4(arg);
+    const vec_float4 abs_arg = (vec_float4)vec_xor((vec_int4)arg, sign_arg);
+    const vec_float4 one = {1.f, 1.f, 1.f, 1.f};
+    const vec_float4 two = {2.f, 2.f, 2.f, 2.f};
+    const vec_float4 maxlogf_2 = {22.f, 22.f, 22.f, 22.f};
+    const vec_float4 limit_small = {0.625f, 0.625f, 0.625f, 0.625f};
+
+    /* large values */
+    const vec_int4   abs_big = (vec_int4)VEC_GT(abs_arg, maxlogf_2);
+    const vec_float4 result_limit_abs = one;
+
+    /* small values */
+    const vec_float4 f1 = {-5.70498872745e-3, -5.70498872745e-3, -5.70498872745e-3, -5.70498872745e-3};
+    const vec_float4 f2 = { 2.06390887954e-2,  2.06390887954e-2,  2.06390887954e-2,  2.06390887954e-2};
+    const vec_float4 f3 = {-5.37397155531e-2, -5.37397155531e-2, -5.37397155531e-2, -5.37397155531e-2};
+    const vec_float4 f4 = { 1.33314422036e-1,  1.33314422036e-1,  1.33314422036e-1,  1.33314422036e-1};
+    const vec_float4 f5 = {-3.33332819422e-1, -3.33332819422e-1, -3.33332819422e-1, -3.33332819422e-1};
+
+    const vec_float4 arg_sqr = abs_arg * abs_arg;
+    const vec_float4 result_small = ((((f1 * arg_sqr
+                                        + f2) * arg_sqr
+                                       + f3) * arg_sqr
+                                      + f4) * arg_sqr
+                                     + f5) * arg_sqr * arg
+        + arg;
+
+    const vec_int4 abs_small = (vec_int4)VEC_LT(abs_arg, limit_small);
+
+    /* medium values */
+    const vec_float4 result_medium_abs = one - two / (_expf4(abs_arg + abs_arg) + one);
+
+    /* select from large and medium branches and set sign */
+    const vec_float4 result_lm_abs = vec_sel(result_medium_abs, result_limit_abs, abs_big);
+    const vec_float4 result_lm = (vec_float4) vec_or((vec_int4)result_lm_abs, sign_arg);
+
+    const vec_float4 result = vec_sel(result_lm, result_small, abs_small);
+
+    return result;
+}
+
+#undef vec_xor
+
+}
+
 #include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -416,6 +498,33 @@ public:
 
 
     /* @{ */
+    /** mathematical functions */
+#define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
+    friend inline vec NAME(vec const & arg) \
+    {                                   \
+        return _##NAME##f4(arg.data_);  \
+    }
+
+    LIBSIMDMATH_WRAPPER_UNARY(sin)
+    LIBSIMDMATH_WRAPPER_UNARY(cos)
+    LIBSIMDMATH_WRAPPER_UNARY(tan)
+    LIBSIMDMATH_WRAPPER_UNARY(asin)
+    LIBSIMDMATH_WRAPPER_UNARY(acos)
+    LIBSIMDMATH_WRAPPER_UNARY(atan)
+
+    LIBSIMDMATH_WRAPPER_UNARY(tanh)
+
+    LIBSIMDMATH_WRAPPER_UNARY(log)
+    LIBSIMDMATH_WRAPPER_UNARY(log2)
+    LIBSIMDMATH_WRAPPER_UNARY(log10)
+    LIBSIMDMATH_WRAPPER_UNARY(exp)
+
+    LIBSIMDMATH_WRAPPER_UNARY(signed_sqrt)
+
+
+    /* @} */
+
+    /* @{ */
     /** horizontal functions */
     inline float horizontal_min(void) const
     {
@@ -455,6 +564,7 @@ private:
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
 #undef RELATIONAL_OPERATOR
+#undef LIBSIMDMATH_WRAPPER_UNARY
 #undef always_inline
 
 #endif /* VEC_SSE_HPP */

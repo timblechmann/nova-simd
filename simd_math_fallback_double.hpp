@@ -24,18 +24,6 @@
 namespace nova
 {
 
-#define WRAP_MATH_FUNCTION(name)                                \
-    template <unsigned int n>                                   \
-    inline void name##_vec_simd_mp(double * out, const double * in)\
-    {                                                           \
-        name##_vec_simd(out, in, n);                            \
-    }                                                           \
-    template <unsigned int n>                                   \
-    inline void name##_vec_simd(double * out, const double * in)\
-    {                                                           \
-        name##_vec_simd(out, in, n);                            \
-    }
-
 #define WRAP_MATH_FUNCTION_BINARY(name)                                 \
     template <unsigned int n>                                           \
     inline void name##_vec_simd(double * out, const double * in0, const double * in1) \
@@ -55,26 +43,12 @@ namespace nova
         name##_vec_simd(out, in0, in1, n);                              \
     }
 
-
-WRAP_MATH_FUNCTION(sin)
-WRAP_MATH_FUNCTION(cos)
-WRAP_MATH_FUNCTION(tan)
-WRAP_MATH_FUNCTION(asin)
-WRAP_MATH_FUNCTION(acos)
-WRAP_MATH_FUNCTION(atan)
-WRAP_MATH_FUNCTION(log)
-WRAP_MATH_FUNCTION(log2)
-WRAP_MATH_FUNCTION(log10)
-WRAP_MATH_FUNCTION(exp)
-WRAP_MATH_FUNCTION(ssqrt)
-WRAP_MATH_FUNCTION(tanh)
-
 WRAP_MATH_FUNCTION_BINARY(pow)
 WRAP_MATH_FUNCTION_BINARY(spow)
 
 } /* namespace nova */
 
-#undef WRAP_MATH_FUNCTION
+
 #undef WRAP_MATH_FUNCTION_BINARY
 
 

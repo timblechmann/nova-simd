@@ -6,6 +6,8 @@
 using namespace nova;
 using namespace std;
 
+namespace {
+
 aligned_array<float, 64> out, in, in2;
 
 typedef float afloat __attribute__ ((__aligned__(16)));
@@ -204,6 +206,7 @@ void __noinline__ bench_5c(float * __restrict__ out, const float * __restrict__ 
     }
 }
 
+}
 
 int main(void)
 {
