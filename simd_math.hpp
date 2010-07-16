@@ -152,13 +152,8 @@ struct NAME##_arithmetic                                                \
 template <typename F>                                                   \
 struct NAME##_arithmetic<F, 0>                                          \
 {                                                                       \
-    static always_inline void mp_iteration(F * out, const F * in1, const F * in2) \
-    {}                                                                  \
-                                                                        \
-    static always_inline void mp_iteration(F * out, const F * in1, F in2) \
-    {}                                                                  \
-                                                                        \
-    static always_inline void mp_iteration(F * out, F in1, const F * in2) \
+    template <typename Arg1, typename Arg2>                             \
+    static always_inline void mp_iteration(F * out, Arg1, Arg2)         \
     {}                                                                  \
 };                                                                      \
 } /* namespace detail */                                                \
