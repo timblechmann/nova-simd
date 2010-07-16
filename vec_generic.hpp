@@ -23,6 +23,7 @@
 #include <cmath>
 #include <algorithm>
 
+#include "wrap_arguments.hpp"
 #include "detail/math.hpp"
 
 namespace nova
@@ -231,7 +232,7 @@ public:
     friend inline vec NAME(vec const & lhs, vec const & rhs)    \
     {                                                           \
         vec ret;                                                \
-        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_,  \
+        detail::apply_on_vector<float_type, size> (ret.data_, wrap_arg_signal(lhs.data_), wrap_arg_signal(rhs.data_),  \
                                                    FUNCTION);   \
         return ret;                                 \
     }

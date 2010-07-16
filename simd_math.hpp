@@ -20,6 +20,7 @@
 #define SIMD_MATH_HPP
 
 #include "vec.hpp"
+#include "wrap_arguments.hpp"
 
 #include "detail/math.hpp"
 
