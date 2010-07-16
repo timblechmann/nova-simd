@@ -24,7 +24,7 @@
 
 #include "simd_binary_arithmetic.hpp"
 #include "simd_math.hpp"
-#include "simd_math_generic.hpp" /* for log2 */
+#include "detail/math.hpp" /* for log2 */
 
 namespace nova
 {

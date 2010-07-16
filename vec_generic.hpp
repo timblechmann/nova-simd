@@ -226,20 +226,18 @@ public:
     /* @} */
 
     /* @{ */
-    friend inline vec max_(vec const & lhs, vec const & rhs)
-    {
-        vec ret;
-        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_, detail::max<float_type>);
-        return ret;
+
+#define APPLY_BINARY(NAME, FUNCTION)                            \
+    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
+    {                                                           \
+        vec ret;                                                \
+        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_,  \
+                                                   FUNCTION);   \
+        return ret;                                 \
     }
 
-    friend inline vec min_(vec const & lhs, vec const & rhs)
-    {
-        vec ret;
-        detail::apply_on_vector<float_type, size> (ret.data_, lhs.data_, rhs.data_, detail::min<float_type>);
-
-        return ret;
-    }
+    APPLY_BINARY(max_, detail::max<float_type>)
+    APPLY_BINARY(min_, detail::min<float_type>)
     /* @} */
 
 
@@ -266,6 +264,9 @@ public:
     APPLY_UNARY(exp, detail::exp<float_type>)
 
     APPLY_UNARY(signed_sqrt, detail::signed_sqrt<float_type>)
+
+    APPLY_BINARY(pow, detail::pow<float_type>)
+    APPLY_BINARY(signed_pow, detail::signed_pow<float_type>)
     /* @} */
 
     /* @{ */

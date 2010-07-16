@@ -137,6 +137,14 @@ DEFINE_STD_UNARY_WRAPPER(log)
 DEFINE_STD_UNARY_WRAPPER(log10)
 DEFINE_STD_UNARY_WRAPPER(exp)
 
+#define DEFINE_STD_BINARY_WRAPPER(NAME)         \
+template<typename float_type>                   \
+inline float_type NAME(float_type const & lhs, float_type const & rhs)  \
+{                                               \
+    return std::NAME(lhs, rhs);                 \
+}
+
+DEFINE_STD_BINARY_WRAPPER(pow)
 
 template<typename float_type>
 inline float_type sign(float_type const & f)
@@ -236,6 +244,15 @@ inline float_type signed_sqrt(float_type in0)
         return std::sqrt(in0);
     else
         return -std::sqrt(-in0);
+}
+
+template <typename float_type>
+inline float_type signed_pow(float_type in0, float_type in1)
+{
+    if (in0 > 0)
+        return std::pow(in0, in1);
+    else
+        return -std::pow(-in0, in1);
 }
 
 }

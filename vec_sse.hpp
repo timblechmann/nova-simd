@@ -35,6 +35,7 @@
 #include "libsimdmath/lib/atanf4.h"
 #include "libsimdmath/lib/logf4.h"
 #include "libsimdmath/lib/expf4.h"
+#include "libsimdmath/lib/powf4.h"
 
 namespace {
 
@@ -106,6 +107,16 @@ inline vec_float4 _tanhf4(vec_float4 arg)
     const vec_float4 result = vec_sel(result_lm, result_small, abs_small);
 
     return result;
+}
+
+inline vec_float4 _signed_powf4(vec_float4 arg1, vec_float4 arg2)
+{
+    const vec_int4   sign_in1 = _signf4(arg1);
+    const vec_float4 abs_in1 = (vec_float4)vec_xor((vec_int4)arg1, sign_in1);
+
+    vec_float4 result = _powf4(abs_in1, arg2);
+
+    return (vec_float4)(sign_in1 | (vec_int4)result);
 }
 
 #undef vec_xor
@@ -521,6 +532,14 @@ public:
 
     LIBSIMDMATH_WRAPPER_UNARY(signed_sqrt)
 
+#define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
+    friend inline vec NAME(vec const & lhs, vec const & rhs)\
+    {                                                       \
+        return _##NAME##f4(lhs.data_, rhs.data_);           \
+    }
+
+    LIBSIMDMATH_WRAPPER_BINARY(pow)
+    LIBSIMDMATH_WRAPPER_BINARY(signed_pow)
 
     /* @} */
 

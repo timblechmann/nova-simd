@@ -23,19 +23,7 @@
 
 #include "detail/math.hpp"
 
-#include "simd_math_generic.hpp"
-
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) && defined(__SSE2__)
-#include "simd_math_vec.hpp"
-#else
-#include "simd_math_fallback_float.hpp"
-#endif
-
-#include "simd_math_fallback_double.hpp"
-
 namespace nova {
-
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -43,7 +31,7 @@ namespace nova {
 #define always_inline inline
 #endif
 
-#define DEFINE_MATH_FUNCTIONS(NAME, VEC_NAME)                           \
+#define DEFINE_MATH_FUNCTIONS_UNARY(NAME, VEC_NAME)                     \
                                                                         \
 namespace detail                                                        \
 {                                                                       \
@@ -106,22 +94,152 @@ inline void NAME##_vec_simd(double * out, const double * in)            \
     NAME##_vec_simd(out, in, n);                                        \
 }
 
-DEFINE_MATH_FUNCTIONS(sin, sin)
-DEFINE_MATH_FUNCTIONS(cos, cos)
-DEFINE_MATH_FUNCTIONS(tan, tan)
-DEFINE_MATH_FUNCTIONS(asin, asin)
-DEFINE_MATH_FUNCTIONS(acos, acos)
-DEFINE_MATH_FUNCTIONS(atan, atan)
+DEFINE_MATH_FUNCTIONS_UNARY(sin, sin)
+DEFINE_MATH_FUNCTIONS_UNARY(cos, cos)
+DEFINE_MATH_FUNCTIONS_UNARY(tan, tan)
+DEFINE_MATH_FUNCTIONS_UNARY(asin, asin)
+DEFINE_MATH_FUNCTIONS_UNARY(acos, acos)
+DEFINE_MATH_FUNCTIONS_UNARY(atan, atan)
 
-DEFINE_MATH_FUNCTIONS(tanh, tanh)
+DEFINE_MATH_FUNCTIONS_UNARY(tanh, tanh)
 
-DEFINE_MATH_FUNCTIONS(log, log)
-DEFINE_MATH_FUNCTIONS(exp, exp)
+DEFINE_MATH_FUNCTIONS_UNARY(log, log)
+DEFINE_MATH_FUNCTIONS_UNARY(exp, exp)
 
-DEFINE_MATH_FUNCTIONS(ssqrt, signed_sqrt)
+DEFINE_MATH_FUNCTIONS_UNARY(ssqrt, signed_sqrt)
 
+
+#define DEFINE_MATH_FUNCTIONS_BINARY(NAME, VEC_NAME)                    \
+                                                                        \
+namespace detail                                                        \
+{                                                                       \
+template <typename F, unsigned int n>                                   \
+struct NAME##_arithmetic                                                \
+{                                                                       \
+    static const int offset = vec<F>::size;                             \
+                                                                        \
+    static always_inline void mp_iteration(F * out, const F * in1, const F * in2) \
+    {                                                                   \
+        vec<F> arg1, arg2;                                              \
+        arg1.load_aligned(in1);                                         \
+        arg2.load_aligned(in2);                                         \
+        arg1 = VEC_NAME(arg1, arg2);                                    \
+        arg1.store_aligned(out);                                        \
+        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1+offset, in2+offset); \
+    }                                                                   \
+                                                                        \
+    static always_inline void mp_iteration(F * out, const F * in1, F in2) \
+    {                                                                   \
+        vec<F> arg1, arg2(in2);                                         \
+        arg1.load_aligned(in1);                                         \
+        arg1 = VEC_NAME(arg1, arg2);                                    \
+        arg1.store_aligned(out);                                        \
+        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1+offset, in2); \
+    }                                                                   \
+                                                                        \
+    static always_inline void mp_iteration(F * out, F in1, const F * in2) \
+    {                                                                   \
+        vec<F> arg1(in1), arg2;                                         \
+        arg2.load_aligned(in2);                                         \
+        arg2 = VEC_NAME(arg1, arg2);                                    \
+        arg2.store_aligned(out);                                        \
+        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1, in2+offset); \
+    }                                                                   \
+                                                                        \
+};                                                                      \
+                                                                        \
+template <typename F>                                                   \
+struct NAME##_arithmetic<F, 0>                                          \
+{                                                                       \
+    static always_inline void mp_iteration(F * out, const F * in1, const F * in2) \
+    {}                                                                  \
+                                                                        \
+    static always_inline void mp_iteration(F * out, const F * in1, F in2) \
+    {}                                                                  \
+                                                                        \
+    static always_inline void mp_iteration(F * out, F in1, const F * in2) \
+    {}                                                                  \
+};                                                                      \
+} /* namespace detail */                                                \
+                                                                        \
+template <typename F>                                                   \
+inline void NAME##_vec_simd(F * out, const F * arg1, const F * arg2, unsigned int n) \
+{                                                                       \
+    const int per_loop = vec<F>::objects_per_cacheline;                 \
+    unsigned int unroll = n / per_loop;                                 \
+    do {                                                                \
+        detail::NAME##_arithmetic<F, per_loop>::mp_iteration(out, arg1, arg2); \
+        out += per_loop; arg1 += per_loop; arg2 += per_loop;            \
+    }                                                                   \
+    while (--unroll);                                                   \
+}                                                                       \
+                                                                        \
+template <typename F>                                                   \
+inline void NAME##_vec_simd(F * out, const F * arg1, F arg2, unsigned int n) \
+{                                                                       \
+    const int per_loop = vec<F>::objects_per_cacheline;                 \
+    unsigned int unroll = n / per_loop;                                 \
+    do {                                                                \
+        detail::NAME##_arithmetic<F, per_loop>::mp_iteration(out, arg1, arg2); \
+        out += per_loop; arg1 += per_loop;                              \
+    }                                                                   \
+    while (--unroll);                                                   \
+}                                                                       \
+                                                                        \
+template <typename F>                                                   \
+inline void NAME##_vec_simd(F * out, F arg1, const F * arg2, unsigned int n) \
+{                                                                       \
+    const int per_loop = vec<F>::objects_per_cacheline;                 \
+    unsigned int unroll = n / per_loop;                                 \
+    do {                                                                \
+        detail::NAME##_arithmetic<F, per_loop>::mp_iteration(out, arg1, arg2); \
+        out += per_loop; arg2 += per_loop;                              \
+    }                                                                   \
+    while (--unroll);                                                   \
+}                                                                       \
+                                                                        \
+template <typename F, unsigned int n>                                   \
+inline void NAME##_vec_simd(F * out, const F * arg1, const F * arg2)    \
+{                                                                       \
+    detail::NAME##_arithmetic<F, n>::mp_iteration(out, arg1, arg2);     \
+}                                                                       \
+                                                                        \
+template <typename float_type>                                          \
+inline void NAME##_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n) \
+{                                                                       \
+    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
+}                                                                       \
+                                                                        \
+template <typename float_type>                                          \
+inline void NAME##_vec(float_type * out, const float_type * arg1, float_type arg2, unsigned int n) \
+{                                                                       \
+    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
+}                                                                       \
+                                                                        \
+template <typename float_type>                                          \
+inline void NAME##_vec(float_type * out, float_type arg1, const float_type * arg2, unsigned int n) \
+{                                                                       \
+    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
+}                                                                       \
+                                                                        \
+template <unsigned int n>                                               \
+inline void NAME##_vec_simd(float * out, const float * in1, const float * in2) \
+{                                                                       \
+    NAME##_vec_simd(out, in1, in2, n);                                  \
+}                                                                       \
+                                                                        \
+template <unsigned int n>                                               \
+inline void NAME##_vec_simd(double * out, const double * in1, const double * in2) \
+{                                                                       \
+    NAME##_vec_simd(out, in1, in2, n);                                  \
 }
 
+DEFINE_MATH_FUNCTIONS_BINARY(pow, pow)
+DEFINE_MATH_FUNCTIONS_BINARY(spow, signed_pow)
+}
+
+#undef DEFINE_MATH_FUNCTIONS_UNARY
+#undef DEFINE_MATH_FUNCTIONS_BINARY
 #undef always_inline
 
 #endif /* SIMD_MATH_HPP */
