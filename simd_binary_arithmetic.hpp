@@ -27,6 +27,8 @@
 #include "wrap_arguments.hpp"
 #include "wrap_argument_vector.hpp"
 
+#include "detail/unroll_helpers.hpp"
+
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -44,7 +46,7 @@ template<typename float_type>
 struct clip2:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & f, float_type const & limit)
+    float_type operator()(float_type const & f, float_type const & limit) const
     {
         float_type zero(0);
         float_type neg = zero - float_type(limit);
@@ -56,7 +58,7 @@ template<typename float_type>
 struct min_functor:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return min_(x, y);
     }
@@ -66,7 +68,7 @@ template<typename float_type>
 struct max_functor:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return max_(x, y);
     }
@@ -76,7 +78,7 @@ template<typename float_type>
 struct less:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x < y;
     }
@@ -86,7 +88,7 @@ template<typename float_type>
 struct less_equal:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x <= y;
     }
@@ -96,7 +98,7 @@ template<typename float_type>
 struct greater:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x > y;
     }
@@ -106,7 +108,7 @@ template<typename float_type>
 struct greater_equal:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x >= y;
     }
@@ -117,7 +119,7 @@ template<typename float_type>
 struct equal_to:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x == y;
     }
@@ -127,7 +129,7 @@ template<typename float_type>
 struct not_equal_to:
     public std::binary_function<float_type, float_type, float_type>
 {
-    float_type operator()(float_type const & x, float_type const & y)
+    float_type operator()(float_type const & x, float_type const & y) const
     {
         return x != y;
     }
@@ -160,31 +162,6 @@ inline void NAME##_vec(float_type * out, float_type arg1, const float_type arg1_
 
 
 #define DEFINE_SIMD_FUNCTIONS(NAME, FUNCTOR)                            \
-namespace detail                                                        \
-{                                                                       \
-template <typename F, unsigned int n>                                   \
-struct NAME##_arithmetic                                                \
-{                                                                       \
-    static const int offset = vec<F>::size;                             \
-                                                                        \
-    template <typename arg1_type, typename arg2_type>                   \
-    static always_inline void mp_iteration(F * out, arg1_type & in1, arg2_type & in2) \
-    {                                                                   \
-        vec<F> result = FUNCTOR<vec<F> >()(in1.get(), in2.get());       \
-        result.store_aligned(out);                                      \
-        in1.increment(); in2.increment();                               \
-        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1, in2); \
-    }                                                                   \
-};                                                                      \
-                                                                        \
-template <typename F>                                                   \
-struct NAME##_arithmetic<F, 0>                                          \
-{                                                                       \
-    template <typename Arg1, typename Arg2>                             \
-    static always_inline void mp_iteration(F * out, Arg1, Arg2)         \
-    {}                                                                  \
-};                                                                      \
-} /* namespace detail */                                                \
                                                                         \
 template <typename float_type, typename arg1_type, typename arg2_type>  \
 inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
@@ -192,7 +169,7 @@ inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2, u
     const unsigned int per_loop = vec<float_type>::objects_per_cacheline; \
     n /= per_loop;                                                      \
     do {                                                                \
-        detail::NAME##_arithmetic<float_type, per_loop>::mp_iteration(out, arg1, arg2); \
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, FUNCTOR<vec<float_type> >()); \
         out += per_loop;                                                \
     } while (--n);                                                      \
 }                                                                       \
@@ -220,7 +197,7 @@ inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float
 template <unsigned int n, typename float_type, typename arg1_type, typename arg2_type> \
 inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2) \
 {                                                                       \
-    detail::NAME##_arithmetic<float_type, n>::mp_iteration(out, arg1, arg2); \
+    detail::compile_time_unroller<float_type, n>::mp_iteration(out, arg1, arg2, FUNCTOR<vec<float_type> >());\
 }                                                                       \
                                                                         \
 template <unsigned int n, typename F, typename Arg1Type, typename Arg2Type> \

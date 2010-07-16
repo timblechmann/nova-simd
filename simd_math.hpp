@@ -24,6 +24,7 @@
 #include "wrap_argument_vector.hpp"
 
 #include "detail/math.hpp"
+#include "detail/unroll_helpers.hpp"
 
 namespace nova {
 
@@ -112,62 +113,38 @@ DEFINE_MATH_FUNCTIONS_UNARY(ssqrt, signed_sqrt)
 
 
 #define DEFINE_MATH_FUNCTIONS_BINARY(NAME, VEC_NAME)                    \
+NOVA_SIMD_DEFINE_UNROLLER(NAME, VEC_NAME)                               \
                                                                         \
-namespace detail                                                        \
-{                                                                       \
-template <typename F, unsigned int n>                                   \
-struct NAME##_arithmetic                                                \
-{                                                                       \
-    static const int offset = vec<F>::size;                             \
                                                                         \
-    template <typename arg1_type, typename arg2_type>                   \
-    static always_inline void mp_iteration(F * out, arg1_type & in1, arg2_type & in2) \
-    {                                                                   \
-        vec<F> result = VEC_NAME(in1.get(), in2.get());                           \
-        result.store_aligned(out);                                      \
-        in1.increment(); in2.increment();                               \
-        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1, in2); \
-    }                                                                   \
-};                                                                      \
-                                                                        \
-template <typename F>                                                   \
-struct NAME##_arithmetic<F, 0>                                          \
-{                                                                       \
-    template <typename Arg1, typename Arg2>                             \
-    static always_inline void mp_iteration(F * out, Arg1, Arg2)         \
-    {}                                                                  \
-};                                                                      \
-} /* namespace detail */                                                \
-                                                                        \
-template <typename F, typename Arg1Type, typename Arg2Type>                           \
+template <typename F, typename Arg1Type, typename Arg2Type>             \
 inline void NAME##_vec_simd_(F * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
 {                                                                       \
     const int per_loop = vec<F>::objects_per_cacheline;                 \
     unsigned int unroll = n / per_loop;                                 \
     do {                                                                \
-        detail::NAME##_arithmetic<F, per_loop>::mp_iteration(out, arg1, arg2); \
+        detail::NAME##_unroller<F, per_loop>::mp_iteration(out, arg1, arg2); \
         out += per_loop;                                                \
     }                                                                   \
     while (--unroll);                                                   \
 }                                                                       \
-\
-template <typename F, typename Arg1Type, typename Arg2Type>                           \
+                                                                        \
+template <typename F, typename Arg1Type, typename Arg2Type>             \
 inline void NAME##_vec_simd(F * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
 {                                                                       \
-    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n);                                  \
+    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n); \
 }                                                                       \
                                                                         \
-\
+                                                                        \
 template <typename float_type, typename arg1_type, typename arg2_type>  \
 inline void NAME##_vec(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
 {                                                                       \
     detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, detail::VEC_NAME<float_type>); \
 }                                                                       \
                                                                         \
-template <unsigned int n, typename FloatType, typename Arg1Type, typename Arg2Type>                           \
+template <unsigned int n, typename FloatType, typename Arg1Type, typename Arg2Type> \
 inline void NAME##_vec_simd(FloatType * out, Arg1Type in1, Arg1Type in2) \
 {                                                                       \
-    NAME##_vec_simd_(out, wrap_arg_vector(in1), wrap_arg_vector(in2), n);                                  \
+    NAME##_vec_simd_(out, wrap_arg_vector(in1), wrap_arg_vector(in2), n); \
 }
 
 DEFINE_MATH_FUNCTIONS_BINARY(pow, pow)
@@ -177,5 +154,6 @@ DEFINE_MATH_FUNCTIONS_BINARY(spow, signed_pow)
 #undef DEFINE_MATH_FUNCTIONS_UNARY
 #undef DEFINE_MATH_FUNCTIONS_BINARY
 #undef always_inline
+
 
 #endif /* SIMD_MATH_HPP */
