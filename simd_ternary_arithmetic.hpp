@@ -52,84 +52,59 @@ struct muladd
     }
 };
 
-}
-
-template <typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void clip_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
+template<typename float_type>
+struct ampmod
 {
-    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, detail::clip<float_type>());
+    float_type operator()(float_type signal, float_type modulator, float_type amount) const
+    {
+        return signal * (float_type(1) + modulator * amount);
+    }
+};
+
 }
 
-template <typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void clip_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
-{
-    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
-    n /= per_loop;
-    do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3,
-                                                                          detail::clip<vec<float_type> >());
-        out += per_loop;
-    } while (--n);
+#define DEFINE_TERNARY_OPERATION(NAME, FUNCTOR)                         \
+template <typename float_type,                                          \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3                                                 \
+         >                                                              \
+inline void NAME##_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
+{                                                                       \
+    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, FUNCTOR<float_type>()); \
+}                                                                       \
+                                                                        \
+template <typename float_type,                                          \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3                                                 \
+         >                                                              \
+inline void NAME##_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
+{                                                                       \
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline; \
+    n /= per_loop;                                                      \
+    do {                                                                \
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, \
+                                                                          FUNCTOR<vec<float_type> >()); \
+        out += per_loop;                                                \
+    } while (--n);                                                      \
+}                                                                       \
+                                                                        \
+template <int N,                                                        \
+          typename float_type,                                          \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3                                                 \
+         >                                                              \
+inline void NAME##_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3) \
+{                                                                       \
+    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3, \
+                                                               FUNCTOR<vec<float_type> >()); \
 }
 
-template <int N,
-          typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void clip_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3)
-{
-    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3,
-                                                               detail::clip<vec<float_type> >());
-}
-
-template <typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void muladd_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
-{
-    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, detail::muladd<float_type>());
-}
-
-template <typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void muladd_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
-{
-    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
-    n /= per_loop;
-    do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3,
-                                                                          detail::muladd<vec<float_type> >());
-        out += per_loop;
-    } while (--n);
-}
-
-template <int N,
-          typename float_type,
-          typename Arg1,
-          typename Arg2,
-          typename Arg3
-         >
-inline void muladd_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3)
-{
-    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3,
-                                                               detail::muladd<vec<float_type> >());
-}
-
+DEFINE_TERNARY_OPERATION(clip, detail::clip)
+DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
+DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
 
 }
 
