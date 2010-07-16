@@ -434,6 +434,17 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
 
+    friend inline vec select(vec lhs, vec rhs, vec bitmask)
+    {
+        /* if bitmask is set, return value in rhs, else value in lhs */
+#ifdef __SSE4_1__
+        return _mm_blendv_ps(rhs.data_, lhs.data_, bitmask.data_);
+#else
+        return _mm_or_ps(_mm_andnot_ps(bitmask.data_, lhs.data_),
+                        _mm_and_ps(rhs.data_, bitmask.data_));
+#endif
+    }
+
     /* @} */
 
     /* @{ */
