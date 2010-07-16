@@ -21,8 +21,7 @@
 
 #include "vec.hpp"
 
-#include "wrap_argument_vector.hpp"
-#include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -43,7 +42,11 @@ struct fabs_
     {
         return fabs<FloatType>(arg);
     }
+};
 
+template <typename FloatType>
+struct fabs_<vec<FloatType> >
+{
     always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
     {
         return abs(arg);
@@ -57,7 +60,11 @@ struct sign_
     {
         return sign<FloatType>(arg);
     }
+};
 
+template <typename FloatType>
+struct sign_<vec<FloatType> >
+{
     always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
     {
         return sign(arg);
@@ -71,7 +78,11 @@ struct square_
     {
         return square<FloatType>(arg);
     }
+};
 
+template <typename FloatType>
+struct square_<vec<FloatType> >
+{
     always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
     {
         return square(arg);
@@ -85,7 +96,11 @@ struct cube_
     {
         return cube<FloatType>(arg);
     }
+};
 
+template <typename FloatType>
+struct cube_<vec<FloatType> >
+{
     always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
     {
         return cube(arg);
@@ -94,31 +109,11 @@ struct cube_
 
 } /* namespace detail */
 
-#define DEFINE_UNARY_FUNCTIONS(NAME, FUNCTOR)                           \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, const float_type * arg, unsigned int n) \
-{                                                                       \
-    detail::apply_on_vector(out, arg, n, FUNCTOR<float_type>());        \
-}                                                                       \
-                                                                        \
-template <typename FloatType>                                           \
-inline void NAME##_vec_simd(FloatType * out, const FloatType * arg, unsigned int n) \
-{                                                                       \
-    detail::generate_simd_loop(out, wrap_arg_vector(arg), n, FUNCTOR<FloatType>()); \
-}                                                                       \
-                                                                        \
-template <unsigned int n, typename FloatType>                           \
-inline void NAME##_vec_simd(FloatType * out, const FloatType * arg)     \
-{                                                                       \
-    detail::vector_pointer_argument<FloatType> varg(arg); \
-    detail::compile_time_unroller<FloatType, n>::mp_iteration(out, varg, FUNCTOR<FloatType>()); \
-}
 
-DEFINE_UNARY_FUNCTIONS(abs, detail::fabs_)
-DEFINE_UNARY_FUNCTIONS(sgn, detail::sign_)
-DEFINE_UNARY_FUNCTIONS(square, detail::square_)
-DEFINE_UNARY_FUNCTIONS(cube, detail::cube_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(abs, detail::fabs_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(sgn, detail::sign_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(square, detail::square_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(cube, detail::cube_)
 
 } /* namespace nova */
 

@@ -28,6 +28,7 @@
 #include "wrap_argument_vector.hpp"
 
 #include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
 
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -138,98 +139,23 @@ struct not_equal_to:
 
 } /* namespace detail */
 
-#define DEFINE_NON_SIMD_FUNCTIONS(NAME, FUNCTOR)                        \
-template <typename float_type, typename arg1_type, typename arg2_type>  \
-inline void NAME##_vec(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
-{                                                                       \
-    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, FUNCTOR<float_type>()); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, const float_type * arg1, float_type arg2, \
-                      const float_type arg2_slope, unsigned int n)      \
-{                                                                       \
-    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2, arg2_slope), n, FUNCTOR<float_type>()); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, float_type arg1, const float_type arg1_slope, \
-                      const float_type * arg2, unsigned int n)          \
-{                                                                       \
-    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, FUNCTOR<float_type>()); \
-}
 
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(plus, std::plus)
 
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(minus, std::minus)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(times, std::multiplies)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(over, std::divides)
 
-#define DEFINE_SIMD_FUNCTIONS(NAME, FUNCTOR)                            \
-                                                                        \
-template <typename float_type, typename Arg1Type, typename Arg2Type>    \
-inline void NAME##_vec_simd(float_type * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
-{                                                                       \
-    detail::generate_simd_loop(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n, FUNCTOR<vec<float_type> >()); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
-                            const float_type arg2_slope, unsigned int n) \
-{                                                                       \
-    detail::generate_simd_loop(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope), n, FUNCTOR<vec<float_type> >()); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
-                            const float_type * arg2, unsigned int n)    \
-{                                                                       \
-    detail::generate_simd_loop(out, wrap_arg_vector(arg1, arg1_slope), wrap_arg_vector(arg2), n, FUNCTOR<vec<float_type> >()); \
-}                                                                       \
-                                                                        \
-template <unsigned int n, typename float_type, typename arg1_type, typename arg2_type> \
-inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2) \
-{                                                                       \
-    detail::compile_time_unroller<float_type, n>::mp_iteration(out, arg1, arg2, FUNCTOR<vec<float_type> >());\
-}                                                                       \
-                                                                        \
-template <unsigned int n, typename F, typename Arg1Type, typename Arg2Type> \
-inline void NAME##_vec_simd(F * out, Arg1Type arg1, Arg2Type arg2)      \
-{                                                                       \
-    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2)); \
-}                                                                       \
-                                                                        \
-template <unsigned int n, typename float_type>                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
-                            const float_type arg2_slope)                \
-{                                                                       \
-    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope)); \
-}                                                                       \
-                                                                        \
-template <unsigned int n, typename float_type>                          \
-inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
-                            const float_type * arg2)                    \
-{                                                                       \
-    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1, arg1_slope), wrap_arg_vector(arg2)); \
-}
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(min, detail::min_functor)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(max, detail::max_functor)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less, detail::less)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less_equal, detail::less_equal)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater, detail::greater)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater_equal, detail::greater_equal)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(equal, detail::equal_to)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(notequal, detail::not_equal_to)
 
-
-
-#define DEFINE_FUNCTIONS(NAME, FUNCTOR)         \
-    DEFINE_NON_SIMD_FUNCTIONS(NAME, FUNCTOR)    \
-    DEFINE_SIMD_FUNCTIONS(NAME, FUNCTOR)
-
-DEFINE_FUNCTIONS(plus, std::plus)
-DEFINE_FUNCTIONS(minus, std::minus)
-DEFINE_FUNCTIONS(times, std::multiplies)
-DEFINE_FUNCTIONS(over, std::divides)
-
-DEFINE_FUNCTIONS(min, detail::min_functor)
-DEFINE_FUNCTIONS(max, detail::max_functor)
-DEFINE_FUNCTIONS(less, detail::less)
-DEFINE_FUNCTIONS(less_equal, detail::less_equal)
-DEFINE_FUNCTIONS(greater, detail::greater)
-DEFINE_FUNCTIONS(greater_equal, detail::greater_equal)
-DEFINE_FUNCTIONS(equal, detail::equal_to)
-DEFINE_FUNCTIONS(notequal, detail::not_equal_to)
-
-DEFINE_FUNCTIONS(clip2, detail::clip2)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(clip2, detail::clip2)
 
 } /* namespace nova */
 

@@ -26,7 +26,7 @@
 #include "vec.hpp"
 #include "wrap_argument_vector.hpp"
 
-#include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
 
 namespace nova
 {
@@ -41,6 +41,13 @@ struct clip
         return max_(min_(value, high),
                     low);
     }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type value, vec_type low, vec_type high) const
+    {
+        return clip<vec_type>()(value, low, high);
+    }
 };
 
 template<typename float_type>
@@ -49,6 +56,13 @@ struct muladd
     float_type operator()(float_type value, float_type mul, float_type add) const
     {
         return value * mul + add;
+    }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type value, vec_type mul, vec_type add) const
+    {
+        return muladd<vec_type>()(value, mul, add);
     }
 };
 
@@ -59,46 +73,21 @@ struct ampmod
     {
         return signal * (float_type(1) + modulator * amount);
     }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type signal, vec_type modulator, vec_type amount) const
+    {
+        return ampmod<vec_type>()(signal, modulator, amount);
+    }
 };
 
 }
 
-#define DEFINE_TERNARY_OPERATION(NAME, FUNCTOR)                         \
-template <typename float_type,                                          \
-          typename Arg1,                                                \
-          typename Arg2,                                                \
-          typename Arg3                                                 \
-         >                                                              \
-inline void NAME##_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
-{                                                                       \
-    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, FUNCTOR<float_type>()); \
-}                                                                       \
-                                                                        \
-template <typename float_type,                                          \
-          typename Arg1,                                                \
-          typename Arg2,                                                \
-          typename Arg3                                                 \
-         >                                                              \
-inline void NAME##_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
-{                                                                       \
-    detail::generate_simd_loop(out, arg1, arg2, arg3, n, FUNCTOR<vec<float_type> >()); \
-}                                                                       \
-                                                                        \
-template <int N,                                                        \
-          typename float_type,                                          \
-          typename Arg1,                                                \
-          typename Arg2,                                                \
-          typename Arg3                                                 \
-         >                                                              \
-inline void NAME##_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3) \
-{                                                                       \
-    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3, \
-                                                               FUNCTOR<vec<float_type> >()); \
-}
 
-DEFINE_TERNARY_OPERATION(clip, detail::clip)
-DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
-DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(clip, detail::clip)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
 
 }
 
