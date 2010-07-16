@@ -25,6 +25,7 @@
 #include "vec.hpp"
 
 #include "wrap_arguments.hpp"
+#include "wrap_argument_vector.hpp"
 
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -136,7 +137,7 @@ struct not_equal_to:
 } /* namespace detail */
 
 #define DEFINE_NON_SIMD_FUNCTIONS(NAME, FUNCTOR)                        \
-template <typename float_type, typename arg1_type, typename arg2_type>                                          \
+template <typename float_type, typename arg1_type, typename arg2_type>  \
 inline void NAME##_vec(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
 {                                                                       \
     detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, FUNCTOR<float_type>()); \
@@ -146,248 +147,103 @@ template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, const float_type * arg1, float_type arg2, \
                       const float_type arg2_slope, unsigned int n)      \
 {                                                                       \
-    detail::apply_on_vector(out, arg1, arg2, arg2_slope, n, FUNCTOR<float_type>()); \
+    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2, arg2_slope), n, FUNCTOR<float_type>()); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec(float_type * out, float_type arg1, const float_type arg1_slope, \
                       const float_type * arg2, unsigned int n)          \
 {                                                                       \
-    detail::apply_on_vector(out, arg1, arg1_slope, arg2, n, FUNCTOR<float_type>()); \
+    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, FUNCTOR<float_type>()); \
 }
 
 
 
 #define DEFINE_SIMD_FUNCTIONS(NAME, FUNCTOR)                            \
-namespace detail {                                                      \
-                                                                        \
-template <typename float_type, int n>                                   \
-always_inline void NAME##_vec_simd_mp(float_type * out, const float_type * src1, const float_type * src2) \
+namespace detail                                                        \
 {                                                                       \
-    const unsigned int size = vec<float_type>::size;                    \
-                                                                        \
-    vec<float_type> in1, in2;                                           \
-    in1.load_aligned(src1);                                             \
-    in2.load_aligned(src2);                                             \
-                                                                        \
-    vec<float_type> result = FUNCTOR<vec<float_type> >()(in1, in2);           \
-    result.store_aligned(out);                                          \
-                                                                        \
-    NAME##_vec_simd_mp<float_type, n-size>(out+size, src1+size, src2+size); \
-}                                                                       \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<float, 0>(float * out, const float * src1, const float * src2) \
-{}                                                                      \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<double, 0>(double * out, const double * src1, const double * src2) \
-{}                                                                      \
-                                                                        \
-                                                                        \
-template <typename float_type, int n>                                   \
-always_inline void NAME##_vec_simd_mp(float_type * out, const float_type * src1, const vec<float_type> & src2) \
+template <typename F, unsigned int n>                                   \
+struct NAME##_arithmetic                                                \
 {                                                                       \
-    const unsigned int size = vec<float_type>::size;                    \
-    vec<float_type> in1;                                                \
-    in1.load_aligned(src1);                                             \
+    static const int offset = vec<F>::size;                             \
                                                                         \
-    vec<float_type> result = FUNCTOR<vec<float_type> >()(in1, src2);          \
-    result.store_aligned(out);                                          \
+    template <typename arg1_type, typename arg2_type>                   \
+    static always_inline void mp_iteration(F * out, arg1_type & in1, arg2_type & in2) \
+    {                                                                   \
+        vec<F> result = FUNCTOR<vec<F> >()(in1.get(), in2.get());       \
+        result.store_aligned(out);                                      \
+        in1.increment(); in2.increment();                               \
+        NAME##_arithmetic<F, n-offset>::mp_iteration(out+offset, in1, in2); \
+    }                                                                   \
+};                                                                      \
                                                                         \
-    NAME##_vec_simd_mp<float_type, n-size>(out+size, src1+size, src2);  \
-}                                                                       \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<float, 0>(float * out, const float * src1, const vec<float> & src2) \
-{}                                                                      \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<double, 0>(double * out, const double * src1, const vec<double> & src2) \
-{}                                                                      \
-                                                                        \
-                                                                        \
-template <typename float_type, int n>                                   \
-always_inline void NAME##_vec_simd_mp(float_type * out, const float_type * src1, \
-                                                vec<float_type> & src2, const vec<float_type> & src2_slope) \
+template <typename F>                                                   \
+struct NAME##_arithmetic<F, 0>                                          \
 {                                                                       \
-    const unsigned int size = vec<float_type>::size;                    \
-    vec<float_type> in1;                                                \
-    in1.load_aligned(src1);                                             \
-                                                                        \
-    vec<float_type> result = FUNCTOR<vec<float_type> >()(in1, src2);          \
-    result.store_aligned(out);                                          \
-                                                                        \
-    src2 += src2_slope;                                                 \
-    NAME##_vec_simd_mp<float_type, n-size>(out+size, src1+size, src2, src2_slope); \
-}                                                                       \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<float, 0>(float * out, const float * src1, \
-                                                          vec<float> & src2, const vec<float> & src2_slope) \
-{}                                                                      \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<double, 0>(double * out, const double * src1, \
-                                                           vec<double> & src2, const vec<double> & src2_slope) \
-{}                                                                      \
-                                                                        \
-                                                                        \
-template <typename float_type, int n>                                   \
-always_inline void NAME##_vec_simd_mp(float_type * out, const vec<float_type> & src1, const float_type * src2) \
-{                                                                       \
-    const unsigned int size = vec<float_type>::size;                    \
-    vec<float_type> in2;                                                \
-    in2.load_aligned(src2);                                             \
-                                                                        \
-    vec<float_type> result = FUNCTOR<vec<float_type> >()(src1, in2);          \
-    result.store_aligned(out);                                          \
-                                                                        \
-    NAME##_vec_simd_mp<float_type, n-size>(out+size, src1, src2+size);  \
-}                                                                       \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<float, 0>(float * out, const vec<float> & src1, const float * src2) \
-{}                                                                      \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<double, 0>(double * out, const vec<double> & src1, const double * src2) \
-{}                                                                      \
-                                                                        \
-                                                                        \
-template <typename float_type, int n>                                   \
-always_inline void NAME##_vec_simd_mp(float_type * out, vec<float_type> & src1, const vec<float_type> & src1_slope, \
-                                                const float_type * src2) \
-{                                                                       \
-    const unsigned int size = vec<float_type>::size;                    \
-    vec<float_type> in2;                                                \
-    in2.load_aligned(src2);                                             \
-                                                                        \
-    vec<float_type> result = FUNCTOR<vec<float_type> >()(src1, in2);          \
-    result.store_aligned(out);                                          \
-                                                                        \
-    src1 += src1_slope;                                                 \
-    NAME##_vec_simd_mp<float_type, n-size>(out+size, src1, src1_slope, src2+size); \
-}                                                                       \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<float, 0>(float * out, vec<float> & src1, const vec<float> & src1_slope, \
-                                                          const float * src2) \
-{}                                                                      \
-                                                                        \
-template <>                                                             \
-always_inline void NAME##_vec_simd_mp<double, 0>(double * out, vec<double> & src1, const vec<double> & src1_slope, \
-                                                           const double * src2) \
-{}                                                                      \
-                                                                        \
+    template <typename Arg1, typename Arg2>                             \
+    static always_inline void mp_iteration(F * out, Arg1, Arg2)         \
+    {}                                                                  \
+};                                                                      \
 } /* namespace detail */                                                \
                                                                         \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n) \
+template <typename float_type, typename arg1_type, typename arg2_type>  \
+inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
 {                                                                       \
-    const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= samples_per_loop;                                              \
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline; \
+    n /= per_loop;                                                      \
     do {                                                                \
-        detail::NAME##_vec_simd_mp<float_type, samples_per_loop>(out, arg1, arg2); \
-        arg1 += samples_per_loop; arg2 += samples_per_loop; out += samples_per_loop; \
+        detail::NAME##_arithmetic<float_type, per_loop>::mp_iteration(out, arg1, arg2); \
+        out += per_loop;                                                \
     } while (--n);                                                      \
 }                                                                       \
                                                                         \
-template <typename float_type>                                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n) \
+template <typename F, typename Arg1Type, typename Arg2Type>             \
+inline void NAME##_vec_simd(F * out, Arg1Type arg1, Arg2Type arg2, unsigned int n) \
 {                                                                       \
-    const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= samples_per_loop;                                              \
-    vec<float_type> in2(arg2);                                          \
-    do {                                                                \
-        detail::NAME##_vec_simd_mp<float_type, samples_per_loop>(out, arg1, in2); \
-        arg1 += samples_per_loop; out += samples_per_loop;              \
-    } while (--n);                                                      \
+    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2), n); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
                             const float_type arg2_slope, unsigned int n) \
 {                                                                       \
-    const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= samples_per_loop;                                              \
-    vec<float_type> in2;                                                \
-    float_type diff = in2.set_slope(arg2, arg2_slope);                  \
-    const vec<float_type> offset(diff);                                 \
-    do {                                                                \
-        detail::NAME##_vec_simd_mp<float_type, samples_per_loop>(out, arg1, in2, offset); \
-        arg1 += samples_per_loop; out += samples_per_loop;              \
-    } while (--n);                                                      \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n) \
-{                                                                       \
-    const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= samples_per_loop;                                              \
-    vec<float_type> in1(arg1);                                          \
-    do {                                                                \
-        detail::NAME##_vec_simd_mp<float_type, samples_per_loop>(out, in1, arg2); \
-        arg2 += samples_per_loop; out += samples_per_loop;              \
-    } while (--n);                                                      \
+    NAME##_vec_simd_(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope), n); \
 }                                                                       \
                                                                         \
 template <typename float_type>                                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
                             const float_type * arg2, unsigned int n)    \
 {                                                                       \
-    const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline; \
-    n /= samples_per_loop;                                              \
-    vec<float_type> in1;                                                \
-    float_type diff = in1.set_slope(arg1, arg1_slope);                  \
-    const vec<float_type> offset(diff);                                 \
-    do {                                                                \
-        detail::NAME##_vec_simd_mp<float_type, samples_per_loop>(out, in1, offset, arg2); \
-        arg2 += samples_per_loop; out += samples_per_loop;              \
-    } while (--n);                                                      \
+    NAME##_vec_simd_(out, wrap_arg_vector(arg1_slope), wrap_arg_vector(arg2), n); \
 }                                                                       \
                                                                         \
-                                                                        \
-template <unsigned int n, typename float_type>                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2) \
+template <unsigned int n, typename float_type, typename arg1_type, typename arg2_type> \
+inline void NAME##_vec_simd_(float_type * out, arg1_type arg1, arg2_type arg2) \
 {                                                                       \
-    detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, arg2);         \
+    detail::NAME##_arithmetic<float_type, n>::mp_iteration(out, arg1, arg2); \
 }                                                                       \
                                                                         \
-template <unsigned int n, typename float_type>                          \
-inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2) \
+template <unsigned int n, typename F, typename Arg1Type, typename Arg2Type> \
+inline void NAME##_vec_simd(F * out, Arg1Type arg1, Arg2Type arg2)      \
 {                                                                       \
-    vec<float_type> in2(arg2);                                          \
-    detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, in2);          \
+    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2)); \
 }                                                                       \
                                                                         \
 template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, \
                             const float_type arg2_slope)                \
 {                                                                       \
-    vec<float_type> in2;                                                \
-    float_type diff = in2.set_slope(arg2, arg2_slope);                  \
-    const vec<float_type> offset(diff);                                 \
-    detail::NAME##_vec_simd_mp<float_type, n>(out, arg1, in2, offset);  \
-}                                                                       \
-                                                                        \
-template <unsigned int n,typename float_type>                          \
-inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type * arg2) \
-{                                                                       \
-    vec<float_type> in1(arg1);                                          \
-    detail::NAME##_vec_simd_mp<float_type, n>(out, in1, arg2);          \
+    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1), wrap_arg_vector(arg2, arg2_slope)); \
 }                                                                       \
                                                                         \
 template <unsigned int n, typename float_type>                          \
 inline void NAME##_vec_simd(float_type * out, const float_type arg1, const float_type arg1_slope, \
                             const float_type * arg2)                    \
 {                                                                       \
-    vec<float_type> in1;                                                \
-    float_type diff = in1.set_slope(arg1, arg1_slope);                  \
-    const vec<float_type> offset(diff);                                 \
-    detail::NAME##_vec_simd_mp<float_type, n>(out, in1, offset, arg2);  \
+    NAME##_vec_simd_<n>(out, wrap_arg_vector(arg1_slope), wrap_arg_vector(arg2)); \
 }
+
+
 
 #define DEFINE_FUNCTIONS(NAME, FUNCTOR)         \
     DEFINE_NON_SIMD_FUNCTIONS(NAME, FUNCTOR)    \
