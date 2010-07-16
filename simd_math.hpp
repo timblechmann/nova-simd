@@ -204,22 +204,10 @@ inline void NAME##_vec_simd(F * out, const F * arg1, const F * arg2)    \
     detail::NAME##_arithmetic<F, n>::mp_iteration(out, arg1, arg2);     \
 }                                                                       \
                                                                         \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n) \
+template <typename float_type, typename arg1_type, typename arg2_type>                                          \
+inline void NAME##_vec(float_type * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
 {                                                                       \
-    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, const float_type * arg1, float_type arg2, unsigned int n) \
-{                                                                       \
-    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
-}                                                                       \
-                                                                        \
-template <typename float_type>                                          \
-inline void NAME##_vec(float_type * out, float_type arg1, const float_type * arg2, unsigned int n) \
-{                                                                       \
-    detail::apply_on_vector(out, arg1, arg2, n, detail::VEC_NAME<float_type>); \
+    detail::apply_on_vector(out, wrap_arg_signal(arg1), wrap_arg_signal(arg2), n, detail::VEC_NAME<float_type>); \
 }                                                                       \
                                                                         \
 template <unsigned int n>                                               \

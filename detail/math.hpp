@@ -25,6 +25,97 @@
 
 
 namespace nova {
+
+namespace detail {
+
+template <typename FloatType>
+struct scalar_pointer_argument
+{
+    explicit scalar_pointer_argument(const FloatType * arg):
+        data(arg)
+    {}
+
+    void increment(void)
+    {
+        data += 1;
+    }
+
+    FloatType get(void) const
+    {
+        return *data;
+    }
+
+    const FloatType * data;
+};
+
+template <typename FloatType>
+struct scalar_scalar_argument
+{
+    explicit scalar_scalar_argument(FloatType const & arg):
+        data(arg)
+    {}
+
+    void increment(void)
+    {}
+
+    FloatType get(void) const
+    {
+        return data;
+    }
+
+    FloatType data;
+};
+
+template <typename FloatType>
+struct scalar_ramp_argument
+{
+    scalar_ramp_argument(FloatType const & base, FloatType const & slope):
+        data(base), slope_(slope)
+    {}
+
+    void increment(void)
+    {
+        data += slope_;
+    }
+
+    FloatType get(void) const
+    {
+        return data;
+    }
+
+    FloatType data;
+    const FloatType slope_;
+};
+
+}
+
+inline detail::scalar_scalar_argument<float> wrap_arg_signal(float arg)
+{
+    return detail::scalar_scalar_argument<float>(arg);
+}
+
+inline detail::scalar_scalar_argument<double> wrap_arg_signal(double arg)
+{
+    return detail::scalar_scalar_argument<double>(arg);
+}
+
+inline detail::scalar_pointer_argument<float> wrap_arg_signal(const float * arg)
+{
+    return detail::scalar_pointer_argument<float>(arg);
+}
+
+inline detail::scalar_pointer_argument<double> wrap_arg_signal(const double * arg)
+{
+    return detail::scalar_pointer_argument<double>(arg);
+}
+
+template <typename FloatType>
+inline detail::scalar_ramp_argument<FloatType> wrap_arg_signal(FloatType base, FloatType slope)
+{
+    return detail::scalar_ramp_argument<FloatType>(base, slope);
+}
+
+
 namespace detail {
 
 ///@{
@@ -61,14 +152,21 @@ inline void apply_on_vector(FloatType * out, const FloatType * in, unsigned int 
 }
 
 template <typename FloatType,
+          typename Arg1Type,
+          typename Arg2Type,
           typename Functor
          >
-inline void apply_on_vector(FloatType * out, const FloatType * in1, const FloatType * in2, unsigned int n, Functor f)
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, unsigned int n, Functor f)
 {
     do
-        *out++ = f(*in1++, *in2++);
+    {
+        *out++ = f(in1.get(), in2.get());
+        in1.increment();
+        in2.increment();
+    }
     while (--n);
 }
+
 
 template <typename FloatType,
           typename Functor
