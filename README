@@ -75,10 +75,7 @@ inline void foo_vec_simd(float_type * out, float_type arg1, const float_type arg
                          const float_type * arg2, unsigned int n)
 
 
-for ternary operations, a suffix need to be added to specify the
-ramping arguments. the suffix is formatted as _(r[0-9])+. this means,
-that _r1r3 would select a function, ramping the first and the third
-argument, which are implied to be scalar.
+for ternary operations, each argument needs to be packed with the wrap_arg_vector function.
 
 
 
