@@ -28,37 +28,6 @@
 
 namespace nova
 {
-namespace helper
-{
-
-template <typename float_type>
-float_type round(float_type arg)
-{
-    return std::floor(arg + float_type(0.5));
-}
-
-template <>
-double round<double>(double arg)
-{
-    return ::round(arg);
-}
-
-#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
-template <>
-float round<float>(float arg)
-{
-    return roundf(arg);
-}
-#endif
-
-template <typename float_type>
-inline float_type frac(float_type arg)
-{
-    return arg - floor(arg);
-}
-
-} /* namespace */
-
 
 template <typename float_type>
 struct vec
