@@ -83,7 +83,21 @@ struct compile_time_unroller
 
     static const int offset = vec_type::size;
 
-    template <typename arg1_type, typename arg2_type, typename Functor>
+    template <typename arg1_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, Functor const & f)
+    {
+        vec_type result = f(in1.get());
+        result.store_aligned(out);
+        in1.increment();
+        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, f);
+    }
+
+    template <typename arg1_type,
+              typename arg2_type,
+              typename Functor
+             >
     static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2, Functor const & f)
     {
         vec_type result = f(in1.get(), in2.get());
@@ -92,7 +106,11 @@ struct compile_time_unroller
         compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, f);
     }
 
-    template <typename arg1_type, typename arg2_type, typename arg3_type, typename Functor>
+    template <typename arg1_type,
+              typename arg2_type,
+              typename arg3_type,
+              typename Functor
+             >
     static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2,
                                            arg3_type & in3, Functor const & f)
     {
@@ -106,11 +124,24 @@ struct compile_time_unroller
 template <typename FloatType>
 struct compile_time_unroller<FloatType, 0>
 {
-    template <typename Arg1, typename Arg2, typename Functor>
+    template <typename Arg1,
+              typename Functor
+             >
+    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Functor const & f)
+    {}
+
+    template <typename Arg1,
+              typename Arg2,
+              typename Functor
+             >
     static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Functor const & f)
     {}
 
-    template <typename Arg1, typename Arg2, typename Arg3, typename Functor>
+    template <typename Arg1,
+              typename Arg2,
+              typename Arg3,
+              typename Functor
+             >
     static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Arg3 const &, Functor const & f)
     {}
 };
