@@ -35,77 +35,34 @@ namespace nova
 namespace detail
 {
 
-template <typename FloatType>
-struct fabs_
-{
-    always_inline FloatType operator()(FloatType arg) const
-    {
-        return fabs<FloatType>(arg);
-    }
+#define DEFINE_UNARY_FUNCTOR(NAME, VEC_NAME)                            \
+template <typename FloatType>                                           \
+struct NAME##_                                                          \
+{                                                                       \
+    always_inline FloatType operator()(FloatType arg) const             \
+    {                                                                   \
+        return NAME<FloatType>(arg);                                    \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_<vec<FloatType> >                                         \
+{                                                                       \
+    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const \
+    {                                                                   \
+        return VEC_NAME(arg);                                           \
+    }                                                                   \
 };
 
-template <typename FloatType>
-struct fabs_<vec<FloatType> >
-{
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
-    {
-        return abs(arg);
-    }
-};
+DEFINE_UNARY_FUNCTOR(fabs, abs)
+DEFINE_UNARY_FUNCTOR(sign, sign)
+DEFINE_UNARY_FUNCTOR(square, square)
+DEFINE_UNARY_FUNCTOR(cube, cube)
 
-template <typename FloatType>
-struct sign_
-{
-    always_inline FloatType operator()(FloatType arg) const
-    {
-        return sign<FloatType>(arg);
-    }
-};
-
-template <typename FloatType>
-struct sign_<vec<FloatType> >
-{
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
-    {
-        return sign(arg);
-    }
-};
-
-template <typename FloatType>
-struct square_
-{
-    always_inline FloatType operator()(FloatType arg) const
-    {
-        return square<FloatType>(arg);
-    }
-};
-
-template <typename FloatType>
-struct square_<vec<FloatType> >
-{
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
-    {
-        return square(arg);
-    }
-};
-
-template <typename FloatType>
-struct cube_
-{
-    always_inline FloatType operator()(FloatType arg) const
-    {
-        return cube<FloatType>(arg);
-    }
-};
-
-template <typename FloatType>
-struct cube_<vec<FloatType> >
-{
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const
-    {
-        return cube(arg);
-    }
-};
+DEFINE_UNARY_FUNCTOR(round, round)
+DEFINE_UNARY_FUNCTOR(frac, frac)
+DEFINE_UNARY_FUNCTOR(ceil, ceil)
+DEFINE_UNARY_FUNCTOR(floor, floor)
 
 } /* namespace detail */
 
@@ -114,6 +71,11 @@ NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(abs, detail::fabs_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(sgn, detail::sign_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(square, detail::square_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(cube, detail::cube_)
+
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(round, detail::round_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(frac, detail::frac_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ceil, detail::ceil_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(floor, detail::floor_)
 
 } /* namespace nova */
 
