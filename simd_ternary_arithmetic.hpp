@@ -21,18 +21,116 @@
 #ifndef SIMD_TERNARY_ARITHMETIC_HPP
 #define SIMD_TERNARY_ARITHMETIC_HPP
 
-#include "simd_unroll_constraints.hpp"
-#include "simd_ternary_arithmetic_generic.hpp"
+#include <algorithm>
 
-#ifdef __SSE__
-#include "simd_ternary_arithmetic_sse.hpp"
-#endif
+#include "vec.hpp"
+#include "wrap_argument_vector.hpp"
 
-#include "simd_ternary_arithmetic_fallbacks_double.hpp"
+#include "detail/unroll_helpers.hpp"
 
-#ifndef __SSE__
-#include "simd_ternary_arithmetic_fallbacks_float.hpp"
-#endif
+namespace nova
+{
+namespace detail
+{
 
+template<typename float_type>
+struct clip
+{
+    float_type operator()(float_type value, float_type low, float_type high) const
+    {
+        return max_(min_(value, high),
+                    low);
+    }
+};
+
+template<typename float_type>
+struct muladd
+{
+    float_type operator()(float_type value, float_type mul, float_type add) const
+    {
+        return value * mul + add;
+    }
+};
+
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void clip_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
+{
+    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, detail::clip<float_type>());
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void clip_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3,
+                                                                          detail::clip<vec<float_type> >());
+        out += per_loop;
+    } while (--n);
+}
+
+template <int N,
+          typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void clip_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3)
+{
+    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3,
+                                                               detail::clip<vec<float_type> >());
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void muladd_vec(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
+{
+    detail::apply_on_vector<float_type>(out, arg1, arg2, arg3, n, detail::muladd<float_type>());
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void muladd_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3,
+                                                                          detail::muladd<vec<float_type> >());
+        out += per_loop;
+    } while (--n);
+}
+
+template <int N,
+          typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3
+         >
+inline void muladd_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3)
+{
+    detail::compile_time_unroller<float_type, N>::mp_iteration(out, arg1, arg2, arg3,
+                                                               detail::muladd<vec<float_type> >());
+}
+
+
+}
 
 #endif /* SIMD_TERNARY_ARITHMETIC_HPP */

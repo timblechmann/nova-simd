@@ -54,6 +54,25 @@ inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Functor
         in2.increment();
     }
 }
+
+template <typename FloatType,
+          int VectorSize,
+          typename Arg1Type,
+          typename Arg2Type,
+          typename Arg3Type,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg2Type in3, Functor f)
+{
+    for (int i = 0; i != VectorSize; ++i)
+    {
+        *out++ = f(in1.get(), in2.get(), in3.get());
+        in1.increment();
+        in2.increment();
+        in3.increment();
+    }
+}
+
 ///@}
 
 ///@{
@@ -79,6 +98,24 @@ inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, unsigne
         *out++ = f(in1.get(), in2.get());
         in1.increment();
         in2.increment();
+    }
+    while (--n);
+}
+
+template <typename FloatType,
+          typename Arg1Type,
+          typename Arg2Type,
+          typename Arg3Type,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg3Type in3, unsigned int n, Functor f)
+{
+    do
+    {
+        *out++ = f(in1.get(), in2.get(), in3.get());
+        in1.increment();
+        in2.increment();
+        in3.increment();
     }
     while (--n);
 }

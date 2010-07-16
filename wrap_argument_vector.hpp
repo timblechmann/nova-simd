@@ -84,7 +84,7 @@ struct vector_ramp_argument
     }
 
     vec<FloatType> data;
-    const FloatType slope_;
+    const vec<FloatType> slope_;
 };
 
 }
