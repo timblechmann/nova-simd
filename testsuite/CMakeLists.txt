@@ -12,6 +12,7 @@ set(tests
   simd_unary_tests.cpp
   simd_unit_conversion_tests.cpp
   softclip_test.cpp
+  vec_test.cpp
 )
 
 # build benchmarks
