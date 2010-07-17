@@ -24,9 +24,6 @@
 
 #include "vec.hpp"
 
-#include "wrap_arguments.hpp"
-#include "wrap_argument_vector.hpp"
-
 #include "detail/unroll_helpers.hpp"
 #include "detail/define_macros.hpp"
 

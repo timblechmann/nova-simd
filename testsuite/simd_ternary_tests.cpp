@@ -26,21 +26,21 @@ static const int unsigned size = 64;
         randomize_buffer<float_type>(in2.c_array(), size, +1);          \
                                                                         \
         function##_vec<float_type>(out.c_array(),                       \
-                                   wrap_arg_signal(in0.c_array()),      \
-                                   wrap_arg_signal(in1.c_array()),      \
-                                   wrap_arg_signal(in2.c_array()),      \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2.c_array()),        \
                                    size);                               \
                                                                         \
         function##_vec_simd<float_type>(out_simd.c_array(),             \
-                                        wrap_arg_vector(in0.c_array()), \
-                                        wrap_arg_vector(in1.c_array()), \
-                                        wrap_arg_vector(in2.c_array()), \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2.c_array()),   \
                                         size);                          \
                                                                         \
         function##_vec_simd<size>(out_mp.c_array(),                     \
-                                  wrap_arg_vector(in0.c_array()),       \
-                                  wrap_arg_vector(in1.c_array()),       \
-                                  wrap_arg_vector(in2.c_array()));      \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2.c_array()));        \
                                                                         \
         compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f); \
         compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
@@ -55,18 +55,18 @@ static const int unsigned size = 64;
         float_type in2 = randomize_float<float_type>();                 \
                                                                         \
         function##_vec<float_type>(out.c_array(),                       \
-                                   wrap_arg_signal(in0.c_array()),      \
-                                   wrap_arg_signal(in1.c_array()),      \
-                                   wrap_arg_signal(in2), size);         \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2), size);           \
         function##_vec_simd<float_type>(out_simd.c_array(),             \
-                                        wrap_arg_vector(in0.c_array()), \
-                                        wrap_arg_vector(in1.c_array()), \
-                                        wrap_arg_vector(in2),           \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2),             \
                                         size);                          \
         function##_vec_simd<size>(out_mp.c_array(),                     \
-                                  wrap_arg_vector(in0.c_array()),       \
-                                  wrap_arg_vector(in1.c_array()),       \
-                                  wrap_arg_vector(in2));                \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2));                  \
                                                                         \
         compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f); \
         compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
@@ -82,19 +82,19 @@ static const int unsigned size = 64;
         float_type in2_slope = randomize_float<float_type>() * 0.0001;  \
                                                                         \
         function##_vec<float_type>(out.c_array(),                       \
-                                   wrap_arg_signal(in0.c_array()),      \
-                                   wrap_arg_signal(in1.c_array()),      \
-                                   wrap_arg_signal(in2, in2_slope),     \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2, in2_slope),       \
                                    size);                               \
         function##_vec_simd<float_type>(out_simd.c_array(),             \
-                                        wrap_arg_vector(in0.c_array()), \
-                                        wrap_arg_vector(in1.c_array()), \
-                                        wrap_arg_vector(in2, in2_slope), \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2, in2_slope),  \
                                         size);                          \
         function##_vec_simd<size>(out_mp.c_array(),                     \
-                                  wrap_arg_vector(in0.c_array()),       \
-                                  wrap_arg_vector(in1.c_array()),       \
-                                  wrap_arg_vector(in2, in2_slope));     \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2, in2_slope));       \
                                                                         \
         compare_buffers_relative(out.c_array(), out_simd.c_array(),     \
                                  size);                                 \

@@ -22,12 +22,12 @@ void vv_tests(void)
     randomize_buffer<float_type>(in1.c_array(), size);
     randomize_buffer<float_type>(amount.c_array(), size);
 
-    ampmod_vec<float_type>(out.c_array(), wrap_arg_signal(in0.c_array()),
-                        wrap_arg_signal(in1.c_array()),
-                        wrap_arg_signal(amount.c_array()), size);
+    ampmod_vec<float_type>(out.c_array(), wrap_argument(in0.c_array()),
+                        wrap_argument(in1.c_array()),
+                        wrap_argument(amount.c_array()), size);
 
-    ampmod_vec_simd<float_type>(out_simd.c_array(), wrap_arg_vector(in0.c_array()),
-                             wrap_arg_vector(in1.c_array()), wrap_arg_vector(amount.c_array()), size);
+    ampmod_vec_simd<float_type>(out_simd.c_array(), wrap_argument(in0.c_array()),
+                             wrap_argument(in1.c_array()), wrap_argument(amount.c_array()), size);
 
     compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6);
 }
@@ -47,11 +47,11 @@ void vs_tests(void)
     randomize_buffer<float_type>(in1.c_array(), size);
     amount = randomize_float<float_type>();
 
-    ampmod_vec<float_type>(out.c_array(), wrap_arg_signal(in0.c_array()),
-                        wrap_arg_signal(in1.c_array()),
-                        wrap_arg_signal(amount), size);
-    ampmod_vec_simd<float_type>(out_simd.c_array(), wrap_arg_vector(in0.c_array()),
-                             wrap_arg_vector(in1.c_array()), wrap_arg_vector(amount), size);
+    ampmod_vec<float_type>(out.c_array(), wrap_argument(in0.c_array()),
+                        wrap_argument(in1.c_array()),
+                        wrap_argument(amount), size);
+    ampmod_vec_simd<float_type>(out_simd.c_array(), wrap_argument(in0.c_array()),
+                             wrap_argument(in1.c_array()), wrap_argument(amount), size);
 
     compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6);
 }

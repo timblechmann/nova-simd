@@ -24,9 +24,15 @@
 #include <algorithm>
 
 #include "vec.hpp"
-#include "wrap_argument_vector.hpp"
 
 #include "detail/define_macros.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 
 namespace nova
 {
@@ -90,5 +96,7 @@ NOVA_SIMD_DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
 NOVA_SIMD_DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
 
 }
+
+#undef always_inline
 
 #endif /* SIMD_TERNARY_ARITHMETIC_HPP */

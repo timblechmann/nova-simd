@@ -19,22 +19,29 @@
 #ifndef NOVA_SIMD_WRAP_ARGUMENTS_HPP
 #define NOVA_SIMD_WRAP_ARGUMENTS_HPP
 
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
+
 namespace nova {
 namespace detail {
 
 template <typename FloatType>
 struct scalar_pointer_argument
 {
-    explicit scalar_pointer_argument(const FloatType * arg):
+    always_inline explicit scalar_pointer_argument(const FloatType * arg):
         data(arg)
     {}
 
-    void increment(void)
+    always_inline void increment(void)
     {
         data += 1;
     }
 
-    FloatType get(void) const
+    always_inline FloatType get(void) const
     {
         return *data;
     }
@@ -45,14 +52,14 @@ struct scalar_pointer_argument
 template <typename FloatType>
 struct scalar_scalar_argument
 {
-    explicit scalar_scalar_argument(FloatType const & arg):
+    always_inline explicit scalar_scalar_argument(FloatType const & arg):
         data(arg)
     {}
 
-    void increment(void)
+    always_inline void increment(void)
     {}
 
-    FloatType get(void) const
+    always_inline FloatType get(void) const
     {
         return data;
     }
@@ -63,16 +70,16 @@ struct scalar_scalar_argument
 template <typename FloatType>
 struct scalar_ramp_argument
 {
-    scalar_ramp_argument(FloatType const & base, FloatType const & slope):
+    always_inline scalar_ramp_argument(FloatType const & base, FloatType const & slope):
         data(base), slope_(slope)
     {}
 
-    void increment(void)
+    always_inline void increment(void)
     {
         data += slope_;
     }
 
-    FloatType get(void) const
+    always_inline FloatType get(void) const
     {
         return data;
     }
@@ -83,32 +90,35 @@ struct scalar_ramp_argument
 
 }
 
-inline detail::scalar_scalar_argument<float> wrap_arg_signal(float arg)
+always_inline detail::scalar_scalar_argument<float> wrap_argument(float arg)
 {
     return detail::scalar_scalar_argument<float>(arg);
 }
 
-inline detail::scalar_scalar_argument<double> wrap_arg_signal(double arg)
+always_inline detail::scalar_scalar_argument<double> wrap_argument(double arg)
 {
     return detail::scalar_scalar_argument<double>(arg);
 }
 
-inline detail::scalar_pointer_argument<float> wrap_arg_signal(const float * arg)
+always_inline detail::scalar_pointer_argument<float> wrap_argument(const float * arg)
 {
     return detail::scalar_pointer_argument<float>(arg);
 }
 
-inline detail::scalar_pointer_argument<double> wrap_arg_signal(const double * arg)
+always_inline detail::scalar_pointer_argument<double> wrap_argument(const double * arg)
 {
     return detail::scalar_pointer_argument<double>(arg);
 }
 
 template <typename FloatType>
-inline detail::scalar_ramp_argument<FloatType> wrap_arg_signal(FloatType base, FloatType slope)
+always_inline detail::scalar_ramp_argument<FloatType> wrap_argument(FloatType base, FloatType slope)
 {
     return detail::scalar_ramp_argument<FloatType>(base, slope);
 }
 
 }
+
+#undef always_inline
+
 
 #endif /* NOVA_SIMD_WRAP_ARGUMENTS_HPP */

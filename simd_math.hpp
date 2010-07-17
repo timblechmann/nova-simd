@@ -20,8 +20,6 @@
 #define SIMD_MATH_HPP
 
 #include "vec.hpp"
-#include "wrap_arguments.hpp"
-#include "wrap_argument_vector.hpp"
 
 #include "detail/math.hpp"
 #include "detail/unroll_helpers.hpp"

@@ -16,10 +16,19 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef NOVA_SIMD_WRAP_ARGUMENT_VECTOR_HPP
-#define NOVA_SIMD_WRAP_ARGUMENT_VECTOR_HPP
+#ifndef NOVA_SIMD_DETAIL_WRAP_ARGUMENT_VECTOR_HPP
+#define NOVA_SIMD_DETAIL_WRAP_ARGUMENT_VECTOR_HPP
 
-#include "vec.hpp"
+#include "../vec.hpp"
+
+#include "../wrap_arguments.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 
 namespace nova {
 namespace detail {
@@ -27,16 +36,16 @@ namespace detail {
 template <typename FloatType>
 struct vector_pointer_argument
 {
-    explicit vector_pointer_argument(const FloatType * arg):
+    always_inline explicit vector_pointer_argument(const FloatType * arg):
         data(arg)
     {}
 
-    void increment(void)
+    always_inline void increment(void)
     {
         data += vec<FloatType>::size;
     }
 
-    vec<FloatType> get(void) const
+    always_inline vec<FloatType> get(void) const
     {
         vec<FloatType> ret;
         ret.load_aligned(data);
@@ -49,14 +58,14 @@ struct vector_pointer_argument
 template <typename FloatType>
 struct vector_scalar_argument
 {
-    explicit vector_scalar_argument(FloatType const & arg):
+    always_inline explicit vector_scalar_argument(FloatType const & arg):
         data(arg)
     {}
 
-    void increment(void)
+    always_inline void increment(void)
     {}
 
-    vec<FloatType> get(void) const
+    always_inline vec<FloatType> get(void) const
     {
         return vec<FloatType>(data);
     }
@@ -67,18 +76,18 @@ struct vector_scalar_argument
 template <typename FloatType>
 struct vector_ramp_argument
 {
-    vector_ramp_argument(FloatType const & base, FloatType const & slope):
+    always_inline vector_ramp_argument(FloatType const & base, FloatType const & slope):
         slope_(vec<FloatType>::size * slope)
     {
         data.set_slope(base, slope);
     }
 
-    void increment(void)
+    always_inline void increment(void)
     {
         data += slope_;
     }
 
-    vec<FloatType> get(void) const
+    always_inline vec<FloatType> get(void) const
     {
         return data;
     }
@@ -87,34 +96,31 @@ struct vector_ramp_argument
     const vec<FloatType> slope_;
 };
 
-}
-
-inline detail::vector_scalar_argument<float> wrap_arg_vector(float arg)
+template <typename FloatType>
+always_inline detail::vector_scalar_argument<FloatType>
+wrap_vector_arg(detail::scalar_scalar_argument<FloatType> const & arg)
 {
-    return detail::vector_scalar_argument<float>(arg);
-}
-
-inline detail::vector_scalar_argument<double> wrap_arg_vector(double arg)
-{
-    return detail::vector_scalar_argument<double>(arg);
-}
-
-inline detail::vector_pointer_argument<float> wrap_arg_vector(const float * arg)
-{
-    return detail::vector_pointer_argument<float>(arg);
-}
-
-inline detail::vector_pointer_argument<double> wrap_arg_vector(const double * arg)
-{
-    return detail::vector_pointer_argument<double>(arg);
+    return detail::vector_scalar_argument<FloatType>(arg.data);
 }
 
 template <typename FloatType>
-inline detail::vector_ramp_argument<FloatType> wrap_arg_vector(FloatType base, FloatType slope)
+always_inline detail::vector_pointer_argument<FloatType>
+wrap_vector_arg(detail::scalar_pointer_argument<FloatType> const & arg)
 {
-    return detail::vector_ramp_argument<FloatType>(base, slope);
+    return detail::vector_pointer_argument<FloatType>(arg.data);
 }
 
+template <typename FloatType>
+always_inline detail::vector_ramp_argument<FloatType>
+wrap_vector_arg(detail::scalar_ramp_argument<FloatType> const & arg)
+{
+    return detail::vector_ramp_argument<FloatType>(arg.data, arg.slope_);
 }
 
-#endif /* NOVA_SIMD_WRAP_ARGUMENT_VECTOR_HPP */
+} /* namespace detail */
+} /* namespace nova */
+
+#undef always_inline
+
+
+#endif /* NOVA_SIMD_DETAIL_WRAP_ARGUMENT_VECTOR_HPP */
