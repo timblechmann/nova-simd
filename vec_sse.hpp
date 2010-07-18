@@ -355,7 +355,7 @@ public:
     {
         /* if bitmask is set, return value in rhs, else value in lhs */
 #ifdef __SSE4_1__
-        return _mm_blendv_ps(rhs.data_, lhs.data_, bitmask.data_);
+        return _mm_blendv_ps(lhs.data_, rhs.data_, bitmask.data_);
 #else
         return _mm_or_ps(_mm_andnot_ps(bitmask.data_, lhs.data_),
                         _mm_and_ps(rhs.data_, bitmask.data_));
@@ -443,6 +443,7 @@ public:
 
     /* @{ */
     /** mathematical functions */
+
 #ifndef NO_GPL3_CODE
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -572,6 +573,7 @@ private:
 };
 
 } /* namespace nova */
+
 
 #undef OPERATOR_ASSIGNMENT
 #undef ARITHMETIC_OPERATOR
