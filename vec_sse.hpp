@@ -576,8 +576,8 @@ public:
     {                                                           \
         vec ret;                                                \
         detail::apply_on_vector<float, size> ((float*)&ret.data_,\
-                                              wrap_arg_signal((float*)&lhs.data_), \
-                                              wrap_arg_signal((float*)&rhs.data_),  \
+                                              wrap_argument((float*)&lhs.data_), \
+                                              wrap_argument((float*)&rhs.data_),  \
                                               FUNCTION);   \
         return ret;                                 \
     }
