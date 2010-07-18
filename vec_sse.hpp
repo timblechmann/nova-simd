@@ -38,92 +38,6 @@
 #include "libsimdmath/lib/expf4.h"
 #include "libsimdmath/lib/powf4.h"
 
-namespace {
-
-inline vec_float4 _log2f4(vec_float4 arg)
-{
-    const float rlog2 = 1.f/std::log(2.f);
-    const vec_float4 rlog2v= {rlog2, rlog2, rlog2, rlog2};
-    return _logf4(arg) * rlog2v;
-}
-
-inline vec_float4 _log10f4(vec_float4 arg)
-{
-    const float rlog10 = 1.f/std::log(10.f);
-    const vec_float4 rlog10v= {rlog10, rlog10, rlog10, rlog10};
-    return _logf4(arg) * rlog10v;
-}
-
-#define vec_xor(a,b)           ((a)^(b))
-
-inline vec_float4 _signed_sqrtf4(vec_float4 arg)
-{
-    const vec_int4   sign_in = _signf4(arg);
-    const vec_float4 abs_in = (vec_float4)vec_xor((vec_int4)arg, sign_in);
-
-    vec_float4 result = _sqrtf4(abs_in);
-
-    return (vec_float4)(sign_in | (vec_int4)result);
-}
-
-inline vec_float4 _tanhf4(vec_float4 arg)
-{
-    /* this order of computation (large->small->medium) seems to be the most efficient */
-
-    const vec_int4   sign_arg = _signf4(arg);
-    const vec_float4 abs_arg = (vec_float4)vec_xor((vec_int4)arg, sign_arg);
-    const vec_float4 one = {1.f, 1.f, 1.f, 1.f};
-    const vec_float4 two = {2.f, 2.f, 2.f, 2.f};
-    const vec_float4 maxlogf_2 = {22.f, 22.f, 22.f, 22.f};
-    const vec_float4 limit_small = {0.625f, 0.625f, 0.625f, 0.625f};
-
-    /* large values */
-    const vec_int4   abs_big = (vec_int4)VEC_GT(abs_arg, maxlogf_2);
-    const vec_float4 result_limit_abs = one;
-
-    /* small values */
-    const vec_float4 f1 = {-5.70498872745e-3, -5.70498872745e-3, -5.70498872745e-3, -5.70498872745e-3};
-    const vec_float4 f2 = { 2.06390887954e-2,  2.06390887954e-2,  2.06390887954e-2,  2.06390887954e-2};
-    const vec_float4 f3 = {-5.37397155531e-2, -5.37397155531e-2, -5.37397155531e-2, -5.37397155531e-2};
-    const vec_float4 f4 = { 1.33314422036e-1,  1.33314422036e-1,  1.33314422036e-1,  1.33314422036e-1};
-    const vec_float4 f5 = {-3.33332819422e-1, -3.33332819422e-1, -3.33332819422e-1, -3.33332819422e-1};
-
-    const vec_float4 arg_sqr = abs_arg * abs_arg;
-    const vec_float4 result_small = ((((f1 * arg_sqr
-                                        + f2) * arg_sqr
-                                       + f3) * arg_sqr
-                                      + f4) * arg_sqr
-                                     + f5) * arg_sqr * arg
-        + arg;
-
-    const vec_int4 abs_small = (vec_int4)VEC_LT(abs_arg, limit_small);
-
-    /* medium values */
-    const vec_float4 result_medium_abs = one - two / (_expf4(abs_arg + abs_arg) + one);
-
-    /* select from large and medium branches and set sign */
-    const vec_float4 result_lm_abs = vec_sel(result_medium_abs, result_limit_abs, abs_big);
-    const vec_float4 result_lm = (vec_float4) vec_or((vec_int4)result_lm_abs, sign_arg);
-
-    const vec_float4 result = vec_sel(result_lm, result_small, abs_small);
-
-    return result;
-}
-
-inline vec_float4 _signed_powf4(vec_float4 arg1, vec_float4 arg2)
-{
-    const vec_int4   sign_in1 = _signf4(arg1);
-    const vec_float4 abs_in1 = (vec_float4)vec_xor((vec_int4)arg1, sign_in1);
-
-    vec_float4 result = _powf4(abs_in1, arg2);
-
-    return (vec_float4)(sign_in1 | (vec_int4)result);
-}
-
-#undef vec_xor
-
-}
-
 #endif
 
 #include "detail/vec_math.hpp"
@@ -467,6 +381,11 @@ public:
         return _mm_mul_ps(arg.data_, arg.data_);
     }
 
+    friend inline vec sqrt(vec const & arg)
+    {
+        return _mm_sqrt_ps(arg.data_);
+    }
+
     friend inline vec cube(vec const & arg)
     {
         return _mm_mul_ps(arg.data_, _mm_mul_ps(arg.data_, arg.data_));
@@ -539,14 +458,8 @@ public:
     LIBSIMDMATH_WRAPPER_UNARY(acos)
     LIBSIMDMATH_WRAPPER_UNARY(atan)
 
-    LIBSIMDMATH_WRAPPER_UNARY(tanh)
-
     LIBSIMDMATH_WRAPPER_UNARY(log)
-    LIBSIMDMATH_WRAPPER_UNARY(log2)
-    LIBSIMDMATH_WRAPPER_UNARY(log10)
     LIBSIMDMATH_WRAPPER_UNARY(exp)
-
-    LIBSIMDMATH_WRAPPER_UNARY(signed_sqrt)
 
 #define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
     friend inline vec NAME(vec const & lhs, vec const & rhs)\
@@ -555,19 +468,17 @@ public:
     }
 
     LIBSIMDMATH_WRAPPER_BINARY(pow)
-    LIBSIMDMATH_WRAPPER_BINARY(signed_pow)
 
 #undef LIBSIMDMATH_WRAPPER_UNARY
 #undef LIBSIMDMATH_WRAPPER_BINARY
-
 #else
 
 #define APPLY_UNARY(NAME, FUNCTION)                 \
     friend inline vec NAME(vec const & arg)         \
     {                                               \
         vec ret;                                    \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_, (float*)&arg.data_,                \
-                                                   FUNCTION);    \
+        detail::apply_on_vector<float, size> ((float*)&ret.data_, (float*)&arg.data_,   \
+                                                   FUNCTION);   \
         return ret;                                 \
     }
 
@@ -589,23 +500,40 @@ public:
     APPLY_UNARY(acos, detail::acos<float>)
     APPLY_UNARY(atan, detail::atan<float>)
 
-    APPLY_UNARY(tanh, detail::tanh<float>)
-
     APPLY_UNARY(log, detail::log<float>)
-    APPLY_UNARY(log2, detail::log2<float>)
-    APPLY_UNARY(log10, detail::log10<float>)
     APPLY_UNARY(exp, detail::exp<float>)
 
-    APPLY_UNARY(signed_sqrt, detail::signed_sqrt<float>)
-
     APPLY_BINARY(pow, detail::pow<float>)
-    APPLY_BINARY(signed_pow, detail::signed_pow<float>)
 
 #undef APPLY_UNARY
 #undef APPLY_BINARY
 
 #endif
 
+    friend inline vec tanh(vec const & arg)
+    {
+        return detail::vec_tanh_float(arg);
+    }
+
+    friend inline vec signed_pow(vec const & lhs, vec const & rhs)
+    {
+        return detail::vec_signed_pow(lhs, rhs);
+    }
+
+    friend inline vec signed_sqrt(vec const & arg)
+    {
+        return detail::vec_signed_sqrt(arg);
+    }
+
+    friend inline vec log2(vec const & arg)
+    {
+        return detail::vec_log2(arg);
+    }
+
+    friend inline vec log10(vec const & arg)
+    {
+        return detail::vec_log10(arg);
+    }
     /* @} */
 
     /* @{ */
