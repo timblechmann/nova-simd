@@ -17,8 +17,8 @@ static const int size = 1024;
 template <typename float_type>
 void test_pan2(void)
 {
-    aligned_array<float_type, size> ALIGNED sseval0, mpval0, generic0, args;
-    aligned_array<float_type, size> ALIGNED sseval1, mpval1, generic1;
+    aligned_array<float_type, size> sseval0, mpval0, generic0, args;
+    aligned_array<float_type, size> sseval1, mpval1, generic1;
     randomize_buffer<float_type>(args.c_array(), size);
 
     float_type factor0 = 0.4;
@@ -45,8 +45,8 @@ BOOST_AUTO_TEST_CASE( pan2_tests )
 template <typename float_type>
 void test_pan2_ramp(void)
 {
-    aligned_array<float_type, size> ALIGNED sseval0, mpval0, generic0, args;
-    aligned_array<float_type, size> ALIGNED sseval1, mpval1, generic1;
+    aligned_array<float_type, size> sseval0, mpval0, generic0, args;
+    aligned_array<float_type, size> sseval1, mpval1, generic1;
     randomize_buffer<float_type>(args.c_array(), size);
 
     float_type factor0 = 0.4;

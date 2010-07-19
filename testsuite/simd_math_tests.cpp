@@ -20,7 +20,7 @@ static const int size = 10000;
 template <typename float_type>                                          \
 void test_##name(void)                                                  \
 {                                                                       \
-    aligned_array<float_type, size> ALIGNED sseval, mpval, libmval, args;    \
+    aligned_array<float_type, size> sseval, mpval, libmval, args;    \
                                                                         \
     float_type init = low;                                                   \
     float_type diff = (float_type(high) - float_type(low)) / float_type(size); \
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( pow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> ALIGNED sseval, libmval, args;
+        aligned_array<float, size> sseval, libmval, args;
 
         float init = 0;
         for (int i = 0; i != size; ++i)
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> ALIGNED sseval, libmval, args;
+        aligned_array<float, size> sseval, libmval, args;
 
         aligned_array<float, 4> exparray;
         exparray.assign(exponent);
