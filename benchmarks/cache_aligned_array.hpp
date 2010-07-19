@@ -50,7 +50,7 @@ namespace nova {
       public:
         aligned_array(void)
         {
-            elems = malloc_aligned(N * sizeof(T));
+            elems = (T*)malloc_aligned(N * sizeof(T));
             for (int i = 0; i != N; ++i)
                 new(elems+i) T();
         }

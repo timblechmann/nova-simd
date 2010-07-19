@@ -30,7 +30,11 @@
 #include <smmintrin.h>
 #endif
 
-#ifndef NO_GPL3_CODE
+#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
+    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) && defined(__SSE2__)
+
+#define NOVA_SIMD_USE_LIBSIMDMATH
+
 #include "libsimdmath/lib/sincosf4.h"
 #include "libsimdmath/lib/asinf4.h"
 #include "libsimdmath/lib/atanf4.h"
@@ -444,7 +448,7 @@ public:
     /* @{ */
     /** mathematical functions */
 
-#ifndef NO_GPL3_CODE
+#ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
     friend inline vec NAME(vec const & arg) \
