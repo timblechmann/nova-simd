@@ -179,7 +179,7 @@ public:
 
     void clear(void)
     {
-        data_ = _mm_setzero_ps();
+        data_ = gen_zero();
     }
 
     /* @} */
