@@ -482,8 +482,9 @@ public:
     friend inline vec NAME(vec const & arg)         \
     {                                               \
         vec ret;                                    \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_, (float*)&arg.data_,   \
-                                                   FUNCTION);   \
+        detail::apply_on_vector<float, size> ((float*)&ret.data_,   \
+                                              wrap_argument((float*)&arg.data_),   \
+                                              FUNCTION);            \
         return ret;                                 \
     }
 

@@ -20,23 +20,23 @@ static const int size = 10000;
 template <typename float_type>                                          \
 void test_##name(void)                                                  \
 {                                                                       \
-    aligned_array<float_type, size> sseval, mpval, libmval, args;    \
+    aligned_array<float_type, size> sseval, mpval, libmval, args;       \
                                                                         \
-    float_type init = low;                                                   \
+    float_type init = low;                                              \
     float_type diff = (float_type(high) - float_type(low)) / float_type(size); \
     \
     for (int i = 0; i != size; ++i)                                     \
     {                                                                   \
         args[i] = init;                                                 \
-        init += diff;                                      \
+        init += diff;                                                   \
     }                                                                   \
                                                                         \
     name##_vec(libmval.begin(), args.begin(), size);                    \
     name##_vec_simd(sseval.begin(), args.begin(), size);                \
-    /*name##_vec_simd<size>(mpval.begin(), args.begin());*/                 \
+    /*name##_vec_simd<size>(mpval.begin(), args.begin())*/;                 \
                                                                         \
-    compare_buffers(sseval.begin(), libmval.begin(), size, 1e-5f);            \
-    /*compare_buffers(mpval.begin(), libmval.begin(), size, 1e-5f);*/             \
+    compare_buffers(sseval.begin(), libmval.begin(), size, 1e-5f);      \
+    /*compare_buffers(mpval.begin(), libmval.begin(), size, 1e-5f)*/;       \
 }                                                                       \
                                                                         \
 BOOST_AUTO_TEST_CASE( name##_tests)                                     \
@@ -97,3 +97,8 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
         compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);
     }
 }
+
+COMPARE_TEST(log, 0.01, 100)
+COMPARE_TEST(log2, 0.01, 100)
+COMPARE_TEST(log10, 0.01, 100)
+COMPARE_TEST(exp, -10, 10)
