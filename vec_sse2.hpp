@@ -43,6 +43,7 @@ namespace nova
 template <>
 struct vec<double>
 {
+    typedef double float_type;
     typedef __m128d internal_vector_type;
 
     static inline __m128d gen_sign_mask(void)

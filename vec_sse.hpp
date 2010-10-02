@@ -61,6 +61,7 @@ template <>
 struct vec<float>
 {
     typedef __m128 internal_vector_type;
+    typedef float float_type;
 
 #ifdef __SSE2__
     static inline __m128 gen_sign_mask(void)
@@ -136,7 +137,7 @@ public:
     vec(void)
     {}
 
-    explicit vec(float f)
+    vec(float f)
     {
         set_vec(f);
     }
