@@ -63,45 +63,38 @@ struct vec<float>
 #ifdef __SSE2__
     static inline __m128 gen_sign_mask(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 31), 31);
     }
 
     static inline __m128 gen_abs_mask(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_srli_epi32 (_mm_slli_epi32(ones, 1), 1);
     }
 
     static inline __m128 gen_one(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 25), 23);
     }
 
+
     static inline __m128 gen_05(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+       __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 26), 24);
     }
 #else
     /* SSE fallback */
     static inline __m128 gen_sign_mask(void)
     {
-        static const int sign_mask = 0x80000000;
-        float * casted = (float*)(&sign_mask);
-        return _mm_set_ps1(*casted);
+        return set_bitmask(0x80000000);
     }
 
     static inline __m128 gen_abs_mask(void)
     {
-        static const int abs_mask = 0x7fffffff;
-        float * casted = (float*)(&abs_mask);
-        return _mm_set_ps1(*casted);
+        return set_bitmask(0x7fffffff);
     }
 
     static inline __m128 gen_one(void)
@@ -114,6 +107,32 @@ struct vec<float>
         return _mm_set_ps1(0.5f);
     }
 #endif
+    static inline __m128 set_bitmask(uint32_t mask)
+    {
+        union {
+            uint32_t i;
+            float f;
+        } u;
+        u.i = mask;
+        return _mm_set_ps1(u.f);
+    }
+
+    static inline __m128 gen_exp_mask(void)
+    {
+        return set_bitmask(0x7F800000);
+    }
+
+    static inline __m128 gen_exp_mask_1(void)
+    {
+        return set_bitmask(0x3F000000);
+    }
+
+    static inline __m128 gen_ones(void)
+    {
+        __m128 x = gen_zero();
+        __m128 ones = _mm_cmpeq_ps(x, x);
+        return ones;
+    }
 
     static inline __m128 gen_zero(void)
     {
@@ -238,7 +257,7 @@ public:
         return v3 * curve;
     }
 
-    float get (std::size_t index)
+    float get (std::size_t index) const
     {
 #ifdef __SSE4_1__
         union {
@@ -341,6 +360,11 @@ public:
     BITWISE_OPERATOR(&, _mm_and_ps)
     BITWISE_OPERATOR(|, _mm_or_ps)
     BITWISE_OPERATOR(^, _mm_xor_ps)
+
+    static vec andnot(vec const & lhs, vec const & rhs)
+    {
+        return _mm_andnot_ps(lhs.data_, rhs.data_);
+    }
 
     #define RELATIONAL_MASK_OPERATOR(op, opcode) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
