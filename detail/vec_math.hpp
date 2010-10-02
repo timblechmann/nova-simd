@@ -26,6 +26,7 @@
 #else
 #define always_inline inline
 #endif
+#include <limits>
 
 namespace nova
 {
@@ -82,6 +83,83 @@ always_inline VecType vec_ceil_float(VecType const & arg)
     const vec rounded_smaller = mask_lt(rounded, arg);
     const vec add             = rounded_smaller & vec::gen_one();
     return rounded + add;
+}
+
+template <typename VecFloat>
+always_inline VecFloat ldexp_float(VecFloat const & x, typename VecFloat::int_vec const & n)
+{
+    typedef typename VecFloat::int_vec int_vec;
+
+    const VecFloat exponent_mask = VecFloat::gen_exp_mask();
+    const VecFloat exponent = exponent_mask & x;
+    const VecFloat x_wo_x = andnot(exponent_mask, x);     // clear exponent
+
+    int_vec new_exp = slli(n, 16+7) + int_vec(exponent);  // new exponent
+    VecFloat new_exp_float(new_exp);
+    VecFloat ret = x_wo_x | new_exp_float;
+    return ret;
+}
+
+template <typename VecFloat>
+always_inline VecFloat frexp_float(VecFloat const & x, typename VecFloat::int_vec & exp)
+{
+    typedef typename VecFloat::int_vec int_vec;
+
+    const VecFloat exponent_mask = VecFloat::gen_exp_mask();
+    const VecFloat exponent = exponent_mask & x;
+    const VecFloat x_wo_x = x.andnot(exponent_mask, x);             // clear exponent
+
+    const int_vec exp_int(exponent);
+
+    exp = srli(exp_int, 16+7) - exp_int(126);
+    return x_wo_x | VecFloat::gen_exp_mask_1();
+}
+
+/* adapted from cephes */
+template <typename VecType>
+always_inline VecType vec_exp_float(VecType const & arg)
+{
+    typedef typename VecType::int_vec int_vec;
+
+    /* Express e**x = e**g 2**n
+     *   = e**g e**( n loge(2) )
+     *   = e**( g + n loge(2) )
+     */
+
+    // black magic
+    VecType x = arg;
+    VecType z = round(VecType(1.44269504088896341f) * x);
+    int_vec n = z.truncate_to_int();
+    x -= z*VecType(0.693359375f);
+    x -= z*VecType(-2.12194440e-4f);
+
+    /* Theoretical peak relative error in [-0.5, +0.5] is 4.2e-9. */
+    VecType p =
+    ((((( VecType(1.9875691500E-4f)  * x
+    + VecType(1.3981999507E-3f)) * x
+    + VecType(8.3334519073E-3f)) * x
+    + VecType(4.1665795894E-2f)) * x
+    + VecType(1.6666665459E-1f)) * x
+    + VecType(5.0000001201E-1f)) * x*x
+    + x
+    + VecType::gen_one();
+
+    /* multiply by power of 2 */
+    VecType approx = ldexp_float(p, n);
+
+    /* handle min/max boundaries */
+    const VecType maxlogf(88.72283905206835f);
+    const VecType minlogf(-103.278929903431851103f);
+    const VecType max_float(std::numeric_limits<float>::max());
+    const VecType zero = VecType::gen_zero();
+
+    VecType too_large = mask_gt(arg, maxlogf);
+    VecType too_small = mask_lt(arg, minlogf);
+
+    VecType ret = select(approx, max_float, too_large);
+    ret = select(ret, zero, too_small);
+
+    return ret;
 }
 
 template <typename VecType>

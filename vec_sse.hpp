@@ -41,7 +41,6 @@
 #include "libsimdmath/lib/asinf4.h"
 #include "libsimdmath/lib/atanf4.h"
 #include "libsimdmath/lib/logf4.h"
-#include "libsimdmath/lib/expf4.h"
 #include "libsimdmath/lib/powf4.h"
 
 #endif
@@ -364,7 +363,7 @@ public:
     BITWISE_OPERATOR(|, _mm_or_ps)
     BITWISE_OPERATOR(^, _mm_xor_ps)
 
-    static vec andnot(vec const & lhs, vec const & rhs)
+    friend inline vec andnot(vec const & lhs, vec const & rhs)
     {
         return _mm_andnot_ps(lhs.data_, rhs.data_);
     }
@@ -475,6 +474,11 @@ public:
     /* @{ */
     /** mathematical functions */
 
+    friend inline vec exp(vec const & arg)
+    {
+        return detail::vec_exp_float(arg);
+    }
+
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -491,7 +495,6 @@ public:
     LIBSIMDMATH_WRAPPER_UNARY(atan)
 
     LIBSIMDMATH_WRAPPER_UNARY(log)
-    LIBSIMDMATH_WRAPPER_UNARY(exp)
 
 #define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
     friend inline vec NAME(vec const & lhs, vec const & rhs)\
@@ -534,7 +537,6 @@ public:
     APPLY_UNARY(atan, detail::atan<float>)
 
     APPLY_UNARY(log, detail::log<float>)
-    APPLY_UNARY(exp, detail::exp<float>)
 
     APPLY_BINARY(pow, detail::pow<float>)
 
@@ -594,7 +596,64 @@ public:
     }
     /* @} */
 
-private:
+#ifdef __SSE2__
+    /* @{ */
+    struct int_vec
+    {
+        __m128i data_;
+
+        /* cast */
+        explicit int_vec(vec<float> arg):
+            data_((__m128i)arg.data_)
+        {}
+
+        explicit int_vec(int arg):
+            data_(_mm_set1_epi32(arg))
+        {}
+
+        explicit int_vec(__m128i arg):
+            data_(arg)
+        {}
+
+        int_vec(int_vec const & arg):
+            data_(arg.data_)
+        {}
+
+        int_vec & operator+(int_vec const & rhs)
+        {
+            data_ = _mm_add_epi32(data_, rhs.data_);
+            return *this;
+        }
+
+        // shift in zeros
+        friend inline int_vec slli(int_vec const & arg, int count)
+        {
+            int_vec ret (_mm_slli_epi32(arg.data_, count));
+            return ret;
+        }
+
+        // shift in zeros
+        friend inline int_vec srli(int_vec const & arg, int count)
+        {
+            int_vec ret (_mm_srli_epi32(arg.data_, count));
+            return ret;
+        }
+    };
+
+    vec (int_vec const & rhs):
+        data_((__m128)rhs.data_)
+    {}
+
+    int_vec truncate_to_int(void) const
+    {
+        __m128i int_val = _mm_cvttps_epi32(data_);
+        return int_vec(int_val);
+    }
+
+    /* @} */
+#endif // __SSE2__
+
+// private:
     typedef union
     {
         float f[4];
