@@ -69,12 +69,12 @@ struct vec<double>
 
     static inline __m128d gen_one(void)
     {
-        return _mm_set_pd1(1.f);
+        return _mm_set1_pd(1.f);
     }
 
     static inline __m128d gen_05(void)
     {
-        return _mm_set_pd1(0.5f);
+        return _mm_set1_pd(0.5f);
     }
 
     static inline __m128d gen_zero(void)
@@ -156,7 +156,7 @@ public:
 
     void set_vec (double value)
     {
-        data_ = _mm_set_pd1(value);
+        data_ = _mm_set1_pd(value);
     }
 
     double set_slope(double start, double slope)

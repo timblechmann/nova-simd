@@ -31,7 +31,9 @@
 #endif
 
 #if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) && defined(__SSE2__)
+    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) \
+    && defined(__SSE2__) \
+    && !defined(__clang__)
 
 #define NOVA_SIMD_USE_LIBSIMDMATH
 
