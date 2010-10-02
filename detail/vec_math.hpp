@@ -92,8 +92,8 @@ always_inline VecType vec_tanh_float(VecType const & arg)
     const VecType sign_arg = arg & VecType::gen_sign_mask();
     const VecType abs_arg  = arg ^ sign_arg;
     const VecType one      = VecType::gen_one();
-    const VecType two (2);
-    const VecType maxlogf_2 (22);
+    const VecType two (2.f);
+    const VecType maxlogf_2 (22.f);
     const VecType limit_small (0.625f);
 
     /* large values */
@@ -101,11 +101,11 @@ always_inline VecType vec_tanh_float(VecType const & arg)
     const VecType result_limit_abs = one;
 
     /* small values */
-    const VecType f1(-5.70498872745e-3);
-    const VecType f2( 2.06390887954e-2);
-    const VecType f3(-5.37397155531e-2);
-    const VecType f4( 1.33314422036e-1);
-    const VecType f5(-3.33332819422e-1);
+    const VecType f1((float)-5.70498872745e-3);
+    const VecType f2((float) 2.06390887954e-2);
+    const VecType f3((float)-5.37397155531e-2);
+    const VecType f4((float) 1.33314422036e-1);
+    const VecType f5((float)-3.33332819422e-1);
 
     const VecType arg_sqr = abs_arg * abs_arg;
     const VecType result_small = ((((f1 * arg_sqr
@@ -155,14 +155,14 @@ template <typename VecType>
 always_inline VecType vec_log2(VecType arg)
 {
     const double rlog2 = 1.0/std::log(2.0);
-    return log(arg) * VecType(rlog2);
+    return log(arg) * VecType((typename VecType::float_type)rlog2);
 }
 
 template <typename VecType>
 always_inline VecType vec_log10(VecType arg)
 {
     const double rlog10 = 1.0/std::log(10.0);
-    return log(arg) * VecType(rlog10);
+    return log(arg) * VecType((typename VecType::float_type)rlog10);
 }
 
 }
