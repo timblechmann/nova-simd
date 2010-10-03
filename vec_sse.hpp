@@ -494,6 +494,11 @@ public:
         return detail::vec_log_float(arg);
     }
 
+    friend inline vec pow(vec const & arg1, vec const & arg2)
+    {
+        return detail::vec_pow(arg1, arg2);
+    }
+
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -515,8 +520,6 @@ public:
     {                                                       \
         return _##NAME##f4(lhs.data_, rhs.data_);           \
     }
-
-    LIBSIMDMATH_WRAPPER_BINARY(pow)
 
 #undef LIBSIMDMATH_WRAPPER_UNARY
 #undef LIBSIMDMATH_WRAPPER_BINARY
@@ -549,8 +552,6 @@ public:
     APPLY_UNARY(asin, detail::asin<float>)
     APPLY_UNARY(acos, detail::acos<float>)
     APPLY_UNARY(atan, detail::atan<float>)
-
-    APPLY_BINARY(pow, detail::pow<float>)
 
 #undef APPLY_UNARY
 #undef APPLY_BINARY

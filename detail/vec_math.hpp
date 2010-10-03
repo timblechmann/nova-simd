@@ -290,6 +290,14 @@ always_inline VecType vec_signed_pow(VecType arg1, VecType arg2)
     return sign_arg1 | result;
 }
 
+/* compute pow using exp and log. seems to be faster than table-based algorithms */
+template <typename VecType>
+always_inline VecType vec_pow(VecType arg1, VecType arg2)
+{
+    const VecType result = exp(arg2 * log(arg1));
+    return result;
+}
+
 template <typename VecType>
 always_inline VecType vec_signed_sqrt(VecType arg)
 {
