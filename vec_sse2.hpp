@@ -97,9 +97,14 @@ public:
     vec(void)
     {}
 
-    explicit vec(double f)
+    vec(double f)
     {
         set_vec(f);
+    }
+
+    vec(float f)
+    {
+        set_vec((double)f);
     }
 
     vec(vec const & rhs)

@@ -46,7 +46,12 @@ public:
     vec(void)
     {}
 
-    vec(float_type f)
+    vec(double f)
+    {
+        set_vec(f);
+    }
+
+    vec(float f)
     {
         set_vec(f);
     }
