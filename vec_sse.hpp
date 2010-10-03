@@ -489,6 +489,11 @@ public:
         return detail::vec_exp_float(arg);
     }
 
+    friend inline vec log(vec const & arg)
+    {
+        return detail::vec_log_float(arg);
+    }
+
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -504,7 +509,6 @@ public:
     LIBSIMDMATH_WRAPPER_UNARY(acos)
     LIBSIMDMATH_WRAPPER_UNARY(atan)
 
-    LIBSIMDMATH_WRAPPER_UNARY(log)
 
 #define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
     friend inline vec NAME(vec const & lhs, vec const & rhs)\
@@ -545,8 +549,6 @@ public:
     APPLY_UNARY(asin, detail::asin<float>)
     APPLY_UNARY(acos, detail::acos<float>)
     APPLY_UNARY(atan, detail::atan<float>)
-
-    APPLY_UNARY(log, detail::log<float>)
 
     APPLY_BINARY(pow, detail::pow<float>)
 
@@ -629,10 +631,25 @@ public:
             data_(arg.data_)
         {}
 
+        int_vec(void)
+        {}
+
         int_vec & operator+(int_vec const & rhs)
         {
             data_ = _mm_add_epi32(data_, rhs.data_);
             return *this;
+        }
+
+        int_vec & operator-(int_vec const & rhs)
+        {
+            data_ = _mm_sub_epi32(data_, rhs.data_);
+            return *this;
+        }
+
+        friend int_vec operator&(int_vec const & lhs, int_vec const & rhs)
+        {
+            int_vec ret = int_vec (_mm_and_si128(lhs.data_, rhs.data_));
+            return ret;
         }
 
         // shift in zeros
@@ -646,6 +663,12 @@ public:
         friend inline int_vec srli(int_vec const & arg, int count)
         {
             int_vec ret (_mm_srli_epi32(arg.data_, count));
+            return ret;
+        }
+
+        vec convert_to_float(void) const
+        {
+            vec ret(_mm_cvtepi32_ps(data_));
             return ret;
         }
     };

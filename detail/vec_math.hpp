@@ -110,11 +110,11 @@ always_inline VecFloat frexp_float(VecFloat const & x, typename VecFloat::int_ve
 
     const VecFloat exponent_mask = VecFloat::gen_exp_mask();
     const VecFloat exponent = exponent_mask & x;
-    const VecFloat x_wo_x = x.andnot(exponent_mask, x);             // clear exponent
+    const VecFloat x_wo_x = andnot(exponent_mask, x);             // clear exponent
 
     const int_vec exp_int(exponent);
 
-    exp = srli(exp_int, 16+7) - exp_int(126);
+    exp = srli(exp_int, 16+7) - int_vec(126);
     return x_wo_x | VecFloat::gen_exp_mask_1();
 }
 
@@ -162,6 +162,43 @@ always_inline VecType vec_exp_float(VecType const & arg)
 
     return ret;
 }
+
+/* adapted from cephes */
+template <typename VecType>
+always_inline VecType vec_log_float(VecType x)
+{
+    typedef typename VecType::int_vec int_vec;
+
+    int_vec e;
+    x = frexp_float( x, e );
+
+    const VecType sqrt_05 = 0.707106781186547524f;
+    const VecType x_smaller_sqrt_05 = mask_lt(x, sqrt_05);
+    e = e + int_vec(x_smaller_sqrt_05);
+    VecType x_add = x;
+    x_add = x_add & x_smaller_sqrt_05;
+    x += x_add - VecType(VecType::gen_one());
+
+    VecType y =
+    (((((((( 7.0376836292E-2 * x
+    - 1.1514610310E-1) * x
+    + 1.1676998740E-1) * x
+    - 1.2420140846E-1) * x
+    + 1.4249322787E-1) * x
+    - 1.6668057665E-1) * x
+    + 2.0000714765E-1) * x
+    - 2.4999993993E-1) * x
+    + 3.3333331174E-1) * x * x*x;
+
+    VecType fe = e.convert_to_float();
+    y += fe * -2.12194440e-4;
+
+    y -= 0.5 * x*x;            /* y - 0.5 x^2 */
+    VecType z  = x + y;        /* ... + x  */
+
+    return z + 0.693359375 * fe;
+}
+
 
 /* exp function for vec_tanh_float. similar to vec_exp_tanh, but without boundary checks */
 template <typename VecType>
