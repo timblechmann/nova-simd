@@ -163,6 +163,40 @@ always_inline VecType vec_exp_float(VecType const & arg)
     return ret;
 }
 
+/* exp function for vec_tanh_float. similar to vec_exp_tanh, but without boundary checks */
+template <typename VecType>
+always_inline VecType vec_exp_tanh_float(VecType const & arg)
+{
+    typedef typename VecType::int_vec int_vec;
+
+    /* Express e**x = e**g 2**n
+     *   = e**g e**( n loge(2) )
+     *   = e**( g + n loge(2) )
+     */
+
+    // black magic
+    VecType x = arg;
+    VecType z = round(VecType(1.44269504088896341f) * x);
+    int_vec n = z.truncate_to_int();
+    x -= z*VecType(0.693359375f);
+    x -= z*VecType(-2.12194440e-4f);
+
+    /* Theoretical peak relative error in [-0.5, +0.5] is 3.5e-8. */
+    VecType p = 1.f +
+        x * (1.00000035762786865234375f +
+        x * (0.4999996721744537353515625f +
+        x * (0.16665561497211456298828125f +
+        x * (4.167006909847259521484375e-2f +
+        x * (8.420792408287525177001953125e-3f +
+        x * 1.386119984090328216552734375e-3f)))));
+
+    /* multiply by power of 2 */
+    VecType approx = ldexp_float(p, n);
+
+    return approx;
+}
+
+
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)
 {
@@ -197,7 +231,7 @@ always_inline VecType vec_tanh_float(VecType const & arg)
     const VecType abs_small = mask_lt(abs_arg, limit_small);
 
     /* medium values */
-    const VecType result_medium_abs = one - two / (exp(abs_arg + abs_arg) + one);
+    const VecType result_medium_abs = one - two / (vec_exp_tanh_float(abs_arg + abs_arg) + one);
 
     /* select from large and medium branches and set sign */
     const VecType result_lm_abs = select(result_medium_abs, result_limit_abs, abs_big);
