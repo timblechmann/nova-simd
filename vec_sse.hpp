@@ -331,6 +331,16 @@ public:
     vec operator op(vec const & rhs) const \
     { \
         return opcode(data_, rhs.data_); \
+    } \
+ \
+    friend vec operator op(vec const & lhs, float f)  \
+    { \
+        return opcode(lhs.data_, vec(f).data_); \
+    } \
+    \
+    friend vec operator op(float f, vec const & rhs)  \
+    { \
+        return opcode(vec(f).data_, rhs.data_); \
     }
 
     ARITHMETIC_OPERATOR(+, _mm_add_ps)

@@ -35,8 +35,8 @@ void test_##name(void)                                                  \
     name##_vec_simd(sseval.begin(), args.begin(), size);                \
     /*name##_vec_simd<size>(mpval.begin(), args.begin())*/;                 \
                                                                         \
-    compare_buffers(sseval.begin(), libmval.begin(), size, 1e-5f);      \
-    /*compare_buffers(mpval.begin(), libmval.begin(), size, 1e-5f)*/;       \
+    compare_buffers(sseval.begin(), libmval.begin(), size, 5e-7f);      \
+    /*compare_buffers(mpval.begin(), libmval.begin(), size, 5e-7f)*/;       \
 }                                                                       \
                                                                         \
 BOOST_AUTO_TEST_CASE( name##_tests)                                     \
