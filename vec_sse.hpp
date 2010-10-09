@@ -391,6 +391,8 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
 
+    #undef RELATIONAL_MASK_OPERATOR
+
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
         /* if bitmask is set, return value in rhs, else value in lhs */
@@ -499,6 +501,12 @@ public:
         return detail::vec_pow(arg1, arg2);
     }
 
+    friend inline vec sin(vec const & arg)
+    {
+        return detail::vec_sin_float(arg);
+    }
+
+
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -507,7 +515,7 @@ public:
         return _##NAME##f4(arg.data_);  \
     }
 
-    LIBSIMDMATH_WRAPPER_UNARY(sin)
+//     LIBSIMDMATH_WRAPPER_UNARY(sin)
     LIBSIMDMATH_WRAPPER_UNARY(cos)
     LIBSIMDMATH_WRAPPER_UNARY(tan)
     LIBSIMDMATH_WRAPPER_UNARY(asin)
@@ -546,7 +554,7 @@ public:
         return ret;                                 \
     }
 
-    APPLY_UNARY(sin, detail::sin<float>)
+//     APPLY_UNARY(sin, detail::sin<float>)
     APPLY_UNARY(cos, detail::cos<float>)
     APPLY_UNARY(tan, detail::tan<float>)
     APPLY_UNARY(asin, detail::asin<float>)
@@ -624,7 +632,7 @@ public:
             data_(_mm_set1_epi32(arg))
         {}
 
-        explicit int_vec(__m128i arg):
+        int_vec(__m128i arg):
             data_(arg)
         {}
 
@@ -646,6 +654,18 @@ public:
             data_ = _mm_sub_epi32(data_, rhs.data_);
             return *this;
         }
+
+        #define RELATIONAL_MASK_OPERATOR(op, opcode) \
+        friend int_vec mask_##op(int_vec const & lhs, int_vec const & rhs) \
+        { \
+            return opcode(lhs.data_, rhs.data_); \
+        }
+
+        RELATIONAL_MASK_OPERATOR(lt, _mm_cmplt_epi32)
+        RELATIONAL_MASK_OPERATOR(gt, _mm_cmpgt_epi32)
+        RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_epi32)
+
+        #undef RELATIONAL_MASK_OPERATOR
 
         friend int_vec operator&(int_vec const & lhs, int_vec const & rhs)
         {

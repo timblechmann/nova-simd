@@ -234,6 +234,57 @@ always_inline VecType vec_exp_tanh_float(VecType const & arg)
 }
 
 
+/* adapted from Julien Pommier's sse_mathfun.h, itself based on cephes */
+template <typename VecType>
+always_inline VecType vec_sin_float(VecType const & arg)
+{
+    typedef typename VecType::int_vec int_vec;
+
+    const typename VecType::float_type four_over_pi = 1.27323954473516268615107010698011489627567716592367;
+
+    VecType sign = arg & VecType::gen_sign_mask();
+    VecType abs_arg = arg & VecType::gen_abs_mask();
+
+    VecType y = abs_arg * four_over_pi;
+
+    int_vec j = y.truncate_to_int();
+
+    /* cephes: j=(j+1) & (~1) */
+    j = (j + int_vec(1)) & int_vec(~1);
+    y = j.convert_to_float();
+
+    /* sign based on quadrant */
+    VecType swap_sign_bit = slli(j & int_vec(4), 29);
+    sign = sign ^ swap_sign_bit;
+
+    /* polynomial mask */
+    VecType poly_mask = VecType (mask_eq(j & int_vec(2), int_vec(0)));
+
+    /* black magic */
+    static float DP1 = 0.78515625;
+    static float DP2 = 2.4187564849853515625e-4;
+    static float DP3 = 3.77489497744594108e-8;
+    VecType base = ((abs_arg - y * DP1) - y * DP2) - y * DP3;
+
+    /* [0..pi/4] */
+    VecType z = base * base;
+    VecType p1 = ((  2.443315711809948E-005 * z
+        - 1.388731625493765E-003) * z
+        + 4.166664568298827E-002) * z * z
+        -0.5f * z + 1
+        ;
+
+    /* [pi/4..pi/2] */
+    VecType p2 = ((-1.9515295891E-4 * z
+         + 8.3321608736E-3) * z
+         - 1.6666654611E-1) * z * base + base;
+
+    VecType approximation =  select(p1, p2, poly_mask);
+
+    return approximation ^ sign;
+}
+
+
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)
 {

@@ -35,8 +35,8 @@ void test_##name(void)                                                  \
     name##_vec_simd(sseval.begin(), args.begin(), size);                \
     /*name##_vec_simd<size>(mpval.begin(), args.begin())*/;                 \
                                                                         \
-    compare_buffers(sseval.begin(), libmval.begin(), size, 5e-7f);      \
-    /*compare_buffers(mpval.begin(), libmval.begin(), size, 5e-7f)*/;       \
+    compare_buffers(sseval.begin(), libmval.begin(), size, 5e-6f);      \
+    /*compare_buffers(mpval.begin(), libmval.begin(), size, 5e-6f)*/;       \
 }                                                                       \
                                                                         \
 BOOST_AUTO_TEST_CASE( name##_tests)                                     \
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( name##_tests)                                     \
     test_##name<double>();                                              \
 }
 
-COMPARE_TEST(sin, -1.5, 1.5)
+COMPARE_TEST(sin, -3.2, 3.2)
 COMPARE_TEST(cos, -1.5, 1.5)
 COMPARE_TEST(tan, -1.5, 1.5)
 COMPARE_TEST(tanh, -10, 10)

@@ -260,6 +260,8 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_pd)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_pd)
 
+    #undef RELATIONAL_MASK_OPERATOR
+
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
         /* if bitmask is set, return value in rhs, else value in lhs */
