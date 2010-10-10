@@ -94,10 +94,10 @@ struct vec<float>
         return _mm_set_ps1(0.5f);
     }
 #endif
-    static inline __m128 set_bitmask(uint32_t mask)
+    static inline __m128 set_bitmask(unsigned int mask)
     {
         union {
-            uint32_t i;
+            unsigned int i;
             float f;
         } u;
         u.i = mask;
