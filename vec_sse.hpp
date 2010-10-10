@@ -30,21 +30,6 @@
 #include <smmintrin.h>
 #endif
 
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) \
-    && defined(__SSE2__) \
-    && !defined(__clang__)
-
-#define NOVA_SIMD_USE_LIBSIMDMATH
-
-#include "libsimdmath/lib/sincosf4.h"
-#include "libsimdmath/lib/asinf4.h"
-#include "libsimdmath/lib/atanf4.h"
-#include "libsimdmath/lib/logf4.h"
-#include "libsimdmath/lib/powf4.h"
-
-#endif
-
 #include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
