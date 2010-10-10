@@ -405,6 +405,40 @@ always_inline VecType vec_asin_float(VecType const & arg)
     return ret;
 }
 
+/* based on asin approximation:
+ *
+ * x < -0.5:        acos(x) = pi - 2.0 * asin( sqrt((1+x)/2) );
+ * -0.5 < x < 0.5   acos(x) = pi/2 - asin(x)
+ * x > 0.5          acos(x) =      2.0 * asin( sqrt((1-x)/2) ).
+ *
+ */
+template <typename VecType>
+always_inline VecType vec_acos_float(VecType const & arg)
+{
+    VecType abs_arg = arg & VecType::gen_abs_mask();
+    VecType one = VecType::gen_one();
+    VecType half = VecType::gen_05();
+    VecType zero = VecType::gen_zero();
+
+    VecType arg_greater_05 = mask_gt(abs_arg, half);
+    VecType asin_arg_greater_05 = sqrt((one - abs_arg) * half);
+
+    VecType asin_arg = select(arg, asin_arg_greater_05, arg_greater_05);
+
+    VecType asin = vec_asin_float(asin_arg);
+    VecType two_asin = asin + asin;
+
+    VecType ret_m1_m05 = 3.1415927410125732421875 - two_asin;
+    VecType ret_m05_05 = 1.57079637050628662109375 - asin;
+    VecType ret_05_1 = two_asin;
+
+    VecType ret_m05_1 = select(ret_m05_05, ret_05_1, mask_gt(arg, half));
+    VecType ret = select(ret_m1_m05, ret_m05_1, mask_gt(arg, -0.5));
+
+    // |arg| > 1: return 0
+    ret = select(ret, zero, mask_gt(abs_arg, one));
+    return ret;
+}
 
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)
