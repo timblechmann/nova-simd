@@ -528,6 +528,12 @@ public:
     {
         return detail::vec_tan_float(arg);
     }
+
+    friend inline vec asin(vec const & arg)
+    {
+        return detail::vec_asin_float(arg);
+    }
+
 #else
 
 #define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
@@ -542,6 +548,7 @@ public:
     APPLY_UNARY_FALLBACK(sin, detail::sin)
     APPLY_UNARY_FALLBACK(cos, detail::cos)
     APPLY_UNARY_FALLBACK(tan, detail::tan)
+    APPLY_UNARY_FALLBACK(asin, detail::asin)
 
 #endif
 
@@ -553,7 +560,6 @@ public:
         return _##NAME##f4(arg.data_);  \
     }
 
-    LIBSIMDMATH_WRAPPER_UNARY(asin)
     LIBSIMDMATH_WRAPPER_UNARY(acos)
     LIBSIMDMATH_WRAPPER_UNARY(atan)
 
@@ -589,7 +595,6 @@ public:
         return ret;                                 \
     }
 
-    APPLY_UNARY(asin, detail::asin<float>)
     APPLY_UNARY(acos, detail::acos<float>)
     APPLY_UNARY(atan, detail::atan<float>)
 

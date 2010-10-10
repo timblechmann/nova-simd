@@ -373,6 +373,39 @@ always_inline VecType vec_tan_float(VecType const & arg)
     return approximation ^ sign;
 }
 
+/* adapted from cephes, approximation polynomial generted by sollya */
+template <typename VecType>
+always_inline VecType vec_asin_float(VecType const & arg)
+{
+    VecType abs_arg = arg & VecType::gen_abs_mask();
+    VecType sign = arg & VecType::gen_sign_mask();
+    VecType one = VecType::gen_one();
+    VecType half = VecType::gen_05();
+    VecType zero = VecType::gen_zero();
+
+    // range redution: asin(x) = pi/2 - 2 asin( sqrt( (1-x)/2 ) ). for |arg| > 0.5
+    VecType arg_greater_05 = mask_gt(abs_arg, 0.5);
+    VecType arg_reduced_sqr = (one - abs_arg) * half;
+    VecType arg_reduced = sqrt((one - abs_arg) * half);
+    VecType approx_arg = select(abs_arg, arg_reduced, arg_greater_05);
+
+
+    VecType z = select(abs_arg*abs_arg, arg_reduced_sqr, arg_greater_05);
+
+    VecType x = approx_arg; VecType x2 = x*x;
+    // sollya: fpminimax(asin(x), [|3,5,7,9,11|], [|24...|], [0.000000000000000000001,0.5], x);
+    VecType approx_poly = x + x * x2 * (0.166667520999908447265625 + x2 * (7.4953101575374603271484375e-2 + x2 * (4.54690195620059967041015625e-2 + x2 * (2.418550290167331695556640625e-2 + x2 * 4.21570129692554473876953125e-2))));
+
+    VecType approx_poly_reduced = 1.57079637050628662109375 - approx_poly - approx_poly;
+    VecType approx = select(approx_poly, approx_poly_reduced, arg_greater_05);
+
+    approx = approx ^ sign;
+    // |arg| > 1: return 0
+    VecType ret = select(approx, zero, mask_gt(abs_arg, one));
+    return ret;
+}
+
+
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)
 {

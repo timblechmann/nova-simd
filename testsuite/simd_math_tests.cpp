@@ -48,6 +48,7 @@ BOOST_AUTO_TEST_CASE( name##_tests)                                     \
 COMPARE_TEST(sin, -3.2, 3.2)
 COMPARE_TEST(cos, -3.2, 3.2)
 COMPARE_TEST(tan, -1.5, 1.5)
+COMPARE_TEST(asin, -1, 1)
 COMPARE_TEST(tanh, -10, 10)
 COMPARE_TEST(signed_sqrt, 0, 20)
 
