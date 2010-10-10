@@ -391,8 +391,6 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
 
-    #undef RELATIONAL_MASK_OPERATOR
-
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
         /* if bitmask is set, return value in rhs, else value in lhs */
@@ -506,6 +504,10 @@ public:
         return detail::vec_sin_float(arg);
     }
 
+    friend inline vec cos(vec const & arg)
+    {
+        return detail::vec_cos_float(arg);
+    }
 
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
@@ -515,8 +517,6 @@ public:
         return _##NAME##f4(arg.data_);  \
     }
 
-//     LIBSIMDMATH_WRAPPER_UNARY(sin)
-    LIBSIMDMATH_WRAPPER_UNARY(cos)
     LIBSIMDMATH_WRAPPER_UNARY(tan)
     LIBSIMDMATH_WRAPPER_UNARY(asin)
     LIBSIMDMATH_WRAPPER_UNARY(acos)
@@ -554,8 +554,6 @@ public:
         return ret;                                 \
     }
 
-//     APPLY_UNARY(sin, detail::sin<float>)
-    APPLY_UNARY(cos, detail::cos<float>)
     APPLY_UNARY(tan, detail::tan<float>)
     APPLY_UNARY(asin, detail::asin<float>)
     APPLY_UNARY(acos, detail::acos<float>)
@@ -672,6 +670,12 @@ public:
             int_vec ret = int_vec (_mm_and_si128(lhs.data_, rhs.data_));
             return ret;
         }
+
+        friend inline int_vec andnot(int_vec const & lhs, int_vec const & rhs)
+        {
+            return int_vec(_mm_andnot_si128(lhs.data_, rhs.data_));
+        }
+
 
         // shift in zeros
         friend inline int_vec slli(int_vec const & arg, int count)
