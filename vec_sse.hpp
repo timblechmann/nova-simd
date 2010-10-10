@@ -538,6 +538,11 @@ public:
     {
         return detail::vec_acos_float(arg);
     }
+
+    friend inline vec atan(vec const & arg)
+    {
+        return detail::vec_atan_float(arg);
+    }
 #else
 
 #define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
@@ -554,56 +559,9 @@ public:
     APPLY_UNARY_FALLBACK(tan, detail::tan)
     APPLY_UNARY_FALLBACK(asin, detail::asin)
     APPLY_UNARY_FALLBACK(acos, detail::acos)
+    APPLY_UNARY_FALLBACK(atan, detail::atan)
 
-#endif
-
-#ifdef NOVA_SIMD_USE_LIBSIMDMATH
-
-#define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
-    friend inline vec NAME(vec const & arg) \
-    {                                   \
-        return _##NAME##f4(arg.data_);  \
-    }
-
-    LIBSIMDMATH_WRAPPER_UNARY(atan)
-
-
-#define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)\
-    {                                                       \
-        return _##NAME##f4(lhs.data_, rhs.data_);           \
-    }
-
-#undef LIBSIMDMATH_WRAPPER_UNARY
-#undef LIBSIMDMATH_WRAPPER_BINARY
-#else
-
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_,   \
-                                              wrap_argument((float*)&arg.data_),   \
-                                              FUNCTION);            \
-        return ret;                                 \
-    }
-
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_,\
-                                              wrap_argument((float*)&lhs.data_), \
-                                              wrap_argument((float*)&rhs.data_),  \
-                                              FUNCTION);   \
-        return ret;                                 \
-    }
-
-    APPLY_UNARY(atan, detail::atan<float>)
-
-#undef APPLY_UNARY
-#undef APPLY_BINARY
-
+#undef APPLY_UNARY_FALLBACK
 #endif
 
     friend inline vec tanh(vec const & arg)

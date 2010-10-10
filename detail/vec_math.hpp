@@ -440,6 +440,45 @@ always_inline VecType vec_acos_float(VecType const & arg)
     return ret;
 }
 
+/* adapted from cephes */
+template <typename VecType>
+always_inline VecType vec_atan_float(VecType const & arg)
+{
+    const VecType sign_arg = arg & VecType::gen_sign_mask();
+    const VecType abs_arg  = arg & VecType::gen_abs_mask();
+    const VecType one      = VecType::gen_one();
+    VecType zero           = VecType::gen_zero();
+
+    VecType arg_range0 = abs_arg;
+    VecType arg_range1 = (abs_arg - one) / (abs_arg + one);
+    VecType arg_range2 = -one / abs_arg;
+
+    VecType offset_range0 = zero;
+    VecType offset_range1 = 0.78539816339744830961566084581987572104929234984377;
+    VecType offset_range2 = 1.57079632679489661923132169163975144209858469968754;
+
+    VecType mask_range_01 = mask_gt(abs_arg, 0.41421356237309504880168872420969807856967187537695);
+    VecType mask_range_12 = mask_gt(abs_arg, 2.41421356237309504880168872420969807856967187537698);
+
+    VecType approx_arg = select(arg_range0,
+                                select(arg_range1, arg_range2, mask_range_12),
+                                mask_range_01);
+
+    VecType approx_offset = select(offset_range0,
+                                   select(offset_range1, offset_range2, mask_range_12),
+                                   mask_range_01);
+
+
+    VecType x = approx_arg;
+    VecType x2 = x*x;
+
+    VecType approx = approx_offset +
+       x + x * x2 * (-0.333329498767852783203125 + x2 * (0.19977732002735137939453125 + x2 * (-0.1387787759304046630859375 + x2 * 8.054284751415252685546875e-2)));
+
+    return approx ^ sign_arg;
+}
+
+
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)
 {
