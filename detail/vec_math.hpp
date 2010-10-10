@@ -333,6 +333,45 @@ always_inline VecType vec_cos_float(VecType const & arg)
     return approximation ^ sign;
 }
 
+/* adapted from cephes, approximation polynomial generted by sollya */
+template <typename VecType>
+always_inline VecType vec_tan_float(VecType const & arg)
+{
+    typedef typename VecType::int_vec int_vec;
+    const typename VecType::float_type four_over_pi = 1.27323954473516268615107010698011489627567716592367;
+
+    VecType sign = arg & VecType::gen_sign_mask();
+    VecType abs_arg = arg & VecType::gen_abs_mask();
+
+    VecType y = abs_arg * four_over_pi;
+    int_vec j = y.truncate_to_int();
+
+    /* cephes: j=(j+1) & (~1) */
+    j = (j + int_vec(1)) & int_vec(~1);
+    y = j.convert_to_float();
+
+    /* approximation mask */
+    VecType poly_mask = VecType (mask_eq(j & int_vec(2), int_vec(0)));
+
+    /* black magic */
+    static float DP1 = 0.78515625;
+    static float DP2 = 2.4187564849853515625e-4;
+    static float DP3 = 3.77489497744594108e-8;
+    VecType base = ((abs_arg - y * DP1) - y * DP2) - y * DP3;
+
+    VecType x = base; VecType x2 = x*x;
+
+    // sollya: fpminimax(tan(x), [|3,5,7,9,11,13|], [|24...|], [-pi/4,pi/4], x);
+    VecType approx =
+        x + x * x2 * (0.3333315551280975341796875 + x2 * (0.1333882510662078857421875 + x2 * (5.3409568965435028076171875e-2 + x2 * (2.443529665470123291015625e-2 + x2 * (3.1127030961215496063232421875e-3 + x2 * 9.3892104923725128173828125e-3)))));
+
+    //VecType recip = -reciprocal(approx);
+    VecType recip = -1.0 / approx;
+
+    VecType approximation = select(recip, approx, poly_mask);
+
+    return approximation ^ sign;
+}
 
 template <typename VecType>
 always_inline VecType vec_tanh_float(VecType const & arg)

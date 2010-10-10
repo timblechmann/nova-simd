@@ -348,6 +348,17 @@ public:
     ARITHMETIC_OPERATOR(*, _mm_mul_ps)
     ARITHMETIC_OPERATOR(/, _mm_div_ps)
 
+    friend vec operator -(const vec & arg)
+    {
+        return _mm_xor_ps(arg.data_, gen_sign_mask());
+    }
+
+    friend vec reciprocal(const vec & arg)
+    {
+        return _mm_rcp_ps(arg.data_);
+    }
+
+
 #define RELATIONAL_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
     { \
@@ -390,6 +401,8 @@ public:
     RELATIONAL_MASK_OPERATOR(ge, _mm_cmpge_ps)
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
+
+    #undef RELATIONAL_MASK_OPERATOR
 
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
@@ -499,6 +512,8 @@ public:
         return detail::vec_pow(arg1, arg2);
     }
 
+
+#ifdef __SSE2__
     friend inline vec sin(vec const & arg)
     {
         return detail::vec_sin_float(arg);
@@ -509,6 +524,27 @@ public:
         return detail::vec_cos_float(arg);
     }
 
+    friend inline vec tan(vec const & arg)
+    {
+        return detail::vec_tan_float(arg);
+    }
+#else
+
+#define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
+    friend inline vec NAME(vec const & arg)         \
+    {                                               \
+        vec ret;                                    \
+        for (int i = 0; i != 4; ++i)                \
+            ret.set(i, FUNCTION(arg.get(i)));       \
+        return ret;                                 \
+    }
+
+    APPLY_UNARY_FALLBACK(sin, detail::sin)
+    APPLY_UNARY_FALLBACK(cos, detail::cos)
+    APPLY_UNARY_FALLBACK(tan, detail::tan)
+
+#endif
+
 #ifdef NOVA_SIMD_USE_LIBSIMDMATH
 
 #define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
@@ -517,7 +553,6 @@ public:
         return _##NAME##f4(arg.data_);  \
     }
 
-    LIBSIMDMATH_WRAPPER_UNARY(tan)
     LIBSIMDMATH_WRAPPER_UNARY(asin)
     LIBSIMDMATH_WRAPPER_UNARY(acos)
     LIBSIMDMATH_WRAPPER_UNARY(atan)
@@ -554,7 +589,6 @@ public:
         return ret;                                 \
     }
 
-    APPLY_UNARY(tan, detail::tan<float>)
     APPLY_UNARY(asin, detail::asin<float>)
     APPLY_UNARY(acos, detail::acos<float>)
     APPLY_UNARY(atan, detail::atan<float>)
