@@ -576,28 +576,32 @@ public:
     /* @} */
 
     /* @{ */
+#define HORIZONTAL_OP(PAR_FN, SCAL_FN)                                                  \
+    __m128 data = data_;                                    /* [0, 1, 2, 3] */          \
+    __m128 low  = _mm_movehl_ps(data, data);                /* [2, 3, 2, 3] */          \
+    __m128 low_accum = PAR_FN(low, data);                   /* [0|2, 1|3, 2|2, 3|3] */  \
+    __m128 elem1 = _mm_shuffle_ps(low_accum, low_accum,                                 \
+                                  _MM_SHUFFLE(1,1,1,1));    /* [1|3, 1|3, 1|3, 1|3] */  \
+    __m128 accum = SCAL_FN(low_accum, elem1);                                           \
+    return _mm_cvtss_f32(accum);
+
     /** horizontal functions */
     inline float horizontal_min(void) const
     {
-        __m128 xmm0, xmm1;
-        xmm0 = data_;
-        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
-        xmm0 = _mm_min_ps(xmm0, xmm1);
-        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
-        xmm0 = _mm_min_ss(xmm0, xmm1);
-        return _mm_cvtss_f32(xmm0);
+        HORIZONTAL_OP(_mm_min_ps, _mm_min_ss);
     }
 
     inline float horizontal_max(void) const
     {
-        __m128 xmm0, xmm1;
-        xmm0 = data_;
-        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
-        xmm0 = _mm_max_ps(xmm0, xmm1);
-        xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
-        xmm0 = _mm_max_ss(xmm0, xmm1);
-        return _mm_cvtss_f32(xmm0);
+        HORIZONTAL_OP(_mm_max_ps, _mm_max_ss);
     }
+
+    inline float horizontal_sum(void) const
+    {
+        HORIZONTAL_OP(_mm_add_ps, _mm_add_ss)
+    }
+
+#undef HORIZONTAL_OP
     /* @} */
 
 #ifdef __SSE2__

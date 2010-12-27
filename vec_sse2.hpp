@@ -428,16 +428,30 @@ public:
 
     /* @{ */
     /** horizontal functions */
+#define HORIZONTAL_OP(OP)                                        \
+        __m128d data = data_;                       /* [0, 1] */ \
+        __m128d high = _mm_unpackhi_pd(data, data); /* [1, 1] */ \
+        __m128d accum = OP(data, high);                          \
+        return _mm_cvtsd_f64(accum);
+
+
     inline double horizontal_min(void) const
     {
-        return std::min(get(0), get(1));
+        HORIZONTAL_OP(_mm_min_sd);
     }
 
     inline double horizontal_max(void) const
     {
-        return std::max(get(0), get(1));
+        HORIZONTAL_OP(_mm_max_sd);
+    }
+
+    inline double horizontal_sum(void) const
+    {
+        HORIZONTAL_OP(_mm_add_sd);
     }
     /* @} */
+
+#undef HORIZONTAL_OP
 
 private:
     typedef union

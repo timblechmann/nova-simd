@@ -22,6 +22,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 
 #include "wrap_arguments.hpp"
 #include "detail/math.hpp"
@@ -258,6 +259,11 @@ public:
     inline float horizontal_max(void) const
     {
         return *std::max_element(data_, data_ + size);
+    }
+
+    inline float horizontal_sum(void) const
+    {
+        return std::accumulate(data_, data_ + size, 0);
     }
     /* @} */
 

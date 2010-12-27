@@ -36,6 +36,27 @@ void run_peak(void)
         BOOST_REQUIRE_EQUAL( peak, 1 );
         BOOST_REQUIRE_EQUAL( last, 0.5 );
     }
+
+    {
+        F peak = 0;
+        F rms = 0;
+        F last = nova::peak_rms_vec_simd<F>(in.begin(), &peak, &rms, size);
+
+        BOOST_REQUIRE_EQUAL( peak, 1 );
+        BOOST_REQUIRE_EQUAL( last, 0.5 );
+        BOOST_REQUIRE_EQUAL( rms, 1.25 );
+    }
+
+    {
+        F peak = 0;
+        F rms = 0;
+        F last = nova::peak_rms_vec<F>(in.begin(), &peak, &rms, size);
+
+        BOOST_REQUIRE_EQUAL( peak, 1 );
+        BOOST_REQUIRE_EQUAL( last, 0.5 );
+        BOOST_REQUIRE_EQUAL( rms, 1.25 );
+    }
+
 }
 
 BOOST_AUTO_TEST_CASE( peak_test_float )
