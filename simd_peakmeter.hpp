@@ -36,7 +36,7 @@ namespace nova
 
 /* updates peak, returns last abs(in[n-1]) */
 template <typename F>
-F peak_vec(const F * in, F * peak, unsigned int n)
+inline F peak_vec(const F * in, F * peak, unsigned int n)
 {
     F last;
     F local_peak = *peak;
@@ -87,31 +87,29 @@ inline F peak_vec_simd(const F * in, F * peak, unsigned int n)
     return abs3.get(vec<F>::size - 1);
 }
 
-/* updates peak and squared sum, returns last abs(in[n-1]) */
+/* updates peak and squared sum */
 template <typename F>
-F peak_rms_vec(const F * in, F * peak, F * squared_sum, unsigned int n)
+inline void peak_rms_vec(const F * in, F * peak, F * squared_sum, unsigned int n)
 {
-    F last;
     F local_peak = *peak;
     F local_squared_sum = *squared_sum;
     using namespace std;
 
     do {
         F in_sample = *in++;
-        last = std::fabs(in_sample);
+        F last = std::fabs(in_sample);
         local_peak = max(local_peak, last);
         local_squared_sum += in_sample * in_sample;
     } while(--n);
 
     *peak = local_peak;
     *squared_sum = local_squared_sum;
-    return last;
 }
 
 template <typename F>
-inline F peak_rms_vec_simd(const F * in, F * peak, F * squared_sum, unsigned int n)
+inline void peak_rms_vec_simd(const F * in, F * peak, F * squared_sum, unsigned int n)
 {
-    vec<F> maximum, abs3;
+    vec<F> maximum;
     maximum.load_first(peak);
 
     vec<F> local_squared_sum;
@@ -134,7 +132,7 @@ inline F peak_rms_vec_simd(const F * in, F * peak, F * squared_sum, unsigned int
         vec<F> sqr1 = square(in1);
         vec<F> abs2 = abs(in2);
         vec<F> sqr2 = square(in2);
-        abs3 = abs(in3);
+        vec<F> abs3 = abs(in3);
         vec<F> sqr3 = square(in3);
 
         vec<F> local_max = max_(max_(abs0, abs1),
@@ -149,9 +147,6 @@ inline F peak_rms_vec_simd(const F * in, F * peak, F * squared_sum, unsigned int
     /* horizonal accumulation */
     *peak = maximum.horizontal_max();
     *squared_sum = local_squared_sum.horizontal_sum();
-
-    /* return absolute of last sample */
-    return abs3.get(vec<F>::size - 1);
 }
 
 
