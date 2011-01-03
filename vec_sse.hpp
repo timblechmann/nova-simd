@@ -482,6 +482,7 @@ public:
     /* @{ */
     /** mathematical functions */
 
+#ifdef __SSE2__
     friend inline vec exp(vec const & arg)
     {
         return detail::vec_exp_float(arg);
@@ -497,8 +498,6 @@ public:
         return detail::vec_pow(arg1, arg2);
     }
 
-
-#ifdef __SSE2__
     friend inline vec sin(vec const & arg)
     {
         return detail::vec_sin_float(arg);
@@ -528,6 +527,11 @@ public:
     {
         return detail::vec_atan_float(arg);
     }
+
+    friend inline vec tanh(vec const & arg)
+    {
+        return detail::vec_tanh_float(arg);
+    }
 #else
 
 #define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
@@ -539,6 +543,17 @@ public:
         return ret;                                 \
     }
 
+    APPLY_UNARY_FALLBACK(exp, detail::exp)
+    APPLY_UNARY_FALLBACK(log, detail::log)
+
+    friend inline vec pow(vec const & arg1, vec const & arg2)
+    {
+        vec ret;
+        for (int i = 0; i != 4; ++i)
+            ret.set(i, pow(arg1.get(i), arg2.get(i)));
+        return ret;
+    }
+
     APPLY_UNARY_FALLBACK(sin, detail::sin)
     APPLY_UNARY_FALLBACK(cos, detail::cos)
     APPLY_UNARY_FALLBACK(tan, detail::tan)
@@ -546,13 +561,10 @@ public:
     APPLY_UNARY_FALLBACK(acos, detail::acos)
     APPLY_UNARY_FALLBACK(atan, detail::atan)
 
+    APPLY_UNARY_FALLBACK(tanh, detail::tanh)
+
 #undef APPLY_UNARY_FALLBACK
 #endif
-
-    friend inline vec tanh(vec const & arg)
-    {
-        return detail::vec_tanh_float(arg);
-    }
 
     friend inline vec signed_pow(vec const & lhs, vec const & rhs)
     {
