@@ -21,8 +21,11 @@
 #define VEC_HPP
 
 #include "vec_generic.hpp"
-#ifdef __SSE__
-#include "vec_sse.hpp"
+
+#ifdef __AVX__
+#  include "vec_avx.hpp"
+#elif defined(__SSE__)
+#  include "vec_sse.hpp"
 #endif
 
 #ifdef __SSE2__
