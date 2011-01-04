@@ -24,6 +24,7 @@
 
 #ifdef __SSE2__
 #include <emmintrin.h>
+#include "vec_int_sse2.hpp"
 #endif
 
 #ifdef __SSE4_1__
@@ -186,6 +187,11 @@ public:
     void clear(void)
     {
         data_ = gen_zero();
+    }
+
+    operator __m128 (void) const
+    {
+        return data_;
     }
 
     /* @} */
@@ -483,6 +489,8 @@ public:
     /** mathematical functions */
 
 #ifdef __SSE2__
+    typedef nova::detail::int_vec_sse2 int_vec;
+
     friend inline vec exp(vec const & arg)
     {
         return detail::vec_exp_float(arg);
@@ -618,86 +626,6 @@ public:
 
 #ifdef __SSE2__
     /* @{ */
-    struct int_vec
-    {
-        __m128i data_;
-
-        /* cast */
-        explicit int_vec(vec<float> arg):
-            data_((__m128i)arg.data_)
-        {}
-
-        explicit int_vec(int arg):
-            data_(_mm_set1_epi32(arg))
-        {}
-
-        int_vec(__m128i arg):
-            data_(arg)
-        {}
-
-        int_vec(int_vec const & arg):
-            data_(arg.data_)
-        {}
-
-        int_vec(void)
-        {}
-
-        int_vec & operator+(int_vec const & rhs)
-        {
-            data_ = _mm_add_epi32(data_, rhs.data_);
-            return *this;
-        }
-
-        int_vec & operator-(int_vec const & rhs)
-        {
-            data_ = _mm_sub_epi32(data_, rhs.data_);
-            return *this;
-        }
-
-        #define RELATIONAL_MASK_OPERATOR(op, opcode) \
-        friend int_vec mask_##op(int_vec const & lhs, int_vec const & rhs) \
-        { \
-            return opcode(lhs.data_, rhs.data_); \
-        }
-
-        RELATIONAL_MASK_OPERATOR(lt, _mm_cmplt_epi32)
-        RELATIONAL_MASK_OPERATOR(gt, _mm_cmpgt_epi32)
-        RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_epi32)
-
-        #undef RELATIONAL_MASK_OPERATOR
-
-        friend int_vec operator&(int_vec const & lhs, int_vec const & rhs)
-        {
-            int_vec ret = int_vec (_mm_and_si128(lhs.data_, rhs.data_));
-            return ret;
-        }
-
-        friend inline int_vec andnot(int_vec const & lhs, int_vec const & rhs)
-        {
-            return int_vec(_mm_andnot_si128(lhs.data_, rhs.data_));
-        }
-
-
-        // shift in zeros
-        friend inline int_vec slli(int_vec const & arg, int count)
-        {
-            int_vec ret (_mm_slli_epi32(arg.data_, count));
-            return ret;
-        }
-
-        // shift in zeros
-        friend inline int_vec srli(int_vec const & arg, int count)
-        {
-            int_vec ret (_mm_srli_epi32(arg.data_, count));
-            return ret;
-        }
-
-        vec convert_to_float(void) const
-        {
-            vec ret(_mm_cvtepi32_ps(data_));
-            return ret;
-        }
-    };
 
     vec (int_vec const & rhs):
         data_((__m128)rhs.data_)
