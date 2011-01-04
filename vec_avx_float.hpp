@@ -492,7 +492,7 @@ public:
 
     /* @} */
 
-// private:
+private:
     typedef union
     {
         float f[8];

@@ -652,7 +652,7 @@ public:
     /* @} */
 #endif // __SSE2__
 
-// private:
+private:
     typedef union
     {
         float f[4];

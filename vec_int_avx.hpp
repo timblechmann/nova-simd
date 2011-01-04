@@ -20,6 +20,10 @@
 #ifndef VEC_AVX_INT_HPP
 #define VEC_AVX_INT_HPP
 
+#include <pmmintrin.h>
+
+#include "vec_int_sse2.hpp"
+#include <functional>
 
 namespace nova   {
 namespace detail {
@@ -48,7 +52,7 @@ struct int_vec_avx
     int_vec_avx(void)
     {}
 
-    #define APPLY_M128_OPCODE(op, opcode) \
+#define APPLY_SSE_FUNCTION(op, function) \
     friend int_vec_avx op(int_vec_avx const & lhs, int_vec_avx const & rhs) \
     { \
         __m256 lhs_data = _mm256_castsi256_ps(lhs.data_);       \
@@ -58,36 +62,23 @@ struct int_vec_avx
         __m128 rhs_low =  _mm256_castps256_ps128(rhs_data);    \
         __m128 rhs_hi =   _mm256_extractf128_ps(rhs_data, 1);  \
 \
-        __m128 newlow = (__m128)opcode((__m128i)lhs_low, (__m128i)rhs_low); \
-        __m128 newhi  = (__m128)opcode((__m128i)lhs_hi,  (__m128i)rhs_hi);  \
+        __m128i newlow = function(int_vec_sse2(lhs_low), int_vec_sse2(rhs_low)); \
+        __m128i newhi  = function(int_vec_sse2(lhs_hi),  int_vec_sse2(rhs_hi)); \
 \
-        __m256 result = _mm256_castps128_ps256(newlow);  \
-        result = _mm256_insertf128_ps(result,  newhi, 1);   \
+        __m256i result = _mm256_castsi128_si256(newlow);  \
+        result = _mm256_insertf128_si256(result,  newhi, 1);   \
         return result;   \
     }
 
-private:
-    APPLY_M128_OPCODE(plus, _mm_add_epi32)
-    APPLY_M128_OPCODE(minus, _mm_sub_epi32)
+    APPLY_SSE_FUNCTION(operator +, std::plus<int_vec_sse2>());
+    APPLY_SSE_FUNCTION(operator -, std::minus<int_vec_sse2>());
 
-public:
-    int_vec_avx & operator+(int_vec_avx const & rhs)
-    {
-        *this = plus(*this, rhs);
-        return *this;
-    }
 
-    int_vec_avx & operator-(int_vec_avx const & rhs)
-    {
-        *this = minus(*this, rhs);
-        return *this;
-    }
+    APPLY_SSE_FUNCTION(mask_lt, mask_lt)
+    APPLY_SSE_FUNCTION(mask_gt, mask_gt)
+    APPLY_SSE_FUNCTION(mask_eq, mask_eq)
 
-    APPLY_M128_OPCODE(mask_lt, _mm_cmplt_epi32)
-    APPLY_M128_OPCODE(mask_gt, _mm_cmpgt_epi32)
-    APPLY_M128_OPCODE(mask_eq, _mm_cmpeq_epi32)
-
-    #undef APPLY_M128_OPCODE
+#undef APPLY_SSE_FUNCTION
 
     friend int_vec_avx operator&(int_vec_avx const & lhs, int_vec_avx const & rhs)
     {

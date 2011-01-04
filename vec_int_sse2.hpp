@@ -49,16 +49,19 @@ struct int_vec_sse2
     int_vec_sse2(void)
     {}
 
-    int_vec_sse2 & operator+(int_vec_sse2 const & rhs)
+    operator __m128i (void) const
     {
-        data_ = _mm_add_epi32(data_, rhs.data_);
-        return *this;
+        return data_;
     }
 
-    int_vec_sse2 & operator-(int_vec_sse2 const & rhs)
+    friend int_vec_sse2 operator+(int_vec_sse2 const & lhs, int_vec_sse2 const & rhs)
     {
-        data_ = _mm_sub_epi32(data_, rhs.data_);
-        return *this;
+        return _mm_add_epi32(lhs.data_, rhs.data_);
+    }
+
+    friend int_vec_sse2 operator-(int_vec_sse2 const & lhs, int_vec_sse2 const & rhs)
+    {
+        return _mm_sub_epi32(lhs.data_, rhs.data_);
     }
 
     #define RELATIONAL_MASK_OPERATOR(op, opcode) \
