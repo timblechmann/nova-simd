@@ -71,7 +71,6 @@ struct vec<float>
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 25), 23);
     }
 
-
     static inline __m128 gen_05(void)
     {
        __m128i ones = (__m128i)gen_ones();

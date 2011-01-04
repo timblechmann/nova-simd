@@ -23,7 +23,7 @@
 #include "vec_generic.hpp"
 
 #ifdef __AVX__
-#  include "vec_avx.hpp"
+#  include "vec_avx_float.hpp"
 #elif defined(__SSE__)
 #  include "vec_sse.hpp"
 #endif
