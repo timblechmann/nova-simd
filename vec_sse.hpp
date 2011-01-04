@@ -27,6 +27,10 @@
 #include "vec_int_sse2.hpp"
 #endif
 
+#ifdef __SSE3__
+#include <pmmintrin.h>
+#endif
+
 #ifdef __SSE4_1__
 #include <smmintrin.h>
 #endif
@@ -618,7 +622,16 @@ public:
 
     inline float horizontal_sum(void) const
     {
+#ifdef __SSE3__
+        __m128 accum1 = _mm_hadd_ps(data_, data_);                  /* [0+1, 2+3, 0+1, 2+3] */
+        __m128 elem1  = _mm_shuffle_ps(accum1, accum1,
+                                       _MM_SHUFFLE(1, 1, 1, 1));    /* [2+3, 2+3, 2+3, 2+3,] */
+
+        __m128 result = _mm_add_ps(accum1, elem1);
+        return _mm_cvtss_f32(result);
+#else
         HORIZONTAL_OP(_mm_add_ps, _mm_add_ss)
+#endif
     }
 
 #undef HORIZONTAL_OP
