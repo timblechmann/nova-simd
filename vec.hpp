@@ -28,8 +28,10 @@
 #  include "vec_sse.hpp"
 #endif
 
-#ifdef __SSE2__
-#include "vec_sse2.hpp"
+#ifdef __AVX__
+#  include "vec_avx_double.hpp"
+#elif defined(__SSE2__)
+#  include "vec_sse2.hpp"
 #endif
 
 namespace nova
