@@ -1,6 +1,6 @@
-//  sse2 vector class
+//  avx double-precision vector class
 //
-//  Copyright (C) 2010 Tim Blechmann
+//  Copyright (C) 2011 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by

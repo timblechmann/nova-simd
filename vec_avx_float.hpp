@@ -1,4 +1,4 @@
-//  avx vector class
+//  avx single-precision vector class
 //
 //  Copyright (C) 2011 Tim Blechmann
 //
