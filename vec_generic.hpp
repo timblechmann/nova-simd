@@ -267,6 +267,16 @@ public:
     }
     /* @} */
 
+    float_type * data_handle(void)
+    {
+        return data_;
+    }
+
+    const float_type * data_handle(void) const
+    {
+        return data_;
+    }
+
 private:
     float_type data_[size];
 };
