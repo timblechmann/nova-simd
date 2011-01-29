@@ -22,6 +22,10 @@
 
 #include "vec_generic.hpp"
 
+#ifdef __ALTIVEC__
+#  include "vec_altivec.hpp"
+#endif
+
 #ifdef __AVX__
 #  include "vec_avx_float.hpp"
 #elif defined(__SSE__)

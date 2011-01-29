@@ -251,19 +251,23 @@ public:
 
     /* @{ */
     /** horizontal functions */
-    inline float horizontal_min(void) const
+    inline float_type horizontal_min(void) const
     {
         return *std::min_element(data_, data_ + size);
     }
 
-    inline float horizontal_max(void) const
+    inline float_type horizontal_max(void) const
     {
         return *std::max_element(data_, data_ + size);
     }
 
-    inline float horizontal_sum(void) const
+    inline float_type horizontal_sum(void) const
     {
-        return std::accumulate(data_, data_ + size, 0);
+        float_type * data = (float_type*)&data_;
+        float_type ret = 0;
+        for (int i = 0; i != size; ++i)
+            ret += data[i];
+        return ret;
     }
     /* @} */
 

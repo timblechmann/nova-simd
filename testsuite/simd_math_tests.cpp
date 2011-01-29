@@ -52,7 +52,7 @@ COMPARE_TEST(asin, -1, 1)
 COMPARE_TEST(acos, -0.9, 0.9)
 COMPARE_TEST(atan, -10, 10)
 COMPARE_TEST(tanh, -10, 10)
-COMPARE_TEST(signed_sqrt, 0, 20)
+COMPARE_TEST(signed_sqrt, -20, 20)
 
 
 /* test range: 0, 20 */
