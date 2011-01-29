@@ -30,6 +30,7 @@
 #endif
 
 #include "detail/vec_math.hpp"
+#include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -40,9 +41,22 @@
 namespace nova
 {
 
-template <>
-struct vec<double>
+inline double * get_pointer(__m128d & arg)
 {
+    return (double *)&arg;
+}
+
+inline const double * get_pointer(__m128d const & arg)
+{
+    return (const double *)&arg;
+}
+
+template <>
+struct vec<double>:
+    vec_base<double, __m128d, 2>
+{
+    typedef vec_base<double, __m128d, 2> base;
+
     typedef double float_type;
     typedef __m128d internal_vector_type;
 
@@ -85,7 +99,7 @@ struct vec<double>
     }
 
     vec(__m128d const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -154,11 +168,6 @@ public:
 
     /* @{ */
     /** element access */
-    void set (std::size_t index, double value)
-    {
-        double * data = (double*)&data_;
-        data[index] = value;
-    }
 
     void set_vec (double value)
     {
@@ -247,6 +256,11 @@ public:
     BITWISE_OPERATOR(|, _mm_or_pd)
     BITWISE_OPERATOR(^, _mm_xor_pd)
 
+    friend vec andnot(vec const & lhs, vec const & rhs)
+    {
+        return _mm_andnot_pd(lhs.data_, rhs.data_);
+    }
+
     #define RELATIONAL_MASK_OPERATOR(op, opcode) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
     { \
@@ -268,8 +282,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_blendv_pd(lhs.data_, rhs.data_, bitmask.data_);
 #else
-        return _mm_or_pd(_mm_andnot_pd(bitmask.data_, lhs.data_),
-                        _mm_and_pd(rhs.data_, bitmask.data_));
+        return detail::vec_select(lhs, bitmask, rhs);
 #endif
     }
 
@@ -323,11 +336,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_NEAREST_INT);
 #else
-        vec ret;
-        detail::apply_on_vector<double, size> ((double*)&ret.data_,
-                                              wrap_argument((double*)&arg.data_),
-                                              (double(*)(double const &))detail::round<double>);
-        return ret;
+        return base::round(arg);
 #endif
     }
 
@@ -341,11 +350,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_NEG_INF);
 #else
-        vec ret;
-        detail::apply_on_vector<double, size> ((double*)&ret.data_,
-                                              wrap_argument((double*)&arg.data_),
-                                              (double(*)(double const &))detail::floor<double>);
-        return ret;
+        return base::floor(arg);
 #endif
     }
 
@@ -354,11 +359,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_POS_INF);
 #else
-        vec ret;
-        detail::apply_on_vector<double, size> ((double*)&ret.data_,
-                                              wrap_argument((double*)&arg.data_),
-                                              (double(*)(double const &))detail::ceil<double>);
-        return ret;
+        return base::ceil(arg);
 #endif
     }
     /* @} */
@@ -366,64 +367,29 @@ public:
 
     /* @{ */
     /** mathematical functions */
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        detail::apply_on_vector<double, size> ((double*)&ret.data_, \
-                                               wrap_argument((double*)&arg.data_),    \
-                                               FUNCTION);           \
-        return ret;                                 \
-    }
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
 
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<double, size> ((double*)&ret.data_, \
-                                              wrap_argument((double*)&lhs.data_), \
-                                              wrap_argument((double*)&rhs.data_),  \
-                                              FUNCTION);        \
-        return ret;                                 \
-    }
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
 
-    APPLY_UNARY(sin, detail::sin<double>)
-    APPLY_UNARY(cos, detail::cos<double>)
-    APPLY_UNARY(tan, detail::tan<double>)
-    APPLY_UNARY(asin, detail::asin<double>)
-    APPLY_UNARY(acos, detail::acos<double>)
-    APPLY_UNARY(atan, detail::atan<double>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
 
-    APPLY_UNARY(log, detail::log<double>)
-    APPLY_UNARY(exp, detail::exp<double>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
 
-    APPLY_BINARY(pow, detail::pow<double>)
-
-    APPLY_UNARY(tanh, detail::tanh<double>)
-
-
-#undef APPLY_UNARY
-#undef APPLY_BINARY
-
-    friend inline vec signed_pow(vec const & lhs, vec const & rhs)
-    {
-        return detail::vec_signed_pow(lhs, rhs);
-    }
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
     friend inline vec signed_sqrt(vec const & arg)
     {
         return detail::vec_signed_sqrt(arg);
     }
 
-    friend inline vec log2(vec const & arg)
-    {
-        return detail::vec_log2(arg);
-    }
-
-    friend inline vec log10(vec const & arg)
-    {
-        return detail::vec_log10(arg);
-    }
     /* @} */
 
     /* @{ */
@@ -453,14 +419,6 @@ public:
 
 #undef HORIZONTAL_OP
 
-private:
-    typedef union
-    {
-        double f[2];
-        __m128d m;
-    } cast_union;
-
-    __m128d data_;
 };
 
 } /* namespace nova */
