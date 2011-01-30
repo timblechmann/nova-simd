@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <numeric>
+#include <functional>
 
 #include "detail/math.hpp"
 
@@ -65,6 +66,55 @@ protected:
     }
 
 public:
+    /* @{ */
+    /** io */
+    void load(const WrappedType * src)
+    {
+        WrappedType * data = get_pointer(data_);
+        for (int i = 0; i != size; ++i)
+            data[i] = src[i];
+    }
+
+    void load_first(const WrappedType * src)
+    {
+        WrappedType * data = get_pointer(data_);
+        data[0] = *src;
+
+        for (int i = 1; i != size; ++i)
+            data[i] = 0;
+    }
+
+    void load_aligned(const WrappedType * data)
+    {
+        load(data);
+    }
+
+    void store(WrappedType * dest) const
+    {
+        const WrappedType * data = get_pointer(data_);
+        for (int i = 0; i != size; ++i)
+            dest[i] = data[i];
+    }
+
+    void store_aligned(WrappedType * dest) const
+    {
+        store(dest);
+    }
+
+    void store_aligned_stream(WrappedType * dest) const
+    {
+        store(dest);
+    }
+
+    void clear(void)
+    {
+        set_vec(0);
+    }
+    /* @} */
+
+
+    /* @{ */
+    /** element access */
     WrappedType get (int index) const
     {
         assert(index < size);
@@ -79,9 +129,41 @@ public:
         data[index] = arg;
     }
 
+    void set_vec (WrappedType value)
+    {
+        WrappedType * data = get_pointer(data_);
+        for (int i = 0; i != size; ++i)
+            data[i] = value;
+    }
+
+    WrappedType set_slope(WrappedType start, WrappedType slope)
+    {
+        WrappedType diff = 0;
+        WrappedType * data = get_pointer(data_);
+        for (int i = 0; i != size; ++i)
+        {
+            data[i] = start + diff;
+            diff += slope;
+        }
+        return diff;
+    }
+
+    WrappedType set_exp(WrappedType start, WrappedType curve)
+    {
+        WrappedType value = start;
+        WrappedType * data = get_pointer(data_);
+        for (int i = 0; i != size; ++i)
+        {
+            data[i] = value;
+            value *= curve;
+        }
+        return value;
+    }
+    /* @} */
+
 private:
     template <typename Functor>
-    static always_inline VecType apply_unary(VecType const & arg, Functor & f)
+    static always_inline VecType apply_unary(VecType const & arg, Functor const & f)
     {
         VecType ret;
         const WrappedType * arg_data = get_pointer(arg);
@@ -92,7 +174,7 @@ private:
     }
 
     template <typename Functor>
-    static always_inline VecType apply_binary(VecType const & arg1, VecType const & arg2, Functor & f)
+    static always_inline VecType apply_binary(VecType const & arg1, VecType const & arg2, Functor const & f)
     {
         VecType ret;
         const WrappedType * arg1_data = get_pointer(arg1);
@@ -101,6 +183,81 @@ private:
         for (int i = 0; i != VecSize; ++i)
             ret_data[i] = f(arg1_data[i], arg2_data[i]);
         return ret;
+    }
+
+public:
+    vec_base operator+(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::plus<WrappedType>());
+    }
+
+    vec_base operator-(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::minus<WrappedType>());
+    }
+
+    vec_base operator*(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::multiplies<WrappedType>());
+    }
+
+    vec_base operator/(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::divides<WrappedType>());
+    }
+
+    vec_base & operator+=(vec_base const & rhs)
+    {
+        data_ = vec_base::apply_binary(data_, rhs.data_, std::plus<WrappedType>());
+        return *this;
+    }
+
+    vec_base & operator-=(vec_base const & rhs)
+    {
+        data_ = vec_base::apply_binary(data_, rhs.data_, std::minus<WrappedType>());
+        return *this;
+    }
+
+    vec_base & operator*=(vec_base const & rhs)
+    {
+        data_ = vec_base::apply_binary(data_, rhs.data_, std::multiplies<WrappedType>());
+        return *this;
+    }
+
+    vec_base & operator/=(vec_base const & rhs)
+    {
+        data_ = vec_base::apply_binary(data_, rhs.data_, std::divides<WrappedType>());
+        return *this;
+    }
+
+    vec_base operator<(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::less<WrappedType>());
+    }
+
+    vec_base operator<=(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::less_equal<WrappedType>());
+    }
+
+    vec_base operator==(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::equal_to<WrappedType>());
+    }
+
+    vec_base operator!=(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::not_equal_to<WrappedType>());
+    }
+
+    vec_base operator>(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::greater<WrappedType>());
+    }
+
+    vec_base operator>=(vec_base const & rhs) const
+    {
+        return vec_base::apply_binary(data_, rhs.data_, std::greater_equal<WrappedType>());
     }
 
 #define DEFINE_UNARY_STATIC(NAME, METHOD)                   \
@@ -141,6 +298,15 @@ protected:
     DEFINE_BINARY_STATIC(pow, detail::pow)
     DEFINE_BINARY_STATIC(signed_pow, detail::signed_pow)
 
+    DEFINE_UNARY_STATIC(abs, detail::fabs)
+    DEFINE_UNARY_STATIC(sign, detail::sign)
+    DEFINE_UNARY_STATIC(square, detail::square)
+    DEFINE_UNARY_STATIC(cube, detail::cube)
+
+    DEFINE_BINARY_STATIC(max_, detail::max)
+    DEFINE_BINARY_STATIC(min_, detail::min)
+
+public:
     WrappedType horizontal_min(void) const
     {
         const WrappedType * data = get_pointer(data_);
@@ -176,6 +342,7 @@ protected:
     {                                                           \
         return base::NAME(arg1.data_, arg2.data_);              \
     }
+
 
 #undef always_inline
 
