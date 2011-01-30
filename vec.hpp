@@ -22,6 +22,10 @@
 
 #include "vec_generic.hpp"
 
+#ifdef __ARM_NEON__
+#  include "vec_neon.hpp"
+#endif
+
 #ifdef __ALTIVEC__
 #  include "vec_altivec.hpp"
 #endif
