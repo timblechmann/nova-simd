@@ -26,21 +26,53 @@
 
 #include "wrap_arguments.hpp"
 #include "detail/math.hpp"
+#include "vec_base.hpp"
 
 namespace nova
 {
 
-template <typename FloatType>
-struct vec
+namespace detail
 {
+
+template <typename T, int size>
+struct array
+{
+    friend T* get_pointer(array & arg)
+    {
+        return arg.data;
+    }
+
+    friend const T * get_pointer(array const & arg)
+    {
+        return arg.data;
+    }
+
+    T operator[](int index) const
+    {
+        return data[index];
+    }
+
+    T & operator[](int index)
+    {
+        return data[index];
+    }
+
+    T data[4];
+};
+
+}
+
+template <typename FloatType>
+class vec:
+    public vec_base<FloatType, detail::array<FloatType, 4>, 4>
+{
+    typedef vec_base<FloatType, detail::array<FloatType, 4>, 4> base;
+
 public:
     typedef FloatType float_type;
 
     static const int size = 4;
     static const int objects_per_cacheline = 64/sizeof(float_type);
-
-    typedef float_type (*unary_fn)(float_type);
-    typedef float_type (*binary_fn)(float_type, float_type);
 
     /* @{ */
     /** constructors */
@@ -49,237 +81,78 @@ public:
 
     vec(double f)
     {
-        set_vec(f);
+        base::set_vec(f);
     }
 
     vec(float f)
     {
-        set_vec(f);
+        base::set_vec(f);
     }
 
-    vec(vec const & rhs)
+    vec(vec const & rhs):
+        base(rhs.data_)
+    {}
+
+    vec(detail::array<FloatType, 4> const & rhs)
     {
-        for (int i = 0; i != size; ++i)
-            data_[i] = rhs.data_[i];
+        base::data_ = rhs;
     }
+
+    vec(base const & arg):
+        base(arg)
+    {}
+
+public:
     /* @} */
 
-    /* @{ */
-    /** io */
-    void load(const float_type * data)
-    {
-        for (int i = 0; i != size; ++i)
-            data_[i] = data[i];
-    }
-
-    void load_first(const float_type * data)
-    {
-        data_[0] = *data;
-
-        for (int i = 1; i != size; ++i)
-            data_[i] = 0;
-    }
-
-    void load_aligned(const float_type * data)
-    {
-        load(data);
-    }
-
-    void store(float_type * dest) const
-    {
-        for (int i = 0; i != size; ++i)
-            dest[i] = data_[i];
-    }
-
-    void store_aligned(float_type * dest) const
-    {
-        store(dest);
-    }
-
-    void store_aligned_stream(float_type * dest) const
-    {
-        store(dest);
-    }
-
-    void clear(void)
-    {
-        set_vec(0);
-    }
-    /* @} */
-
-    /* @{ */
-    /** element access */
-    void set (std::size_t index, float_type value)
-    {
-        data_[index] = value;
-    }
-
-    void set_vec (float_type value)
-    {
-        for (int i = 0; i != size; ++i)
-            data_[i] = value;
-    }
-
-    float_type set_slope(float_type start, float_type slope)
-    {
-        float_type diff = 0;
-        for (int i = 0; i != size; ++i)
-        {
-            data_[i] = start + diff;
-            diff += slope;
-        }
-        return diff;
-    }
-
-    float_type set_exp(float_type start, float_type curve)
-    {
-        float_type value = start;
-        for (int i = 0; i != size; ++i)
-        {
-            data_[i] = value;
-            value *= curve;
-        }
-        return value;
-    }
-
-    float_type get (std::size_t index)
-    {
-        return data_[index];
-    }
-    /* @} */
-
-    /* @{ */
-    /** arithmetic operators */
-#define OPERATOR_ASSIGNMENT(op) \
-    vec & operator op(vec const & rhs) \
-    { \
-        for (int i = 0; i != size; ++i) \
-            data_[i] op rhs.data_[i]; \
-        return *this; \
-    }
-
-    OPERATOR_ASSIGNMENT(+=)
-    OPERATOR_ASSIGNMENT(-=)
-    OPERATOR_ASSIGNMENT(*=)
-    OPERATOR_ASSIGNMENT(/=)
-
-#define ARITHMETIC_OPERATOR(op) \
-    vec operator op(vec const & rhs) const \
-    { \
-        vec ret; \
-        for (int i = 0; i != size; ++i) \
-            ret.data_[i] = data_[i] op rhs.data_[i]; \
-        return ret; \
-    }
-
-    ARITHMETIC_OPERATOR(+)
-    ARITHMETIC_OPERATOR(-)
-    ARITHMETIC_OPERATOR(*)
-    ARITHMETIC_OPERATOR(/)
-
-    ARITHMETIC_OPERATOR(<)
-    ARITHMETIC_OPERATOR(<=)
-    ARITHMETIC_OPERATOR(>)
-    ARITHMETIC_OPERATOR(>=)
-    ARITHMETIC_OPERATOR(==)
-    ARITHMETIC_OPERATOR(!=)
-
-    /* @} */
 
     /* @{ */
     /** unary functions */
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        detail::apply_on_vector<float_type, size> (ret.data_, wrap_argument(arg.data_),                \
-                                                   FUNCTION);    \
-        return ret;                                 \
-    }
-
-    APPLY_UNARY(abs, detail::fabs<float_type>)
-    APPLY_UNARY(sign, detail::sign<float_type>)
-    APPLY_UNARY(square, detail::square<float_type>)
-    APPLY_UNARY(cube, detail::cube<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(abs)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sign)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(square)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cube)
     /* @} */
 
     /* @{ */
-
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<float_type, size> (ret.data_, wrap_argument(lhs.data_), wrap_argument(rhs.data_),  \
-                                                   FUNCTION);   \
-        return ret;                                 \
-    }
-
-    APPLY_BINARY(max_, detail::max<float_type>)
-    APPLY_BINARY(min_, detail::min<float_type>)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(max_)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(min_)
     /* @} */
 
 
     /* @{ */
     /** rounding functions */
-    APPLY_UNARY(round, detail::round<float_type>)
-    APPLY_UNARY(frac, detail::frac<float_type>)
-    APPLY_UNARY(floor, detail::floor<float_type>)
-    APPLY_UNARY(ceil, detail::ceil<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(round)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(frac)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(floor)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(ceil)
     /* @} */
 
     /* @{ */
     /** mathematical functions */
-    APPLY_UNARY(sin, detail::sin<float_type>)
-    APPLY_UNARY(cos, detail::cos<float_type>)
-    APPLY_UNARY(tan, detail::tan<float_type>)
-    APPLY_UNARY(asin, detail::asin<float_type>)
-    APPLY_UNARY(acos, detail::acos<float_type>)
-    APPLY_UNARY(atan, detail::atan<float_type>)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
 
-    APPLY_UNARY(tanh, detail::tanh<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
 
-    APPLY_UNARY(log, detail::log<float_type>)
-    APPLY_UNARY(log2, detail::log2<float_type>)
-    APPLY_UNARY(log10, detail::log10<float_type>)
-    APPLY_UNARY(exp, detail::exp<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
 
-    APPLY_UNARY(signed_sqrt, detail::signed_sqrt<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
 
-    APPLY_BINARY(pow, detail::pow<float_type>)
-    APPLY_BINARY(signed_pow, detail::signed_pow<float_type>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
+
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
     /* @} */
-
-    /* @{ */
-    /** horizontal functions */
-    inline float_type horizontal_min(void) const
-    {
-        return *std::min_element(data_, data_ + size);
-    }
-
-    inline float_type horizontal_max(void) const
-    {
-        return *std::max_element(data_, data_ + size);
-    }
-
-    inline float_type horizontal_sum(void) const
-    {
-        float_type * data = (float_type*)&data_;
-        float_type ret = 0;
-        for (int i = 0; i != size; ++i)
-            ret += data[i];
-        return ret;
-    }
-    /* @} */
-
-private:
-    float_type data_[size];
 };
 
 } /* namespace nova */
-
-#undef OPERATOR_ASSIGNMENT
-#undef ARITHMETIC_OPERATOR
-#undef APPLY_UNARY
-#undef APPLY_BINARY
 
 #endif /* VEC_GENERIC_HPP */

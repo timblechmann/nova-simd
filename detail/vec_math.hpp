@@ -568,6 +568,12 @@ always_inline VecType vec_log10(VecType arg)
     return log(arg) * VecType((typename VecType::float_type)rlog10);
 }
 
+template <typename VecType>
+always_inline VecType vec_select(VecType lhs, VecType rhs, VecType bitmask)
+{
+    return andnot(bitmask, lhs) | (bitmask & rhs);
+}
+
 }
 }
 

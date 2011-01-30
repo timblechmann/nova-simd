@@ -36,6 +36,7 @@
 #endif
 
 #include "detail/vec_math.hpp"
+#include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -46,11 +47,23 @@
 namespace nova
 {
 
+inline float * get_pointer(__m128 & arg)
+{
+    return (float *)&arg;
+}
+
+inline const float * get_pointer(__m128 const & arg)
+{
+    return (const float *)&arg;
+}
+
 template <>
-struct vec<float>
+struct vec<float>:
+    vec_base<float, __m128, 4>
 {
     typedef __m128 internal_vector_type;
     typedef float float_type;
+    typedef vec_base<float, __m128, 4> base;
 
 #ifdef __SSE2__
     static inline __m128 gen_sign_mask(void)
@@ -132,7 +145,7 @@ struct vec<float>
     }
 
     vec(__m128 const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -149,9 +162,9 @@ public:
         set_vec(f);
     }
 
-    vec(vec const & rhs)
+    vec(vec const & rhs):
+        base(rhs)
     {
-        data_ = rhs.data_;
     }
     /* @} */
 
@@ -201,9 +214,9 @@ public:
 
     /* @{ */
     /** element access */
+#ifdef __SSE4_1__
     void set (std::size_t index, float value)
     {
-#ifdef __SSE4_1__
         __m128 tmp = _mm_set_ss(value);
 
         switch (index)
@@ -224,11 +237,8 @@ public:
             data_ = _mm_insert_ps(data_, tmp, 3 << 4);
             break;
         }
-#else
-        float * data = (float*)&data_;
-        data[index] = value;
-#endif
     }
+#endif
 
     void set_vec (float value)
     {
@@ -368,10 +378,10 @@ public:
     RELATIONAL_OPERATOR(!=, _mm_cmpneq_ps)
 
     /* @{ */
-#define BITWISE_OPERATOR(op, opcode) \
-    vec operator op(vec const & rhs) const \
-    { \
-        return opcode(data_, rhs.data_); \
+#define BITWISE_OPERATOR(op, opcode)        \
+    vec operator op(vec const & rhs) const  \
+    {                                       \
+        return opcode(data_, rhs.data_);    \
     }
 
     BITWISE_OPERATOR(&, _mm_and_ps)
@@ -383,10 +393,12 @@ public:
         return _mm_andnot_ps(lhs.data_, rhs.data_);
     }
 
-    #define RELATIONAL_MASK_OPERATOR(op, opcode) \
-    friend vec mask_##op(vec const & lhs, vec const & rhs) \
-    { \
-        return opcode(lhs.data_, rhs.data_); \
+#undef BITWISE_OPERATOR
+
+#define RELATIONAL_MASK_OPERATOR(op, opcode)                \
+    friend vec mask_##op(vec const & lhs, vec const & rhs)  \
+    {                                                       \
+        return opcode(lhs.data_, rhs.data_);                \
     }
 
     RELATIONAL_MASK_OPERATOR(lt, _mm_cmplt_ps)
@@ -396,7 +408,7 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
 
-    #undef RELATIONAL_MASK_OPERATOR
+#undef RELATIONAL_MASK_OPERATOR
 
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
@@ -404,8 +416,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_blendv_ps(lhs.data_, rhs.data_, bitmask.data_);
 #else
-        return _mm_or_ps(_mm_andnot_ps(bitmask.data_, lhs.data_),
-                        _mm_and_ps(rhs.data_, bitmask.data_));
+        return detail::vec_select(lhs, rhs, bitmask);
 #endif
     }
 
@@ -491,6 +502,11 @@ public:
     /* @{ */
     /** mathematical functions */
 
+    friend inline vec signed_sqrt(vec const & arg)
+    {
+        return detail::vec_signed_sqrt(arg);
+    }
+
 #ifdef __SSE2__
     typedef nova::detail::int_vec_sse2 int_vec;
 
@@ -543,48 +559,10 @@ public:
     {
         return detail::vec_tanh_float(arg);
     }
-#else
-
-#define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        for (int i = 0; i != 4; ++i)                \
-            ret.set(i, FUNCTION(arg.get(i)));       \
-        return ret;                                 \
-    }
-
-    APPLY_UNARY_FALLBACK(exp, detail::exp)
-    APPLY_UNARY_FALLBACK(log, detail::log)
-
-    friend inline vec pow(vec const & arg1, vec const & arg2)
-    {
-        vec ret;
-        for (int i = 0; i != 4; ++i)
-            ret.set(i, pow(arg1.get(i), arg2.get(i)));
-        return ret;
-    }
-
-    APPLY_UNARY_FALLBACK(sin, detail::sin)
-    APPLY_UNARY_FALLBACK(cos, detail::cos)
-    APPLY_UNARY_FALLBACK(tan, detail::tan)
-    APPLY_UNARY_FALLBACK(asin, detail::asin)
-    APPLY_UNARY_FALLBACK(acos, detail::acos)
-    APPLY_UNARY_FALLBACK(atan, detail::atan)
-
-    APPLY_UNARY_FALLBACK(tanh, detail::tanh)
-
-#undef APPLY_UNARY_FALLBACK
-#endif
 
     friend inline vec signed_pow(vec const & lhs, vec const & rhs)
     {
         return detail::vec_signed_pow(lhs, rhs);
-    }
-
-    friend inline vec signed_sqrt(vec const & arg)
-    {
-        return detail::vec_signed_sqrt(arg);
     }
 
     friend inline vec log2(vec const & arg)
@@ -596,6 +574,27 @@ public:
     {
         return detail::vec_log10(arg);
     }
+#else
+
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
+
+#endif
     /* @} */
 
     /* @{ */
@@ -640,7 +639,7 @@ public:
     /* @{ */
 
     vec (int_vec const & rhs):
-        data_((__m128)rhs.data_)
+        base((__m128)rhs.data_)
     {}
 
     int_vec truncate_to_int(void) const
@@ -651,15 +650,6 @@ public:
 
     /* @} */
 #endif // __SSE2__
-
-private:
-    typedef union
-    {
-        float f[4];
-        __m128 m;
-    } cast_union;
-
-    __m128 data_;
 };
 
 } /* namespace nova */
