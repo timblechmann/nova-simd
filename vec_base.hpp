@@ -21,7 +21,6 @@
 #define VEC_BASE_HPP
 
 #include <cassert>
-#include <numeric>
 #include <functional>
 
 #include "detail/math.hpp"
@@ -322,7 +321,10 @@ public:
     WrappedType horizontal_sum(void) const
     {
         const WrappedType * data = get_pointer(data_);
-        return std::accumulate(data, data + size, 0);
+        WrappedType ret = 0;
+        for (int i = 0; i != size; ++i)
+            ret += data[i];
+        return ret;
     }
 
 protected:
