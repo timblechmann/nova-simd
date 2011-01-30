@@ -74,3 +74,21 @@ BOOST_AUTO_TEST_CASE( get_set )
     test_get_set<double>();
     test_gen_float();
 }
+
+template <typename T>
+void test_slope(void)
+{
+    typedef vec<T> vec_t;
+    vec_t vec;
+    vec.set_slope(0, 1);
+
+    for (int i = 0; i != vec_t::size; ++i)
+        BOOST_REQUIRE_CLOSE_FRACTION( vec.get(i), i, 0.001);
+}
+
+BOOST_AUTO_TEST_CASE( slope )
+{
+    test_slope<float>();
+    test_slope<double>();
+}
+
