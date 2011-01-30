@@ -5,12 +5,12 @@
 
 #include <cmath>
 
+#ifdef __SSE__
 #include "../simd_utils.hpp"
 
 using namespace nova;
 using namespace std;
 
-#ifdef __SSE__
 
 void test_register(__m128 arg, float f)
 {
