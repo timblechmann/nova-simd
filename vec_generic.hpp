@@ -148,7 +148,6 @@ public:
 
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
-
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
     /* @} */
 };

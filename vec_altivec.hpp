@@ -25,6 +25,7 @@
 #include "detail/vec_math.hpp"
 #include "vec_int_altivec.hpp"
 #include "detail/math.hpp"
+#include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -35,14 +36,26 @@
 namespace nova
 {
 
-template <>
-struct vec<float>
+inline float * get_pointer(vector float & arg)
 {
+    return (float *)&arg;
+}
 
+inline const float * get_pointer(vector float const & arg)
+{
+    return (const float *)&arg;
+}
+
+template <>
+struct vec<float>:
+    vec_base<float, vector float, 4>
+{
     typedef vector float internal_vector_type;
     typedef float float_type;
 
 private:
+    typedef vec_base<float, vector float, 4> base;
+
     static internal_vector_type set_vector(float f0, float f1, float f2, float f3)
     {
 #ifdef __GNUC__
@@ -50,7 +63,6 @@ private:
 #else
 #error compiler not supported
 #endif
-
     }
 
     static internal_vector_type set_vector(float f)
@@ -111,7 +123,7 @@ public:
     }
 
     vec(internal_vector_type const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -128,64 +140,57 @@ public:
         set_vec(f);
     }
 
-    vec(vec const & rhs)
-    {
-        data_ = rhs.data_;
-    }
+    vec(vec const & rhs):
+        base(rhs.data_)
+    {}
     /* @} */
 
     /* @{ */
     /** io */
     void load(const float * data)
     {
-        data_ = set_vector(data[0], data[1], data[2], data[3]);
+        base::data_ = vec_ld(0, data);
     }
 
     void load_aligned(const float * data)
     {
-        data_ = vec_ld(0, data);
+        base::data_ = vec_ld(0, data);
     }
 
     void load_first(const float * data)
     {
-        data_ = vec_lde(0, data);
+        base::data_ = vec_lde(0, data);
     }
 
     void store(float * dest) const
     {
-        vec_st(data_, 0, dest);
+        vec_st(base::data_, 0, dest);
     }
 
     void store_aligned(float * dest) const
     {
-        vec_st(data_, 0, dest);
+        vec_st(base::data_, 0, dest);
     }
 
     void store_aligned_stream(float * dest) const
     {
-        vec_st(data_, 0, dest);
+        vec_st(base::data_, 0, dest);
     }
 
     void clear(void)
     {
-        data_ = gen_zero();
+        base::data_ = gen_zero();
     }
 
     operator internal_vector_type (void) const
     {
-        return data_;
+        return base::data_;
     }
 
     /* @} */
 
     /* @{ */
     /** element access */
-    void set (std::size_t index, float value)
-    {
-        float * data = (float*)&data_;
-        data[index] = value;
-    }
-
     void set_vec (float value)
     {
         data_ = set_vector(value, value, value, value);
@@ -207,12 +212,6 @@ public:
         float v3 = v2 * curve;
         data_ = set_vector(start, v1, v2, v3);
         return v3 * curve;
-    }
-
-    float get (std::size_t index) const
-    {
-        float * data = (float*)&data_;
-        return data[index];
     }
     /* @} */
 
@@ -364,11 +363,6 @@ public:
 
     friend always_inline vec sign(vec const & arg)
     {
-/*        vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.set(i, detail::sign(arg.get(i)));
-        return ret;*/
-
         return detail::vec_sign(arg);
     }
 
@@ -427,7 +421,6 @@ public:
 
     /* @{ */
     /** rounding functions */
-
     friend inline vec round(vec const & arg)
     {
         return detail::vec_round_float(arg);
@@ -455,6 +448,7 @@ public:
     /** mathematical functions */
 
 #if 0
+    // FIXME: vector math support seems to be broken
     typedef nova::detail::int_vec_altivec int_vec;
 
     friend inline vec exp(vec const & arg)
@@ -506,39 +500,6 @@ public:
     {
         return detail::vec_tanh_float(arg);
     }
-#else
-
-#define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        for (int i = 0; i != 4; ++i)                \
-            ret.set(i, FUNCTION(arg.get(i)));       \
-        return ret;                                 \
-    }
-
-    APPLY_UNARY_FALLBACK(exp, detail::exp)
-    APPLY_UNARY_FALLBACK(log, detail::log)
-
-    friend inline vec pow(vec const & arg1, vec const & arg2)
-    {
-        vec ret;
-        for (int i = 0; i != 4; ++i)
-            ret.set(i, pow(arg1.get(i), arg2.get(i)));
-        return ret;
-    }
-
-    APPLY_UNARY_FALLBACK(sin, detail::sin)
-    APPLY_UNARY_FALLBACK(cos, detail::cos)
-    APPLY_UNARY_FALLBACK(tan, detail::tan)
-    APPLY_UNARY_FALLBACK(asin, detail::asin)
-    APPLY_UNARY_FALLBACK(acos, detail::acos)
-    APPLY_UNARY_FALLBACK(atan, detail::atan)
-
-    APPLY_UNARY_FALLBACK(tanh, detail::tanh)
-
-#undef APPLY_UNARY_FALLBACK
-#endif
 
     friend inline vec signed_pow(vec const & lhs, vec const & rhs)
     {
@@ -547,13 +508,7 @@ public:
 
     friend inline vec signed_sqrt(vec const & arg)
     {
-        vec ret;
-        for (int i = 0; i != size; ++i)
-            ret.set(i, detail::signed_sqrt(arg.get(i)));
-        return ret;
-
-        // FIXME: this seems to be broken
-        // return detail::vec_signed_sqrt(arg);
+        return detail::vec_signed_sqrt(arg);
     }
 
     friend inline vec log2(vec const & arg)
@@ -565,34 +520,7 @@ public:
     {
         return detail::vec_log10(arg);
     }
-    /* @} */
 
-    /* @{ */
-
-    inline float horizontal_min(void) const
-    {
-        float * data = (float*)&data_;
-        return *std::min_element(data, data + size);
-    }
-
-    inline float horizontal_max(void) const
-    {
-        float * data = (float*)&data_;
-        return *std::max_element(data, data + size);
-    }
-
-    inline float horizontal_sum(void) const
-    {
-        float * data = (float*)&data_;
-        float ret = 0;
-        for (int i = 0; i != size; ++i)
-            ret += data[i];
-        return ret;
-    }
-    /* @} */
-
-    /* @{ */
-#if 0
     vec (int_vec const & rhs):
         data_((internal_vector_type)rhs.data_)
     {}
@@ -601,17 +529,31 @@ public:
     {
         return int_vec(vec_ctu(data_, 0));
     }
+
+#else
+
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
+
 #endif
     /* @} */
-
-private:
-    typedef union
-    {
-        float f[4];
-        internal_vector_type m;
-    } cast_union;
-
-    internal_vector_type data_;
 };
 
 } /* namespace nova */
