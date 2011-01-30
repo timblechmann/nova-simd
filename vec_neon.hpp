@@ -22,6 +22,7 @@
 
 #include <arm_neon.h>
 
+#include "vec_base.hpp"
 #include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -33,10 +34,40 @@
 namespace nova
 {
 
-template <>
-struct vec<float>
+inline float * get_pointer(float32x4_t & arg)
 {
+    return (float *)&arg;
+}
 
+inline const float * get_pointer(float32x4_t const & arg)
+{
+    return (const float *)&arg;
+}
+
+template <>
+struct vec<float>:
+    vec_base<float, float32x4_t, 4>
+{
+private:
+    typedef float32x4_t internal_vector_type;
+    typedef vec_base<float, float32x4_t, 4> base;
+
+    static float32x4_t set_vector(float f0, float f1, float f2, float f3)
+    {
+        float32x4_t ret;
+        ret = vsetq_lane_f32(f0, ret, 0);
+        ret = vsetq_lane_f32(f1, ret, 1);
+        ret = vsetq_lane_f32(f2, ret, 2);
+        ret = vsetq_lane_f32(f3, ret, 3);
+        return ret;
+    }
+
+    static float32x4_t set_vector(float f)
+    {
+        return set_vector(f, f, f, f);
+    }
+
+public:
     static inline float32x4_t gen_sign_mask(void)
     {
         static const int sign_mask = 0x80000000;
@@ -66,8 +97,28 @@ struct vec<float>
         return vdupq_n_f32(0.f);
     }
 
+    static inline internal_vector_type gen_exp_mask(void)
+    {
+        return set_bitmask(0x7F800000);
+    }
+
+    static inline internal_vector_type gen_exp_mask_1(void)
+    {
+        return set_bitmask(0x3F000000);
+    }
+
+    static inline internal_vector_type set_bitmask(unsigned int mask)
+    {
+        union {
+            unsigned int i;
+            float f;
+        } u;
+        u.i = mask;
+        return set_vector(u.f);
+    }
+
     vec(float32x4_t const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -79,7 +130,7 @@ public:
     vec(void)
     {}
 
-    explicit vec(float f)
+    vec(float f)
     {
         set_vec(f);
     }
@@ -94,7 +145,7 @@ public:
     /** io */
     void load(const float * data)
     {
-        data_ = vld1q_f32(data);
+        base::data_ = vld1q_f32((const float32_t*)data);
     }
 
 // TODO check what's available re alignment in NEON
@@ -107,15 +158,16 @@ public:
 // e.g. zero it all, then vld1q_lane_f32() for the first one
     void load_first(const float * data)
     {
-        data_[0] = *data;
+        float * ptr = get_pointer(data_);
+        ptr[0] = *data;
 
         for (int i = 1; i != size; ++i)
-            data_[i] = 0;
+            ptr[i] = 0;
     }
 
     void store(float * dest) const
     {
-        vst1q_f32(dest, data_);
+        vst1q_f32((float32_t*)dest, data_);
     }
 
 // TODO check what's available re alignment in NEON
@@ -127,7 +179,7 @@ public:
 // TODO check what's available re alignment in NEON
     void store_aligned_stream(float * dest) const
     {
-        store(dest, data_);
+        store(dest);
     }
 
     // no particular setzero intrinsic
@@ -142,48 +194,62 @@ public:
     /** element access */
     void set (std::size_t index, float value)
     {
-		data_ = vsetq_lane_f32(value, data_, index);
-	}
+        switch (index) {
+            case 0:
+                data_ = vsetq_lane_f32(value, data_, 0);
+                return;
+            case 1:
+                data_ = vsetq_lane_f32(value, data_, 1);
+                return;
+            case 2:
+                data_ = vsetq_lane_f32(value, data_, 2);
+                return;
+            case 3:
+                data_ = vsetq_lane_f32(value, data_, 3);
+                return;
+        }
+        assert(false);
+    }
 
-// TODO surely we could do this in one?
     void set_vec (float value)
     {
-		data_ = vsetq_lane_f32(value, data_, 0);
-		data_ = vsetq_lane_f32(value, data_, 1);
-		data_ = vsetq_lane_f32(value, data_, 2);
-		data_ = vsetq_lane_f32(value, data_, 3);
-        //for (int i = 0; i != size; ++i)
-        //    data_[i] = value;
+        data_ = vdupq_n_f32(value);
     }
 
-	// still generic
     float set_slope(float start, float slope)
     {
-        float diff = 0;
-        for (int i = 0; i != size; ++i)
-        {
-            data_[i] = start + diff;
-            diff += slope;
-        }
-        return diff;
+        data_ = set_vector(start,
+                           start + slope,
+                           start + slope + slope,
+                           start + slope + slope + slope);
+
+        return start + slope + slope + slope + slope;
     }
 
-	// still generic
     float set_exp(float start, float curve)
     {
-        float value = start;
-        for (int i = 0; i != size; ++i)
-        {
-            data_[i] = value;
-            value *= curve;
-        }
-        return value;
+        data_ = set_vector(start,
+                           start * curve,
+                           start * curve * curve,
+                           start * curve * curve * curve);
+
+        return start * curve * curve * curve * curve;
     }
 
-    float get (std::size_t index)
+    float get (std::size_t index) const
     {
-		return vgetq_lane_f32(data_, (const int)index);
-	}
+        switch (index) {
+            case 0:
+                return vgetq_lane_f32(data_, 0);
+            case 1:
+                return vgetq_lane_f32(data_, 1);
+            case 2:
+                return vgetq_lane_f32(data_, 2);
+            case 3:
+                return vgetq_lane_f32(data_, 3);
+        }
+        assert(false);
+    }
     /* @} */
 
     /* @{ */
@@ -200,9 +266,10 @@ public:
     OPERATOR_ASSIGNMENT(*=, vmulq_f32)
     vec & operator /=(vec const & rhs)
     {
-    	// No fancy divide available in NEON
+        const float * rhs_ptr = get_pointer(rhs.data_);
+        float * data_ptr = get_pointer(data_);
         for (int i = 0; i != size; ++i)
-            data_[i] /= rhs.data_[i];
+            data_ptr[i] /= rhs_ptr[i];
         return *this;
     }
 
@@ -215,23 +282,31 @@ public:
     ARITHMETIC_OPERATOR(+, vaddq_f32)
     ARITHMETIC_OPERATOR(-, vsubq_f32)
     ARITHMETIC_OPERATOR(*, vmulq_f32)
+
     vec operator /(vec const & rhs) const
     {
-    	// No fancy divide available in NEON
         vec ret;
+        const float * rhs_ptr = get_pointer(rhs.data_);
+        const float * data_ptr = get_pointer(data_);
+        float * ret_ptr = get_pointer(ret.data_);
         for (int i = 0; i != size; ++i)
-            ret.data_[i] = data_[i] / rhs.data_[i];
+            ret_ptr[i] = data_ptr[i] / rhs_ptr[i];
         return ret;
     }
 
-//This is done similarly to the SSE version but with reinterpret casts
-// since the comparison result is done on integers, and AND is integer only.
+private:
+    static uint32x4_t vcneqq_f32(float32x4_t a, float32x4_t b)
+    {
+        return vmvnq_u32(vceqq_f32(a, b));
+    }
+
+public:
 #define RELATIONAL_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
     { \
         const uint32x4_t one = vreinterpretq_u32_f32(gen_one()); \
-        return vreinterpretq_f32_u32(vandq_u32( \
-            opcode(data_, rhs.data_), one)); \
+        uint32x4_t mask = opcode(data_, rhs.data_); \
+        return vreinterpretq_f32_u32(vandq_u32(mask, one)); \
     }
 
      RELATIONAL_OPERATOR(<, vcltq_f32)
@@ -239,16 +314,9 @@ public:
      RELATIONAL_OPERATOR(>, vcgtq_f32)
      RELATIONAL_OPERATOR(>=, vcgeq_f32)
      RELATIONAL_OPERATOR(==, vceqq_f32)
-	// No atomic "neq" so here we do "eq" then bitwise-not
-    vec operator !=(vec const & rhs) const
-    {
-        const uint32x4_t one = vreinterpretq_u32_f32(gen_one());
-        return vreinterpretq_f32_u32(vandq_u32(
-            vmvnq_u32(vceqq_f32(data_, rhs.data_)), one));
-    }
+     RELATIONAL_OPERATOR(!=, vcneqq_f32)
 
     /* @{ */
-    // Again, reinterprets added here
 #define BITWISE_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
     { \
@@ -260,12 +328,11 @@ public:
     BITWISE_OPERATOR(|, vorrq_u32)
     BITWISE_OPERATOR(^, veorq_u32)
 
-//TODO frankly I'm not sure what these "relational mask operators" are for so may have made a mistake
-    #define RELATIONAL_MASK_OPERATOR(op, opcode) \
+#define RELATIONAL_MASK_OPERATOR(op, opcode) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
     { \
         return vreinterpretq_f32_u32(opcode( \
-            vreinterpretq_u32_f32(lhs.data_), vreinterpretq_u32_f32(rhs.data_))); \
+            lhs.data_, rhs.data_)); \
     }
 
     RELATIONAL_MASK_OPERATOR(lt, vcltq_f32)
@@ -273,18 +340,12 @@ public:
     RELATIONAL_MASK_OPERATOR(gt, vcgtq_f32)
     RELATIONAL_MASK_OPERATOR(ge, vcgeq_f32)
     RELATIONAL_MASK_OPERATOR(eq, vceqq_f32)
-	// No atomic "neq" so here we do "eq" then bitwise-not
-    friend vec mask_neq(vec const & lhs, vec const & rhs) \
-    { \
-        return vreinterpretq_f32_u32(vmvnq_u32(vceqq_f32( \
-            vreinterpretq_u32_f32(lhs.data_), vreinterpretq_u32_f32(rhs.data_)))); \
-    }
+    RELATIONAL_MASK_OPERATOR(neq, vcneqq_f32)
 
+public:
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
-        /* if bitmask is set, return value in rhs, else value in lhs */
-        return vreinterpretq_f32_u32(vorrq_u32(vbicq_u32(vreinterpretq_u32_f32(bitmask.data_), vreinterpretq_u32_f32(lhs.data_)),
-                        vandq_u32(vreinterpretq_u32_f32(rhs.data_), vreinterpretq_u32_f32(bitmask.data_))));
+        return vbslq_f32(vreinterpretq_u32_f32(bitmask.data_), lhs.data_, rhs.data_);
     }
 
     /* @} */
@@ -300,13 +361,6 @@ public:
     {
         return vmulq_f32(arg.data_, arg.data_);
     }
-
-//TODO: estimate ok?  check "reciprocal square root estimate"
-//  (it's likely we'll need to use the generic implementation)
-//     friend inline vec sqrt(vec const & arg)
-//     {
-//         return _mm_sqrt_ps(arg.data_);
-//     }
 
     friend inline vec cube(vec const & arg)
     {
@@ -328,103 +382,39 @@ public:
     /* @} */
 
     /* @{ */
-    /** unary functions */
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        detail::apply_on_vector<float, size> (ret.data_, arg.data_,                \
-                                                   FUNCTION);    \
-        return ret;                                 \
-    }
-
-    APPLY_UNARY(sign, detail::sign<float>)
-    /* @} */
-
-    /* @{ */
     /** rounding functions */
-    APPLY_UNARY(round, detail::round<float>)
-    APPLY_UNARY(frac, detail::frac<float>)
-    APPLY_UNARY(floor, detail::floor<float>)
-    APPLY_UNARY(ceil, detail::ceil<float>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(round)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(frac)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(floor)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(ceil)
     /* @} */
 
     /* @{ */
     /** mathematical functions */
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sign)
 
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_,\
-                                              wrap_argument((float*)&lhs.data_), \
-                                              wrap_argument((float*)&rhs.data_),  \
-                                              FUNCTION);   \
-        return ret;                                 \
-    }
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
 
-    APPLY_UNARY(sin, detail::sin<float>)
-    APPLY_UNARY(cos, detail::cos<float>)
-    APPLY_UNARY(tan, detail::tan<float>)
-    APPLY_UNARY(asin, detail::asin<float>)
-    APPLY_UNARY(acos, detail::acos<float>)
-    APPLY_UNARY(atan, detail::atan<float>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
 
-    APPLY_UNARY(log, detail::log<float>)
-    APPLY_UNARY(exp, detail::exp<float>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
 
-    APPLY_BINARY(pow, detail::pow<float>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
 
-#undef APPLY_UNARY
-#undef APPLY_BINARY
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
-    friend inline vec tanh(vec const & arg)
-    {
-        return detail::vec_tanh_float(arg);
-    }
-
-    friend inline vec signed_pow(vec const & lhs, vec const & rhs)
-    {
-        return detail::vec_signed_pow(lhs, rhs);
-    }
-
-    friend inline vec signed_sqrt(vec const & arg)
-    {
-        return detail::vec_signed_sqrt(arg);
-    }
-
-    friend inline vec log2(vec const & arg)
-    {
-        return detail::vec_log2(arg);
-    }
-
-    friend inline vec log10(vec const & arg)
-    {
-        return detail::vec_log10(arg);
-    }
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
     /* @} */
 
-    /* @{ */
-    /** horizontal functions */
-    inline float horizontal_min(void) const
-    {
-        return *std::min_element(data_, data_ + size);
-    }
 
-    inline float horizontal_max(void) const
-    {
-        return *std::max_element(data_, data_ + size);
-    }
-    /* @} */
-
-private:
-    typedef union
-    {
-        float f[4];
-        float32x4_t m;
-    } cast_union;
-
-    float32x4_t data_;
 };
 
 } /* namespace nova */
