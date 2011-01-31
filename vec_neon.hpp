@@ -23,6 +23,7 @@
 #include <arm_neon.h>
 
 #include "vec_base.hpp"
+#include "vec_int_neon.hpp"
 #include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -48,6 +49,7 @@ template <>
 struct vec<float>:
     vec_base<float, float32x4_t, 4>
 {
+    typedef float float_type;
 private:
     typedef float32x4_t internal_vector_type;
     typedef vec_base<float, float32x4_t, 4> base;
@@ -64,7 +66,7 @@ private:
 
     static float32x4_t set_vector(float f)
     {
-        return set_vector(f, f, f, f);
+        return vdupq_n_f32(f);
     }
 
 public:
@@ -133,6 +135,11 @@ public:
     vec(float f)
     {
         set_vec(f);
+    }
+
+    vec(double f)
+    {
+        set_vec((float)f);
     }
 
     vec(vec const & rhs)
@@ -274,9 +281,9 @@ public:
     }
 
 #define ARITHMETIC_OPERATOR(op, opcode) \
-    vec operator op(vec const & rhs) const \
+    friend vec operator op(vec const & lhs, vec const & rhs) \
     { \
-        return opcode(data_, rhs.data_); \
+        return opcode(lhs.data_, rhs.data_); \
     }
 
     ARITHMETIC_OPERATOR(+, vaddq_f32)
@@ -327,6 +334,13 @@ public:
     BITWISE_OPERATOR(&, vandq_u32)
     BITWISE_OPERATOR(|, vorrq_u32)
     BITWISE_OPERATOR(^, veorq_u32)
+
+    friend inline vec andnot(vec const & lhs, vec const & rhs)
+    {
+        return  vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(lhs.data_),
+                                                vmvnq_u32(vreinterpretq_u32_f32(rhs.data_))));;
+    }
+
 
 #define RELATIONAL_MASK_OPERATOR(op, opcode) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
@@ -383,15 +397,33 @@ public:
 
     /* @{ */
     /** rounding functions */
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(round)
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(frac)
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(floor)
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(ceil)
+    friend inline vec round(vec const & arg)
+    {
+        return detail::vec_round_float(arg);
+    }
+
+    friend inline vec frac(vec const & arg)
+    {
+        return arg - floor(arg);
+    }
+
+    friend inline vec floor(vec const & arg)
+    {
+        return detail::vec_floor_float(arg);
+    }
+
+    friend inline vec ceil(vec const & arg)
+    {
+        return detail::vec_ceil_float(arg);
+    }
     /* @} */
 
     /* @{ */
     /** mathematical functions */
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sign)
+    friend inline vec sign(vec const & arg)
+    {
+        return detail::vec_sign(arg);
+    }
 
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
@@ -414,6 +446,16 @@ public:
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
     /* @} */
 
+    typedef detail::int_vec_neon int_vec;
+
+    vec (int_vec const & rhs):
+        base(vreinterpretq_f32_u32(rhs.data_))
+    {}
+
+    int_vec truncate_to_int(void) const
+    {
+        return int_vec(vcvtq_u32_f32(data_));
+    }
 
 };
 

@@ -271,7 +271,7 @@ always_inline VecType vec_sin_float(VecType const & arg)
     VecType p1 = ((  2.443315711809948E-005 * z
         - 1.388731625493765E-003) * z
         + 4.166664568298827E-002) * z * z
-        -0.5f * z + 1
+        -0.5f * z + 1.0
         ;
 
     /* [pi/4..pi/2] */
