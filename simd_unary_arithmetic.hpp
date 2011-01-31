@@ -63,6 +63,7 @@ DEFINE_UNARY_FUNCTOR(round, round)
 DEFINE_UNARY_FUNCTOR(frac, frac)
 DEFINE_UNARY_FUNCTOR(ceil, ceil)
 DEFINE_UNARY_FUNCTOR(floor, floor)
+DEFINE_UNARY_FUNCTOR(trunc, trunc)
 
 } /* namespace detail */
 
@@ -76,6 +77,7 @@ NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(round, detail::round_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(frac, detail::frac_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ceil, detail::ceil_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(floor, detail::floor_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(trunc, detail::trunc_)
 
 } /* namespace nova */
 

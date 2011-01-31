@@ -31,14 +31,18 @@ void test_##name(void)                                                  \
         BOOST_CHECK_CLOSE( mpval[i], generic[i], 0.0001 );              \
 }                                                                       \
                                                                         \
-BOOST_AUTO_TEST_CASE( name##_tests )                                    \
+BOOST_AUTO_TEST_CASE( name##_tests_float )                              \
 {                                                                       \
     test_##name<float>();                                               \
+}                                                                       \
+                                                                        \
+BOOST_AUTO_TEST_CASE( name##_tests_double )                             \
+{                                                                       \
     test_##name<double>();                                              \
 }
-
 
 COMPARE_TEST(round)
 COMPARE_TEST(ceil)
 COMPARE_TEST(floor)
 COMPARE_TEST(frac)
+COMPARE_TEST(trunc)

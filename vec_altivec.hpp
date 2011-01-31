@@ -441,6 +441,22 @@ public:
     {
         return vec_ceil(arg.data_);
     }
+
+    friend inline vec trunc(vec const & arg)
+    {
+        return arg.truncate_to_int().convert_to_float();
+    }
+
+    typedef detail::int_vec_altivec int_vec;
+
+    vec (int_vec const & rhs):
+        base((internal_vector_type)rhs.data_)
+    {}
+
+    int_vec truncate_to_int(void) const
+    {
+        return int_vec(vec_ctu(data_, 0));
+    }
     /* @} */
 
 
@@ -521,14 +537,7 @@ public:
         return detail::vec_log10(arg);
     }
 
-    vec (int_vec const & rhs):
-        data_((internal_vector_type)rhs.data_)
-    {}
 
-    int_vec truncate_to_int(void) const
-    {
-        return int_vec(vec_ctu(data_, 0));
-    }
 
 #else
 

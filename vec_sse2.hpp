@@ -362,6 +362,15 @@ public:
         return base::ceil(arg);
 #endif
     }
+
+    friend inline vec trunc(vec const & arg)
+    {
+#ifdef __SSE4_1__
+        return _mm_round_pd(arg.data_, _MM_FROUND_TO_ZERO);
+#else
+        return base::trunc(arg);
+#endif
+    }
     /* @} */
 
 

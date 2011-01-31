@@ -457,6 +457,11 @@ public:
         return int_vec(vcvtq_u32_f32(data_));
     }
 
+    friend inline vec trunc(vec const & arg)
+    {
+        return arg.truncate_to_int().convert_to_float();
+    }
+
 };
 
 } /* namespace nova */

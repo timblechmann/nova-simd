@@ -321,6 +321,11 @@ public:
     {
         return _mm256_round_pd(arg.data_, _MM_FROUND_TO_POS_INF);
     }
+
+    friend inline vec trunc(vec const & arg)
+    {
+        return _mm256_round_pd(arg.data_, _MM_FROUND_TO_ZERO);
+    }
     /* @} */
 
 
