@@ -253,6 +253,13 @@ inline double log2(double arg)
 
 #endif /* __GXX_EXPERIMENTAL_CXX0X__ */
 
+template<typename float_type>
+inline float_type trunc(float_type const & arg)
+{
+    return (float_type)(long)arg;
+}
+
+
 template <typename float_type>
 inline float_type signed_sqrt(float_type in0)
 {

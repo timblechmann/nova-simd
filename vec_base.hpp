@@ -59,6 +59,7 @@ protected:
         data_(arg)
     {}
 
+public:
     operator VecType (void) const
     {
         return data_;
@@ -293,6 +294,7 @@ protected:
     DEFINE_UNARY_STATIC(ceil, detail::ceil)
     DEFINE_UNARY_STATIC(floor, detail::floor)
     DEFINE_UNARY_STATIC(frac, detail::frac)
+    DEFINE_UNARY_STATIC(trunc, detail::trunc)
 
     DEFINE_BINARY_STATIC(pow, detail::pow)
     DEFINE_BINARY_STATIC(signed_pow, detail::signed_pow)

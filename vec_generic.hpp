@@ -126,6 +126,7 @@ public:
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(frac)
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(floor)
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(ceil)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(trunc)
     /* @} */
 
     /* @{ */
