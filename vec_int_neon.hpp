@@ -99,7 +99,7 @@ struct int_vec_neon
 
     inline float32x4_t convert_to_float(void) const
     {
-        return vcvtq_f32_u32(data_);
+        return vcvtq_f32_s32(vreinterpretq_s32_u32(data_));
     }
 };
 

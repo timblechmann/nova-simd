@@ -80,7 +80,9 @@ void test_slope(void)
 {
     typedef vec<T> vec_t;
     vec_t vec;
-    vec.set_slope(0, 1);
+    T increment = vec.set_slope(0, 1);
+    T expected_increment = vec_t::size * 1;
+    BOOST_REQUIRE_CLOSE_FRACTION( increment, expected_increment, 0.001);
 
     for (int i = 0; i != vec_t::size; ++i)
         BOOST_REQUIRE_CLOSE_FRACTION( vec.get(i), i, 0.001);

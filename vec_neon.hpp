@@ -50,6 +50,7 @@ struct vec<float>:
     vec_base<float, float32x4_t, 4>
 {
     typedef float float_type;
+
 private:
     typedef float32x4_t internal_vector_type;
     typedef vec_base<float, float32x4_t, 4> base;
@@ -230,7 +231,7 @@ public:
                            start + slope + slope,
                            start + slope + slope + slope);
 
-        return start + slope + slope + slope + slope;
+        return slope + slope + slope + slope;
     }
 
     float set_exp(float start, float curve)
@@ -416,6 +417,14 @@ public:
     {
         return detail::vec_ceil_float(arg);
     }
+
+/*  FIXME: this is broken
+    friend inline vec trunc(vec const & arg)
+    {
+        return arg.truncate_to_int().convert_to_float();
+    }
+*/
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(trunc)
     /* @} */
 
     /* @{ */
@@ -454,14 +463,8 @@ public:
 
     int_vec truncate_to_int(void) const
     {
-        return int_vec(vcvtq_u32_f32(data_));
+        return int_vec(vreinterpretq_u32_s32(vcvtq_s32_f32(data_)));
     }
-
-    friend inline vec trunc(vec const & arg)
-    {
-        return arg.truncate_to_int().convert_to_float();
-    }
-
 };
 
 } /* namespace nova */
