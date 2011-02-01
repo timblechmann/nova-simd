@@ -261,6 +261,16 @@ public:
     /* @} */
 
     /* @{ */
+
+private:
+    static float32x4_t vdivq_f32(float32x4_t lhs, float32x4_t rhs)
+    {
+        float32x4_t reciprocal = vrecpeq_f32(rhs);
+        reciprocal = vmulq_f32(reciprocal, vrecpsq_f32(rhs, reciprocal));
+        return vmulq_f32(lhs, reciprocal);
+    }
+
+public:
     /** arithmetic operators */
 #define OPERATOR_ASSIGNMENT(op, opcode) \
     vec & operator op(vec const & rhs) \
@@ -272,14 +282,7 @@ public:
     OPERATOR_ASSIGNMENT(+=, vaddq_f32)
     OPERATOR_ASSIGNMENT(-=, vsubq_f32)
     OPERATOR_ASSIGNMENT(*=, vmulq_f32)
-    vec & operator /=(vec const & rhs)
-    {
-        const float * rhs_ptr = get_pointer(rhs.data_);
-        float * data_ptr = get_pointer(data_);
-        for (int i = 0; i != size; ++i)
-            data_ptr[i] /= rhs_ptr[i];
-        return *this;
-    }
+    OPERATOR_ASSIGNMENT(/=, vdivq_f32)
 
 #define ARITHMETIC_OPERATOR(op, opcode) \
     friend vec operator op(vec const & lhs, vec const & rhs) \
@@ -290,17 +293,8 @@ public:
     ARITHMETIC_OPERATOR(+, vaddq_f32)
     ARITHMETIC_OPERATOR(-, vsubq_f32)
     ARITHMETIC_OPERATOR(*, vmulq_f32)
+    ARITHMETIC_OPERATOR(/, vdivq_f32)
 
-    vec operator /(vec const & rhs) const
-    {
-        vec ret;
-        const float * rhs_ptr = get_pointer(rhs.data_);
-        const float * data_ptr = get_pointer(data_);
-        float * ret_ptr = get_pointer(ret.data_);
-        for (int i = 0; i != size; ++i)
-            ret_ptr[i] = data_ptr[i] / rhs_ptr[i];
-        return ret;
-    }
 
 private:
     static uint32x4_t vcneqq_f32(float32x4_t a, float32x4_t b)
@@ -452,7 +446,26 @@ public:
 
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
-    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(signed_sqrt)
+private:
+    static float32x4_t vsqrtq_f32(float32x4_t arg)
+    {
+        float32x4_t reciprocal = vrsqrteq_f32(arg);
+
+        // TODO: maybe we should do another newton-raphson iteration (see: qvrsqrtsq_f32)?
+        return vmulq_f32(arg, reciprocal);
+    }
+
+
+public:
+    friend vec sqrt(vec const & arg)
+    {
+        return vsqrtq_f32(arg);
+    }
+
+    friend inline vec signed_sqrt(vec const & arg)
+    {
+        return detail::vec_signed_sqrt(arg);
+    }
     /* @} */
 
     typedef detail::int_vec_neon int_vec;
