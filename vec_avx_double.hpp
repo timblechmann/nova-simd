@@ -25,6 +25,7 @@
 #include <immintrin.h>
 
 #include "detail/vec_math.hpp"
+#include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -35,9 +36,25 @@
 namespace nova
 {
 
-template <>
-struct vec<double>
+inline double * get_pointer(__m256d & arg)
 {
+    return (double *)&arg;
+}
+
+inline const double * get_pointer(__m256d const & arg)
+{
+    return (const double *)&arg;
+}
+
+
+template <>
+struct vec<double>:
+    vec_base<double, __m256d, 4>
+{
+private:
+    typedef vec_base<double, __m256d, 4> base;
+
+public:
     typedef double float_type;
 
     static inline __m256d gen_sign_mask(void)
@@ -77,7 +94,7 @@ struct vec<double>
     }
 
     vec(__m256d const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -147,12 +164,6 @@ public:
 
     /* @{ */
     /** element access */
-    void set (std::size_t index, double value)
-    {
-        double * data = (double*)&data_;
-        data[index] = value;
-    }
-
     void set_vec (double value)
     {
         data_ = _mm256_set1_pd(value);
@@ -175,12 +186,6 @@ public:
         data_ = _mm256_set_pd(v3, v2, v1, start);
         return v3 * curve;
     }
-
-    double get (std::size_t index) const
-    {
-        const double * data = (const double*)&data_;
-        return data[index];
-    }
     /* @} */
 
     /* @{ */
@@ -197,6 +202,8 @@ public:
     OPERATOR_ASSIGNMENT(*=, _mm256_mul_pd)
     OPERATOR_ASSIGNMENT(/=, _mm256_div_pd)
 
+#undef OPERATOR_ASSIGNMENT
+
 #define ARITHMETIC_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
     { \
@@ -207,6 +214,8 @@ public:
     ARITHMETIC_OPERATOR(-, _mm256_sub_pd)
     ARITHMETIC_OPERATOR(*, _mm256_mul_pd)
     ARITHMETIC_OPERATOR(/, _mm256_div_pd)
+
+#undef ARITHMETIC_OPERATOR
 
 #define RELATIONAL_OPERATOR(op, RELATION) \
     vec operator op(vec const & rhs) const \
@@ -235,6 +244,8 @@ public:
     BITWISE_OPERATOR(&, _mm256_and_pd)
     BITWISE_OPERATOR(|, _mm256_or_pd)
     BITWISE_OPERATOR(^, _mm256_xor_pd)
+
+#undef BITWISE_OPERATOR
 
 #define RELATIONAL_MASK_OPERATOR(op, RELATION) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
@@ -331,100 +342,29 @@ public:
 
     /* @{ */
     /** mathematical functions */
-#define APPLY_UNARY(NAME, FUNCTION)                 \
-    friend inline vec NAME(vec const & arg)         \
-    {                                               \
-        vec ret;                                    \
-        detail::apply_on_vector<double, size> ((double*)&ret.data_, \
-                                               wrap_argument((double*)&arg.data_),    \
-                                               FUNCTION);           \
-        return ret;                                 \
-    }
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
+    NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
 
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<double, size> ((double*)&ret.data_, \
-                                              wrap_argument((double*)&lhs.data_), \
-                                              wrap_argument((double*)&rhs.data_),  \
-                                              FUNCTION);        \
-        return ret;                                 \
-    }
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log10)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(exp)
 
-    APPLY_UNARY(sin, detail::sin<double>)
-    APPLY_UNARY(cos, detail::cos<double>)
-    APPLY_UNARY(tan, detail::tan<double>)
-    APPLY_UNARY(asin, detail::asin<double>)
-    APPLY_UNARY(acos, detail::acos<double>)
-    APPLY_UNARY(atan, detail::atan<double>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(sin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(cos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tan)
 
-    APPLY_UNARY(log, detail::log<double>)
-    APPLY_UNARY(exp, detail::exp<double>)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(asin)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(acos)
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(atan)
 
-    APPLY_BINARY(pow, detail::pow<double>)
-
-    APPLY_UNARY(tanh, detail::tanh<double>)
-
-
-#undef APPLY_UNARY
-#undef APPLY_BINARY
-
-    friend inline vec signed_pow(vec const & lhs, vec const & rhs)
-    {
-        return detail::vec_signed_pow(lhs, rhs);
-    }
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
     friend inline vec signed_sqrt(vec const & arg)
     {
         return detail::vec_signed_sqrt(arg);
     }
-
-    friend inline vec log2(vec const & arg)
-    {
-        return detail::vec_log2(arg);
-    }
-
-    friend inline vec log10(vec const & arg)
-    {
-        return detail::vec_log10(arg);
-    }
     /* @} */
-
-    /* @{ */
-    /** horizontal functions */
-    inline double horizontal_min(void) const
-    {
-        const double * data = (const double*)&data_;
-        return *std::min_element(data, data + size);
-    }
-
-    inline double horizontal_max(void) const
-    {
-        const double * data = (const double*)&data_;
-        return *std::max_element(data, data + size);
-    }
-
-    inline double horizontal_sum(void) const
-    {
-        const double * buf = (const double*)&data_;
-        double sum = 0;
-
-        for (int i = 0; i != 4; ++i)
-            sum += buf[i];
-
-        return sum;
-    }
-    /* @} */
-
-private:
-    typedef union
-    {
-        double f[2];
-        __m256d m;
-    } cast_union;
-
-    __m256d data_;
 };
 
 } /* namespace nova */

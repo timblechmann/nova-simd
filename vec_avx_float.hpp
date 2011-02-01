@@ -34,13 +34,29 @@
 #endif
 
 #include "vec_int_avx.hpp"
+#include "vec_base.hpp"
 
 namespace nova
 {
 
-template <>
-struct vec<float>
+inline float * get_pointer(__m256 & arg)
 {
+    return (float *)&arg;
+}
+
+inline const float * get_pointer(__m256 const & arg)
+{
+    return (const float *)&arg;
+}
+
+template <>
+struct vec<float>:
+    vec_base<float, __m256, 8>
+{
+private:
+    typedef vec_base<float, __m256, 8> base;
+
+public:
     typedef __m256 internal_vector_type;
     typedef float float_type;
 
@@ -99,7 +115,7 @@ struct vec<float>
     }
 
     vec(__m256 const & arg):
-        data_(arg)
+        base(arg)
     {}
 
 public:
@@ -169,12 +185,6 @@ public:
 
     /* @{ */
     /** element access */
-    void set (std::size_t index, float value)
-    {
-        float * data = (float*)&data_;
-        data[index] = value;
-    }
-
     void set_vec (float value)
     {
         data_ = _mm256_set1_ps(value);
@@ -205,12 +215,6 @@ public:
         data_ = _mm256_set_ps(v7, v6, v5, v4,v3, v2, v1, start);
         return v7 * curve;
     }
-
-    float get (std::size_t index) const
-    {
-        const float * data = (const float*)&data_;
-        return data[index];
-    }
     /* @} */
 
     /* @{ */
@@ -226,6 +230,8 @@ public:
     OPERATOR_ASSIGNMENT(-=, _mm256_sub_ps)
     OPERATOR_ASSIGNMENT(*=, _mm256_mul_ps)
     OPERATOR_ASSIGNMENT(/=, _mm256_div_ps)
+
+#undef OPERATOR_ASSIGNMENT
 
 #define ARITHMETIC_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
@@ -248,6 +254,8 @@ public:
     ARITHMETIC_OPERATOR(*, _mm256_mul_ps)
     ARITHMETIC_OPERATOR(/, _mm256_div_ps)
 
+#undef ARITHMETIC_OPERATOR
+
     friend vec operator -(const vec & arg)
     {
         return _mm256_xor_ps(arg.data_, gen_sign_mask());
@@ -257,7 +265,6 @@ public:
     {
         return _mm256_rcp_ps(arg.data_);
     }
-
 
 #define RELATIONAL_OPERATOR(op, RELATION) \
     vec operator op(vec const & rhs) const \
@@ -272,7 +279,7 @@ public:
     RELATIONAL_OPERATOR(>=, _CMP_NLT_US)
     RELATIONAL_OPERATOR(==, _CMP_EQ_OQ)
     RELATIONAL_OPERATOR(!=, _CMP_NEQ_UQ)
-    #undef RELATIONAL_OPERATOR
+#undef RELATIONAL_OPERATOR
 
     /* @{ */
 #define BITWISE_OPERATOR(op, opcode) \
@@ -285,12 +292,14 @@ public:
     BITWISE_OPERATOR(|, _mm256_or_ps)
     BITWISE_OPERATOR(^, _mm256_xor_ps)
 
+#undef BITWISE_OPERATOR
+
     friend inline vec andnot(vec const & lhs, vec const & rhs)
     {
         return _mm256_andnot_ps(lhs.data_, rhs.data_);
     }
 
-    #define RELATIONAL_MASK_OPERATOR(op, RELATION) \
+#define RELATIONAL_MASK_OPERATOR(op, RELATION) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
     { \
         return _mm256_cmp_ps(lhs.data_, rhs.data_, RELATION); \
@@ -303,7 +312,7 @@ public:
     RELATIONAL_MASK_OPERATOR(eq, _CMP_EQ_OQ)
     RELATIONAL_MASK_OPERATOR(neq, _CMP_NEQ_UQ)
 
-    #undef RELATIONAL_MASK_OPERATOR
+#undef RELATIONAL_MASK_OPERATOR
 
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
@@ -457,36 +466,10 @@ public:
     /* @} */
 
     /* @{ */
-    /** horizontal functions */
-    inline float horizontal_min(void) const
-    {
-        const float * data = (const float*)&data_;
-        return *std::min_element(data, data + size);
-    }
-
-    inline float horizontal_max(void) const
-    {
-        const float * data = (const float*)&data_;
-        return *std::max_element(data, data + size);
-    }
-
-    inline float horizontal_sum(void) const
-    {
-        const float * buf = (const float*)&data_;
-        float sum = 0;
-
-        for (int i = 0; i != 8 ; ++i)
-            sum += buf[i];
-
-        return sum;
-    }
-    /* @} */
-
-    /* @{ */
     typedef nova::detail::int_vec_avx int_vec;
 
     vec (int_vec const & rhs):
-        data_(_mm256_castsi256_ps(rhs.data_))
+        base(_mm256_castsi256_ps(rhs.data_))
     {}
 
     int_vec truncate_to_int(void) const
@@ -494,25 +477,12 @@ public:
         __m256i int_val = _mm256_cvttps_epi32(data_);
         return int_vec(int_val);
     }
-
     /* @} */
-
-private:
-    typedef union
-    {
-        float f[8];
-        __m256 m;
-    } cast_union;
-
-    __m256 data_;
 };
 
 } /* namespace nova */
 
 
-#undef OPERATOR_ASSIGNMENT
-#undef ARITHMETIC_OPERATOR
-#undef RELATIONAL_OPERATOR
 #undef always_inline
 
 #endif /* VEC_AVX_FLOAT_HPP */
