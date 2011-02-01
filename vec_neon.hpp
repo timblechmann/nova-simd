@@ -156,21 +156,9 @@ public:
         base::data_ = vld1q_f32((const float32_t*)data);
     }
 
-// TODO check what's available re alignment in NEON
     void load_aligned(const float * data)
     {
         load(data);
-    }
-
-// TODO is there a good NEON for this?
-// e.g. zero it all, then vld1q_lane_f32() for the first one
-    void load_first(const float * data)
-    {
-        float * ptr = get_pointer(data_);
-        ptr[0] = *data;
-
-        for (int i = 1; i != size; ++i)
-            ptr[i] = 0;
     }
 
     void store(float * dest) const
@@ -178,13 +166,11 @@ public:
         vst1q_f32((float32_t*)dest, data_);
     }
 
-// TODO check what's available re alignment in NEON
     void store_aligned(float * dest) const
     {
         store(dest);
     }
 
-// TODO check what's available re alignment in NEON
     void store_aligned_stream(float * dest) const
     {
         store(dest);
@@ -284,6 +270,8 @@ public:
     OPERATOR_ASSIGNMENT(*=, vmulq_f32)
     OPERATOR_ASSIGNMENT(/=, vdivq_f32)
 
+#undef OPERATOR_ASSIGNMENT
+
 #define ARITHMETIC_OPERATOR(op, opcode) \
     friend vec operator op(vec const & lhs, vec const & rhs) \
     { \
@@ -295,6 +283,7 @@ public:
     ARITHMETIC_OPERATOR(*, vmulq_f32)
     ARITHMETIC_OPERATOR(/, vdivq_f32)
 
+#undef ARITHMETIC_OPERATOR
 
 private:
     static uint32x4_t vcneqq_f32(float32x4_t a, float32x4_t b)
@@ -318,6 +307,8 @@ public:
      RELATIONAL_OPERATOR(==, vceqq_f32)
      RELATIONAL_OPERATOR(!=, vcneqq_f32)
 
+#undef RELATIONAL_OPERATOR
+
     /* @{ */
 #define BITWISE_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
@@ -329,6 +320,8 @@ public:
     BITWISE_OPERATOR(&, vandq_u32)
     BITWISE_OPERATOR(|, vorrq_u32)
     BITWISE_OPERATOR(^, veorq_u32)
+
+#undef BITWISE_OPERATOR
 
     friend inline vec andnot(vec const & lhs, vec const & rhs)
     {
@@ -350,6 +343,8 @@ public:
     RELATIONAL_MASK_OPERATOR(ge, vcgeq_f32)
     RELATIONAL_MASK_OPERATOR(eq, vceqq_f32)
     RELATIONAL_MASK_OPERATOR(neq, vcneqq_f32)
+
+#undef RELATIONAL_MASK_OPERATOR
 
 public:
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
@@ -478,14 +473,44 @@ public:
     {
         return int_vec(vreinterpretq_u32_s32(vcvtq_s32_f32(data_)));
     }
+
+    float horizontal_min(void) const
+    {
+        float32x2_t high = vget_high_f32(data_);
+        float32x2_t low = vget_low_f32(data_);
+
+        float32x2_t pmin = vmin_f32(low, high);
+        float pmin0 = vget_lane_f32(pmin, 0);
+        float pmin1 = vget_lane_f32(pmin, 1);
+
+        return std::min(pmin0, pmin1);
+    }
+
+    float horizontal_max(void) const
+    {
+        float32x2_t high = vget_high_f32(data_);
+        float32x2_t low = vget_low_f32(data_);
+
+        float32x2_t pmax = vmax_f32(low, high);
+        float pmax0 = vget_lane_f32(pmax, 0);
+        float pmax1 = vget_lane_f32(pmax, 1);
+
+        return std::max(pmax0, pmax1);
+    }
+
+    float horizontal_sum(void) const
+    {
+        float32x2_t high = vget_high_f32(data_);
+        float32x2_t low = vget_low_f32(data_);
+
+        float32x2_t psum = vpadd_f32(low, high);
+        return vget_lane_f32(psum, 0) + vget_lane_f32(psum, 1);
+    }
 };
 
 } /* namespace nova */
 
 
-#undef OPERATOR_ASSIGNMENT
-#undef ARITHMETIC_OPERATOR
-#undef RELATIONAL_OPERATOR
 #undef always_inline
 
 #endif /* VEC_NEON_HPP */
