@@ -338,13 +338,13 @@ protected:
 #define NOVA_SIMD_DELEGATE_UNARY_TO_BASE(NAME)  \
     inline friend vec NAME(vec const & arg)     \
     {                                           \
-        return base::NAME(arg.data_);           \
+        return vec::NAME(arg.data_);            \
     }
 
 #define NOVA_SIMD_DELEGATE_BINARY_TO_BASE(NAME)                 \
     inline friend vec NAME(vec const & arg1, vec const & arg2)  \
     {                                                           \
-        return base::NAME(arg1.data_, arg2.data_);              \
+        return vec::NAME(arg1.data_, arg2.data_);               \
     }
 
 

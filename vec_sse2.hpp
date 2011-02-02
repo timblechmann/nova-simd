@@ -336,7 +336,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_NEAREST_INT);
 #else
-        return base::round(arg);
+        return vec::round(arg);
 #endif
     }
 
@@ -350,7 +350,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_NEG_INF);
 #else
-        return base::floor(arg);
+        return vec::floor(arg);
 #endif
     }
 
@@ -359,7 +359,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_POS_INF);
 #else
-        return base::ceil(arg);
+        return vec::ceil(arg);
 #endif
     }
 
@@ -368,7 +368,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_pd(arg.data_, _MM_FROUND_TO_ZERO);
 #else
-        return base::trunc(arg);
+        return vec::trunc(arg);
 #endif
     }
     /* @} */
