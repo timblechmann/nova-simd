@@ -468,7 +468,8 @@ public:
 
     friend inline vec frac(vec const & arg)
     {
-        return arg - floor(arg);
+        vec floor_result = floor(arg);
+        return arg - floor_result;
     }
 
     friend inline vec floor(vec const & arg)
