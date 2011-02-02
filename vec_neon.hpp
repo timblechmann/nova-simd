@@ -35,16 +35,6 @@
 namespace nova
 {
 
-inline float * get_pointer(float32x4_t & arg)
-{
-    return (float *)&arg;
-}
-
-inline const float * get_pointer(float32x4_t const & arg)
-{
-    return (const float *)&arg;
-}
-
 template <>
 struct vec<float>:
     vec_base<float, float32x4_t, 4>

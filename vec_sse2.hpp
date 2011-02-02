@@ -38,18 +38,9 @@
 #define always_inline inline
 #endif
 
+
 namespace nova
 {
-
-inline double * get_pointer(__m128d & arg)
-{
-    return (double *)&arg;
-}
-
-inline const double * get_pointer(__m128d const & arg)
-{
-    return (const double *)&arg;
-}
 
 template <>
 struct vec<double>:

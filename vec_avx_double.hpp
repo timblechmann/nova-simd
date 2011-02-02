@@ -36,15 +36,6 @@
 namespace nova
 {
 
-inline double * get_pointer(__m256d & arg)
-{
-    return (double *)&arg;
-}
-
-inline const double * get_pointer(__m256d const & arg)
-{
-    return (const double *)&arg;
-}
 
 
 template <>

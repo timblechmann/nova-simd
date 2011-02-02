@@ -44,18 +44,10 @@
 #define always_inline inline
 #endif
 
+
+
 namespace nova
 {
-
-inline float * get_pointer(__m128 & arg)
-{
-    return (float *)&arg;
-}
-
-inline const float * get_pointer(__m128 const & arg)
-{
-    return (const float *)&arg;
-}
 
 template <>
 struct vec<float>:
@@ -502,7 +494,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_round_ps(arg.data_, _MM_FROUND_TO_ZERO);
 #else
-        return base::trunc(arg);
+        return vec::trunc(arg);
 #endif
     }
 

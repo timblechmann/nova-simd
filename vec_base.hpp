@@ -23,6 +23,7 @@
 #include <cassert>
 #include <functional>
 
+#include "detail/get_pointer.hpp"
 #include "detail/math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)

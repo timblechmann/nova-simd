@@ -39,15 +39,6 @@
 namespace nova
 {
 
-inline float * get_pointer(__m256 & arg)
-{
-    return (float *)&arg;
-}
-
-inline const float * get_pointer(__m256 const & arg)
-{
-    return (const float *)&arg;
-}
 
 template <>
 struct vec<float>:
