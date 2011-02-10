@@ -226,7 +226,7 @@ private:
 
     static internal_vector_type vec_div(internal_vector_type const & lhs, internal_vector_type const & rhs)
     {
-        return vec_mul(lhs, nova::vec<float>::vec_reciprocal(rhs));
+        return vec_mul(lhs, vec_reciprocal(rhs));
     }
 
 public:
