@@ -354,6 +354,7 @@ public:
         return _mm_rcp_ps(arg.data_);
     }
 
+    NOVA_SIMD_DEFINE_MADD
 
 #define RELATIONAL_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \

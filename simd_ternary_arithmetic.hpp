@@ -68,7 +68,7 @@ struct muladd
 
     vec_type operator()(vec_type value, vec_type mul, vec_type add) const
     {
-        return muladd<vec_type>()(value, mul, add);
+        return madd(value, mul, add);
     }
 };
 

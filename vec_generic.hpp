@@ -130,6 +130,8 @@ public:
     /* @} */
 
     /* @{ */
+    NOVA_SIMD_DEFINE_MADD
+
     /** mathematical functions */
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)

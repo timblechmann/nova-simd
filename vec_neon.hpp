@@ -275,6 +275,11 @@ public:
 
 #undef ARITHMETIC_OPERATOR
 
+    friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)
+    {
+        return vmlaq_f32(arg1.data_, arg2.data_, arg3.data_);
+    }
+
 private:
     static uint32x4_t vcneqq_f32(float32x4_t a, float32x4_t b)
     {

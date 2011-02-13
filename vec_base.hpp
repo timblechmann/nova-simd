@@ -348,6 +348,11 @@ protected:
         return vec::NAME(arg1.data_, arg2.data_);               \
     }
 
+#define NOVA_SIMD_DEFINE_MADD                                   \
+    inline friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)  \
+    {                                                           \
+        return arg1 * arg2 + arg3;                       \
+    }
 
 #undef always_inline
 

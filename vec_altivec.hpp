@@ -274,6 +274,11 @@ public:
         return vec_reciprocal(arg.data_);
     }
 
+    friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)
+    {
+        return vec_madd(arg1.data_, arg2.data_, arg3.data_);
+    }
+
 private:
     static internal_vector_type vec_not(internal_vector_type const & arg)
     {

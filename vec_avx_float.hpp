@@ -257,6 +257,8 @@ public:
         return _mm256_rcp_ps(arg.data_);
     }
 
+    NOVA_SIMD_DEFINE_MADD
+
 #define RELATIONAL_OPERATOR(op, RELATION) \
     vec operator op(vec const & rhs) const \
     { \
