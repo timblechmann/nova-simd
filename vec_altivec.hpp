@@ -292,15 +292,19 @@ public:
     vec operator op(vec const & rhs) const \
     { \
         const internal_vector_type one = gen_one(); \
-        return vec_and(opcode(data_, rhs.data_), one); \
+        vector unsigned int mask = (vector unsigned int)opcode(data_, rhs.data_); \
+        return (internal_vector_type)vec_and(mask, (vector unsigned int)one); \
     }
 
+#define vec_cmple_(a, b) (vec_cmpge(b, a))
+
     RELATIONAL_OPERATOR(<, vec_cmplt)
-    RELATIONAL_OPERATOR(<=, vec_cmple)
+    RELATIONAL_OPERATOR(<=, vec_cmple_)
     RELATIONAL_OPERATOR(>, vec_cmpgt)
     RELATIONAL_OPERATOR(>=, vec_cmpge)
     RELATIONAL_OPERATOR(==, vec_cmpeq)
     RELATIONAL_OPERATOR(!=, vec_cmpneq)
+
 
 #undef RELATIONAL_OPERATOR
 
@@ -559,5 +563,6 @@ public:
 } /* namespace nova */
 
 #undef always_inline
+#undef vec_cmplt_
 
 #endif /* VEC_ALTIVEC_HPP */
