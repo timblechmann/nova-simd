@@ -24,6 +24,8 @@ void __noinline__ bench_1(unsigned int numSamples)
 /*         out[i] = direct_clip(in[i], -0.5f, 0.5f); */
 /* } */
 
+#ifdef __SSE__
+
 #include <xmmintrin.h>
 inline float sse_clip(float x, float lo, float hi)
 {
@@ -42,6 +44,7 @@ void __noinline__ bench_3(unsigned int numSamples)
     for (unsigned int i = 0; __builtin_expect((i != numSamples), 1); ++i)
         out[i] = sse_clip(in[i], -0.5f, 0.5f);
 }
+#endif
 
 /* void __noinline__ bench_4(unsigned int numSamples) */
 /* { */
@@ -65,7 +68,9 @@ int main(void)
 
     run_bench(boost::bind(bench_1, 64), iterations);
 /*     run_bench(boost::bind(bench_2, 64), iterations); */
+#ifdef __SSE__
     run_bench(boost::bind(bench_3, 64), iterations);
+#endif
 /*     run_bench(boost::bind(bench_4, 64), iterations); */
     run_bench(boost::bind(bench_5, 64), iterations);
 }

@@ -476,19 +476,19 @@ typedef signed char        s8;
 #endif
 
 #ifdef __powerpc__
-#include "../../arch/powerpc/include/asm/unistd.h"
+#include "asm/unistd.h"
 #define rmb()           asm volatile ("sync" ::: "memory")
 #define cpu_relax()     asm volatile ("" ::: "memory");
 #endif
 
 #ifdef __s390__
-#include "../../arch/s390/include/asm/unistd.h"
+#include "asm/unistd.h"
 #define rmb()           asm volatile("bcr 15,0" ::: "memory")
 #define cpu_relax()     asm volatile("" ::: "memory");
 #endif
 
 #ifdef __sh__
-#include "../../arch/sh/include/asm/unistd.h"
+#include "asm/unistd.h"
 #if defined(__SH4A__) || defined(__SH5__)
 # define rmb()          asm volatile("synco" ::: "memory")
 #else

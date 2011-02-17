@@ -1,6 +1,8 @@
 #include "benchmark_helpers.hpp"
 
+#ifdef __SSE__
 #include <xmmintrin.h>
+#endif
 
 #include "../simd_binary_arithmetic.hpp"
 
@@ -9,6 +11,7 @@ using namespace std;
 
 aligned_array<float, 64> out, in1, in2;
 
+#ifdef __SSE__
 void __noinline__ bench_1(float * out, float * in1, float * in2, unsigned int n)
 {
     n /= 4;
@@ -75,6 +78,7 @@ void __noinline__ bench_3(float * out, float * in1, float * in2, unsigned int n)
     }
     while (--n);
 }
+#endif
 
 
 void __noinline__ bench_4(float * out, float * in1, float * in2, unsigned int n)
@@ -115,9 +119,11 @@ int main(void)
 
     const unsigned int iterations = 100000000;
 
+#ifdef __SSE__
     run_bench(boost::bind(bench_1, out.begin(), in1.begin(), in2.begin(), 64), iterations);
     run_bench(boost::bind(bench_2, out.begin(), in1.begin(), in2.begin(), 64), iterations);
     run_bench(boost::bind(bench_3, out.begin(), in1.begin(), in2.begin(), 64), iterations);
+#endif
     run_bench(boost::bind(bench_4, out.begin(), in1.begin(), in2.begin(), 64), iterations);
     run_bench(boost::bind(bench_5, out.begin(), in1.begin(), in2.begin(), 64), iterations);
 }

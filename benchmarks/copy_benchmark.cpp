@@ -1,8 +1,10 @@
 #include "benchmark_helpers.hpp"
 #include "../simd_memory.hpp"
 
+#ifdef __SSE2__
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#endif
 
 const int unroll = 8;
 
@@ -13,6 +15,7 @@ void __noinline__ bench_1(float * out, float * in, unsigned int numSamples)
     copyvec(out, in, numSamples);
 }
 
+#ifdef __SSE2__
 void __noinline__ bench_2(float * out, float * in, unsigned int numSamples)
 {
     int loops = numSamples / unroll;
@@ -181,7 +184,7 @@ void __noinline__ bench_8(float * out, float * in, unsigned int numSamples)
 {
     copyvec_naa_simd(out, in, numSamples);
 }
-
+#endif
 
 int main(void)
 {
@@ -201,6 +204,7 @@ int main(void)
     run_bench(boost::bind(bench_1, out.begin()+2, in.begin()+2, 64), iterations);
     cout << endl;
 
+#ifdef __SSE2__
     cout << "float/double/int (sse/sse2 instructions)" << endl;
     run_bench(boost::bind(bench_2, out.begin(), in.begin(), 64), iterations);
     run_bench(boost::bind(bench_3, out.begin(), in.begin(), 64), iterations);
@@ -217,4 +221,5 @@ int main(void)
     run_bench(boost::bind(bench_7, out.begin()+2, in.begin(), 64), iterations);
     run_bench(boost::bind(bench_8, out.begin(), in.begin()+2, 64), iterations);
     cout << endl;
+#endif
 }

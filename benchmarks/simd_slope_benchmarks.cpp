@@ -1,7 +1,9 @@
 #include "benchmark_helpers.hpp"
 #include <cmath>
 
+#ifdef __SSE__
 #include <xmmintrin.h>
+#endif
 
 using namespace std;
 
@@ -29,6 +31,7 @@ void __noinline__ bench_2(float * out, float * in1, float in2, float slope, unsi
     }
 }
 
+#ifdef __SSE__
 void __noinline__ bench_3(float * out, float * in1, float in2, float slope, unsigned int n)
 {
     __m128 arg2 = _mm_set_ps(in2, in2+slope, in2+slope+slope, in2+slope+slope+slope);
@@ -62,6 +65,7 @@ void __noinline__ bench_3a(float * out, float * in1, float in2, float slope, uns
         out+=4;
     } while (--loops);
 }
+#endif
 
 void __noinline__ bench_4(float * out, float * in1, float in2, float slope, unsigned int n)
 {
@@ -83,6 +87,7 @@ void __noinline__ bench_5(float * out, float * in1, float in2, float slope, unsi
     }
 }
 
+#ifdef __SSE__
 void __noinline__ bench_6(float * out, float * in1, float in2, float slope, unsigned int n)
 {
     __m128 arg2 = _mm_set_ps(in2, in2+slope, in2+slope+slope, in2+slope+slope+slope);
@@ -116,6 +121,7 @@ void __noinline__ bench_6a(float * out, float * in1, float in2, float slope, uns
         out+=4;
     } while (--loops);
 }
+#endif
 
 int main(void)
 {
@@ -127,11 +133,16 @@ int main(void)
 
     run_bench(boost::bind(bench_1, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
     run_bench(boost::bind(bench_2, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
+#ifdef __SSE__
     run_bench(boost::bind(bench_3, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
     run_bench(boost::bind(bench_3a, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
+#endif
 
     run_bench(boost::bind(bench_4, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
     run_bench(boost::bind(bench_5, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
+
+#ifdef __SSE__
     run_bench(boost::bind(bench_6, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
     run_bench(boost::bind(bench_6a, out.begin(), in.begin(), 0.1f, 0.001f, 64), iterations);
+#endif
 }
