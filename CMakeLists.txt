@@ -3,9 +3,13 @@ project (nova-simd)
 
 enable_testing()
 
+option(NATIVE "compile on gcc with -march=native" OFF)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-1000")
+    if (NATIVE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-1000")
 endif()
 
 add_subdirectory (benchmarks)
