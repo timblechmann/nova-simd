@@ -2,19 +2,112 @@ nova simd
 
 nova simd provides a framework of simdfied vector functions, designed
 mainly for computer music applications.
+it currently supports the following instruction sets:
+- sse/sse2 family
+- ppc/altivec
+- avx
+- arm/neon
 
 
-coding conventions:
+vec class:
+the simd functionality is built around a templated vec class. it usually maps
+to a simd vector. the vec class can be used to compose more specific algorithms,
+hiding different implementations under a common API.
 
-nova simd makes use of generic c++ programming. beside a generic
-implementation, platform-specific simdfied implementations are provided.
+template <typename FloatType>
+class vec
+{
+public:
+    typedef FloatType float_type;
 
-in addition to this interface, functions for compile-time loop
-unrolling may be provided. these functions use template metaprogramming
-for generating sequencial for a known number of iterations. while
-producing larger code, it is usually more efficient than looping code
-on current pipelined cpus.
+    static const int size; // number of samples per vector
+    static const int objects_per_cacheline; // typical number of objects per cacheline
 
+    /* constructors */
+    vec(void);
+    vec(double f);
+    vec(float f);
+    vec(vec const & rhs);
+
+    /* element access */
+    FloatType get (int index) const;
+
+    /* set vector */
+    void set (int index, FloatType arg);
+    void set_vec (FloatType value);
+    FloatType set_slope(FloatType start, FloatType slope);
+    FloatType set_exp(FloatType start, FloatType curve);
+
+    /* load and store */
+    void load(const WrappedType * src);
+    void load_first(const WrappedType * src);
+    void load_aligned(const WrappedType * data);
+
+    void store(WrappedType * dest) const;
+    void store_aligned(WrappedType * dest) const;
+    void store_aligned_stream(WrappedType * dest) const;
+
+    void clear(void);
+
+    vec_base operator+(vec_base const & rhs) const
+    vec_base operator-(vec_base const & rhs) const
+    vec_base operator*(vec_base const & rhs) const
+    vec_base operator/(vec_base const & rhs) const
+
+    vec_base & operator+=(vec_base const & rhs)
+    vec_base & operator-=(vec_base const & rhs)
+    vec_base & operator*=(vec_base const & rhs)
+    vec_base & operator/=(vec_base const & rhs)
+
+    vec_base operator<(vec_base const & rhs) const
+    vec_base operator<=(vec_base const & rhs) const
+    vec_base operator==(vec_base const & rhs) const
+    vec_base operator!=(vec_base const & rhs) const
+    vec_base operator>(vec_base const & rhs) const
+    vec_base operator>=(vec_base const & rhs) const
+
+    friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3);
+
+    friend vec sin(vec const & arg);
+    friend vec cos(vec const & arg);
+    friend vec tan(vec const & arg);
+    friend vec asin(vec const & arg);
+    friend vec acos(vec const & arg);
+    friend vec atan(vec const & arg);
+
+    friend vec tanh(vec const & arg);
+
+    friend vec log(vec const & arg);
+    friend vec log2(vec const & arg);
+    friend vec log10(vec const & arg);
+    friend vec exp(vec const & arg);
+    friend vec pow(vec const & lhs, vec const & rhs);
+
+    friend vec abs(vec const & arg);
+    friend vec sign(vec const & arg);
+    friend vec square(vec const & arg);
+    friend vec cube(vec const & arg);
+
+    friend vec signed_sqrt(vec const & arg);
+    friend vec signed_pow(vec const & lhs, vec const & rhs);
+
+    friend vec min_(vec const & lhs, vec const & rhs);
+    friend vec max_(vec const & lhs, vec const & rhs);
+
+    friend vec round(vec const & arg);
+    friend vec ceil(vec const & arg);
+    friend vec floor(vec const & arg);
+    friend vec frac(vec const & arg);
+    friend vec trunc(vec const & arg);
+};
+
+
+vector functions:
+
+this vec class has been used as building block for a number of vector functions,
+which provides a traditional c++-style interface to perform a specific operation
+on buffers.
+(for details consult the simd_*.hpp files)
 
 for an unary operation `foo', the following functions must be:
 
@@ -40,7 +133,6 @@ inline void foo_vec_simd(FloatType * out, const FloatType * in);
 for binary and ternary operations, instances are provided for mixed
 vector and scalar arguments. using the suffix _simd provides versions for compile-time
 and run-time unrolled code:
-
 
 template <typename float_type,
           typename Arg1,
