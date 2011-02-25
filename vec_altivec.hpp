@@ -301,7 +301,7 @@ public:
         return (internal_vector_type)vec_and(mask, (vector unsigned int)one); \
     }
 
-#define vec_cmple_(a, b) (vec_cmpge(b, a))
+#define vec_cmple_(a, b) vec_cmpge(b, a)
 
     RELATIONAL_OPERATOR(<, vec_cmplt)
     RELATIONAL_OPERATOR(<=, vec_cmple_)
@@ -338,7 +338,7 @@ public:
     }
 
     RELATIONAL_MASK_OPERATOR(lt, vec_cmplt)
-    RELATIONAL_MASK_OPERATOR(le, vec_cmple)
+    RELATIONAL_MASK_OPERATOR(le, vec_cmple_)
     RELATIONAL_MASK_OPERATOR(gt, vec_cmpgt)
     RELATIONAL_MASK_OPERATOR(ge, vec_cmpge)
     RELATIONAL_MASK_OPERATOR(eq, vec_cmpeq)
