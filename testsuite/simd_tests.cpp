@@ -29,3 +29,7 @@ BOOST_AUTO_TEST_CASE( utils_test )
 }
 
 #endif
+
+BOOST_AUTO_TEST_CASE( dummy_test )
+{
+}
