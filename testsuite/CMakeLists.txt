@@ -15,9 +15,16 @@ set(tests
   vec_test.cpp
 )
 
-# build benchmarks
+SET(EMULATOR "" CACHE STRING "use CPU emulator")
+separate_arguments(EMULATOR UNIX_COMMAND "${EMULATOR}")
+
 foreach(test ${tests})
   string(REPLACE .cpp "" test_name ${test} )
   add_executable(${test_name} ${test})
-  add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
+
+  if(EMULATOR)
+    add_test(NAME ${test_name}_run COMMAND ${EMULATOR} ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
+  else()
+    add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
+  endif()
 endforeach(test)
