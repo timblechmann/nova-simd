@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (nova-simd)
 
+include(CTest)
 enable_testing()
 
 option(NATIVE "compile on gcc with -march=native" OFF)
