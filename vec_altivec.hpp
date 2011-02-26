@@ -109,7 +109,8 @@ public:
 
     static inline internal_vector_type gen_zero(void)
     {
-        return set_bitmask(0);
+        internal_vector_type v;
+        return vec_splat(v, 0);
     }
 
     vec(internal_vector_type const & arg):
@@ -149,7 +150,8 @@ public:
 
     void load_first(const float * data)
     {
-        base::data_ = vec_lde(0, data);
+        clear();
+        base::set(0, *data);
     }
 
     void store(float * dest) const
