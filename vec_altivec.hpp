@@ -571,5 +571,6 @@ public:
 
 #undef always_inline
 #undef vec_cmplt_
+#undef bool
 
 #endif /* VEC_ALTIVEC_HPP */
