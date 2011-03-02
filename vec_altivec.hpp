@@ -48,11 +48,16 @@ private:
 
     static internal_vector_type set_vector(float f0, float f1, float f2, float f3)
     {
-#ifdef __GNUC__
-        return (internal_vector_type){f0, f1, f2, f3};
-#else
-#error compiler not supported
-#endif
+        union {
+            float f[4];
+            internal_vector_type v;
+        } ret;
+
+        ret.f[0] = f0;
+        ret.f[1] = f1;
+        ret.f[2] = f2;
+        ret.f[3] = f3;
+        return ret;
     }
 
     static internal_vector_type set_vector(float f)
@@ -109,8 +114,7 @@ public:
 
     static inline internal_vector_type gen_zero(void)
     {
-        internal_vector_type v;
-        return vec_splat(v, 0);
+        return (internal_vector_type)vec_splat_u32(0);
     }
 
     vec(internal_vector_type const & arg):
