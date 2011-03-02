@@ -68,6 +68,7 @@ always_inline void binary_vec_simd(FloatType * out, arg1_type arg1, arg2_type ar
 }
 
 
+
 #define NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(NAME, FUNCTOR)                \
 template <typename FloatType, typename arg1_type, typename arg2_type>   \
 inline void NAME##_vec(FloatType * out, arg1_type arg1, arg2_type arg2, unsigned int n) \
@@ -88,7 +89,7 @@ template <typename FloatType>                                           \
 inline void NAME##_vec(FloatType * out, FloatType arg1, const FloatType arg1_slope, \
                       const FloatType * arg2, unsigned int n)           \
 {                                                                       \
-    detail::apply_on_vector(out, wrap_argument(arg1), wrap_argument(arg2), n, FUNCTOR<FloatType>()); \
+    detail::apply_on_vector(out, wrap_argument(arg1, arg1_slope), wrap_argument(arg2), n, FUNCTOR<FloatType>()); \
 }                                                                       \
                                                                         \
 template <typename FloatType, typename Arg1Type, typename Arg2Type>     \
