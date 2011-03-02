@@ -76,10 +76,10 @@ struct vector_scalar_argument
 template <typename FloatType>
 struct vector_ramp_argument
 {
-    always_inline vector_ramp_argument(FloatType const & base, FloatType const & slope):
-        slope_(vec<FloatType>::size * slope)
+    always_inline vector_ramp_argument(FloatType const & base, FloatType const & slope)
     {
-        data.set_slope(base, slope);
+        float vSlope = data.set_slope(base, slope);
+        slope_.set_vec(vSlope);
     }
 
     always_inline void increment(void)
@@ -93,7 +93,7 @@ struct vector_ramp_argument
     }
 
     vec<FloatType> data;
-    const vec<FloatType> slope_;
+    vec<FloatType> slope_;
 };
 
 template <typename FloatType>
