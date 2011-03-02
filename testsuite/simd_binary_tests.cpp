@@ -112,17 +112,36 @@ static const unsigned int size = 64;
         compare_buffers(out.c_array(), out_mp.c_array(), size);         \
     }                                                                   \
                                                                         \
-    BOOST_AUTO_TEST_CASE( function##_comparer )                         \
+    BOOST_AUTO_TEST_CASE( function##_comparer_vv )                      \
     {                                                                   \
         function##_compare_vv<float>();                                 \
         function##_compare_vv<double>();                                \
+    }                                                                   \
                                                                         \
+    BOOST_AUTO_TEST_CASE( function##_comparer_vs )                      \
+    {                                                                   \
         function##_compare_vs<float>();                                 \
         function##_compare_vs<double>();                                \
+    }                                                                   \
                                                                         \
+    BOOST_AUTO_TEST_CASE( function##_comparer_vr )                      \
+    {                                                                   \
+        function##_compare_vr<float>();                                 \
+        function##_compare_vr<double>();                                \
+    }                                                                   \
+                                                                        \
+    BOOST_AUTO_TEST_CASE( function##_comparer_sv )                      \
+    {                                                                   \
         function##_compare_sv<float>();                                 \
         function##_compare_sv<double>();                                \
-    }
+    }                                                                   \
+                                                                        \
+    BOOST_AUTO_TEST_CASE( function##_comparer_rv )                      \
+    {                                                                   \
+        function##_compare_rv<float>();                                 \
+        function##_compare_rv<double>();                                \
+    }                                                                   \
+
 
 COMPARE_TEST(plus)
 COMPARE_TEST(minus)
