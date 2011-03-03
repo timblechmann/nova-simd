@@ -57,7 +57,7 @@ private:
         ret.f[1] = f1;
         ret.f[2] = f2;
         ret.f[3] = f3;
-        return ret;
+        return ret.v;
     }
 
     static internal_vector_type set_vector(float f)
