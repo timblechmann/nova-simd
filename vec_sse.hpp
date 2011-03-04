@@ -239,11 +239,12 @@ public:
 
     float set_slope(float start, float slope)
     {
+        float slope2 = slope + slope;
         float v1 = start + slope;
-        float v2 = start + slope + slope;
-        float v3 = start + slope + slope + slope;
+        float v2 = start + slope2;
+        float v3 = start + slope2 + slope;
         data_ = _mm_set_ps(v3, v2, v1, start);
-        return slope + slope + slope + slope;
+        return slope2 + slope2;
     }
 
     float set_exp(float start, float curve)
