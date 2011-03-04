@@ -78,7 +78,7 @@ static const unsigned int size = 64;
         aligned_array<float_type, size> out, out_simd, out_mp, in0;     \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         float_type in1 = randomize_float<float_type>();                 \
-        float_type in1_slope = randomize_float<float_type>();           \
+        float_type in1_slope = randomize_float_slope<float_type>();     \
                                                                         \
         function##_vec<float_type>(out.c_array(), in0.c_array(),        \
                                    in1, in1_slope, size);               \
@@ -88,8 +88,8 @@ static const unsigned int size = 64;
         function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
                                   in1, in1_slope);                      \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size);       \
-        compare_buffers(out.c_array(), out_mp.c_array(), size);         \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 5e-4); \
+        compare_buffers(out.c_array(), out_mp.c_array(), size, 5e-4);   \
     }                                                                   \
                                                                         \
     template <typename float_type>                                      \
@@ -98,7 +98,7 @@ static const unsigned int size = 64;
         aligned_array<float_type, size> out, out_simd, out_mp, in0;     \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         float_type in1 = randomize_float<float_type>();                 \
-        float_type in1_slope = randomize_float<float_type>();           \
+        float_type in1_slope = randomize_float_slope<float_type>();     \
                                                                         \
         function##_vec<float_type>(out.c_array(), in1, in1_slope,       \
                                    in0.c_array(), size);                \
@@ -108,8 +108,8 @@ static const unsigned int size = 64;
         function##_vec_simd<size>(out_mp.c_array(), in1, in1_slope,     \
                                   in0.c_array());                       \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size);       \
-        compare_buffers(out.c_array(), out_mp.c_array(), size);         \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 5e-4); \
+        compare_buffers(out.c_array(), out_mp.c_array(), size, 5e-4);   \
     }                                                                   \
                                                                         \
     BOOST_AUTO_TEST_CASE( function##_comparer_vv )                      \

@@ -13,6 +13,15 @@ float_type randomize_float(void)
 }
 
 template <typename float_type>
+float_type randomize_float_slope(void)
+{
+    static boost::mt19937 rng;
+    static boost::uniform_real<float_type> dist(0.0, 0.01);
+    static boost::variate_generator<boost::mt19937&, boost::uniform_real<float_type> >
+        gen(rng, dist);
+    return gen();
+}
+template <typename float_type>
 void randomize_buffer(float_type * buffer, std::size_t size)
 {
     for (std::size_t i = 0; i != size; ++i)
