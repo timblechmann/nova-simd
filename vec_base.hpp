@@ -22,8 +22,8 @@
 
 #include <cassert>
 #include <functional>
+#include <cstring>
 
-#include "detail/get_pointer.hpp"
 #include "detail/math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -49,6 +49,11 @@ template <typename WrappedType,
           int VecSize>
 class vec_base
 {
+    typedef union {
+        WrappedType f[VecSize];
+        VecType vec;
+    } cast_unit;
+
 public:
     static const int size = VecSize;
 
@@ -71,18 +76,19 @@ public:
     /** io */
     void load(const WrappedType * src)
     {
-        WrappedType * data = get_pointer(data_);
+        cast_unit u;
         for (int i = 0; i != size; ++i)
-            data[i] = src[i];
+            u.f[i] = src[i];
+        data_ = u.vec;
     }
 
     void load_first(const WrappedType * src)
     {
-        WrappedType * data = get_pointer(data_);
-        data[0] = *src;
-
+        cast_unit u;
+        u.f[0] = *src;
         for (int i = 1; i != size; ++i)
-            data[i] = 0;
+            u.f[i] = 0;
+        data_ = u.vec;
     }
 
     void load_aligned(const WrappedType * data)
@@ -92,9 +98,10 @@ public:
 
     void store(WrappedType * dest) const
     {
-        const WrappedType * data = get_pointer(data_);
+        cast_unit u;
+        u.vec = data_;
         for (int i = 0; i != size; ++i)
-            dest[i] = data[i];
+            dest[i] = u.f[i];
     }
 
     void store_aligned(WrappedType * dest) const
@@ -119,45 +126,51 @@ public:
     WrappedType get (int index) const
     {
         assert(index < size);
-        const WrappedType * data = get_pointer(data_);
-        return data[index];
+        cast_unit u;
+        u.vec = data_;
+        return u.f[index];
     }
 
     void set (int index, WrappedType arg)
     {
-        assert(index < size);
-        WrappedType * data = get_pointer(data_);
-        data[index] = arg;
+        cast_unit u;
+        u.vec = data_;
+        u.f[index] = arg;
+        data_ = u.vec;
     }
 
     void set_vec (WrappedType value)
     {
-        WrappedType * data = get_pointer(data_);
+        cast_unit u;
         for (int i = 0; i != size; ++i)
-            data[i] = value;
+            u.f[i] = value;
+        data_ = u.vec;
     }
 
     WrappedType set_slope(WrappedType start, WrappedType slope)
     {
         WrappedType diff = 0;
-        WrappedType * data = get_pointer(data_);
+        cast_unit u;
+
         for (int i = 0; i != size; ++i)
         {
-            data[i] = start + diff;
+            u.f[i] = start + diff;
             diff += slope;
         }
+        data_ = u.vec;
         return diff;
     }
 
     WrappedType set_exp(WrappedType start, WrappedType curve)
     {
         WrappedType value = start;
-        WrappedType * data = get_pointer(data_);
+        cast_unit u;
         for (int i = 0; i != size; ++i)
         {
-            data[i] = value;
+            u.f[i] = value;
             value *= curve;
         }
+        data_ = u.vec;
         return value;
     }
     /* @} */
@@ -166,24 +179,24 @@ private:
     template <typename Functor>
     static always_inline VecType apply_unary(VecType const & arg, Functor const & f)
     {
-        VecType ret;
-        const WrappedType * arg_data = get_pointer(arg);
-        WrappedType * ret_data = get_pointer(ret);
+        cast_unit u;
+        u.vec = arg;
+
         for (int i = 0; i != VecSize; ++i)
-            ret_data[i] = f(arg_data[i]);
-        return ret;
+            u.f[i] = f(u.f[i]);
+        return u.vec;
     }
 
     template <typename Functor>
     static always_inline VecType apply_binary(VecType const & arg1, VecType const & arg2, Functor const & f)
     {
-        VecType ret;
-        const WrappedType * arg1_data = get_pointer(arg1);
-        const WrappedType * arg2_data = get_pointer(arg2);
-        WrappedType * ret_data = get_pointer(ret);
+        cast_unit a1, a2, ret;
+        a1.vec = arg1;
+        a2.vec = arg2;
+
         for (int i = 0; i != VecSize; ++i)
-            ret_data[i] = f(arg1_data[i], arg2_data[i]);
-        return ret;
+            ret.f[i] = f(a1.f[i], a2.f[i]);
+        return ret.vec;
     }
 
 public:
@@ -311,22 +324,25 @@ protected:
 public:
     WrappedType horizontal_min(void) const
     {
-        const WrappedType * data = get_pointer(data_);
-        return *std::min_element(data, data + size);
+        cast_unit u;
+        u.vec = data_;
+        return *std::min_element(u.f, u.f + size);
     }
 
     WrappedType horizontal_max(void) const
     {
-        const WrappedType * data = get_pointer(data_);
-        return *std::max_element(data, data + size);
+        cast_unit u;
+        u.vec = data_;
+        return *std::max_element(u.f, u.f + size);
     }
 
     WrappedType horizontal_sum(void) const
     {
-        const WrappedType * data = get_pointer(data_);
+        cast_unit u;
+        u.vec = data_;
         WrappedType ret = 0;
         for (int i = 0; i != size; ++i)
-            ret += data[i];
+            ret += u.f[i];
         return ret;
     }
 
