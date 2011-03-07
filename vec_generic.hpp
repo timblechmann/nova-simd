@@ -57,7 +57,7 @@ struct array
         return data[index];
     }
 
-    T data[4];
+    T data[size];
 };
 
 }
