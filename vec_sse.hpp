@@ -132,8 +132,7 @@ struct vec<float>:
 
     static inline __m128 gen_zero(void)
     {
-        volatile __m128 x;
-        return _mm_xor_ps(x, x);
+        return _mm_setzero_ps();
     }
 
     vec(__m128 const & arg):

@@ -85,8 +85,7 @@ struct vec<double>:
 
     static inline __m128d gen_zero(void)
     {
-        volatile __m128d x;
-        return _mm_xor_pd(x, x);
+        return _mm_setzero_pd();
     }
 
     vec(__m128d const & arg):

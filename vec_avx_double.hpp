@@ -80,8 +80,7 @@ public:
 
     static inline __m256d gen_zero(void)
     {
-        volatile __m256d x;
-        return _mm256_xor_pd(x, x);
+        return _mm256_setzero_pd();
     }
 
     vec(__m256d const & arg):

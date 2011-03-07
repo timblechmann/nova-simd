@@ -101,8 +101,7 @@ public:
 
     static inline __m256 gen_zero(void)
     {
-        volatile __m256 x;
-        return _mm256_xor_ps(x, x);
+        return _mm256_setzero_ps();
     }
 
     vec(__m256 const & arg):
