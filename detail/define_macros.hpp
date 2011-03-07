@@ -166,7 +166,7 @@ inline void NAME##_vec_simd(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, un
     nova::detail::generate_simd_loop(out, detail::wrap_vector_arg(arg1), \
                                      detail::wrap_vector_arg(arg2),     \
                                      detail::wrap_vector_arg(arg3),     \
-                                     n, FUNCTOR<vec<FloatType> >());    \
+                                     n, FUNCTOR<FloatType>());          \
 }                                                                       \
                                                                         \
 namespace detail {                                                      \
@@ -179,7 +179,7 @@ template <int N,                                                        \
 inline void NAME##_vec_simd_perform(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3) \
 {                                                                       \
     nova::detail::compile_time_unroller<FloatType, N>::mp_iteration(out, arg1, arg2, arg3, \
-                                                                    FUNCTOR<vec<FloatType> >()); \
+                                                                    FUNCTOR<FloatType >()); \
 }                                                                       \
                                                                         \
 }                                                                       \

@@ -52,7 +52,8 @@ struct clip
 
     vec_type operator()(vec_type value, vec_type low, vec_type high) const
     {
-        return clip<vec_type>()(value, low, high);
+        return max_(min_(value, high),
+                    low);
     }
 };
 
@@ -85,7 +86,8 @@ struct ampmod
 
     vec_type operator()(vec_type signal, vec_type modulator, vec_type amount) const
     {
-        return ampmod<vec_type>()(signal, modulator, amount);
+        vec_type one (1.f);
+        return signal * (one + modulator * amount);
     }
 };
 
