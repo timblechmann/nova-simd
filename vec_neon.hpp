@@ -277,7 +277,7 @@ public:
 
     friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)
     {
-        return vmlaq_f32(arg1.data_, arg2.data_, arg3.data_);
+        return vmlaq_f32(arg3.data_, arg2.data_, arg1.data_);
     }
 
 private:
