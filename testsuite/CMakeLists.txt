@@ -1,6 +1,7 @@
 set(tests
   ampmod_test.cpp
   simd_binary_tests.cpp
+  simd_horizontal_tests.cpp
   simd_math_tests.cpp
   simd_memory_tests.cpp
   simd_mix_tests.cpp
