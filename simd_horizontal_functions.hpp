@@ -66,6 +66,8 @@ inline F horizontal_max_vec_simd(const F * in, unsigned int n)
     return current.horizontal_max();
 }
 
+
+/* horizontal min */
 template <typename F>
 inline F horizontal_min_vec(const F * in, unsigned int n)
 {
@@ -99,6 +101,7 @@ inline F horizontal_min_vec_simd(const F * in, unsigned int n)
     return current.horizontal_min();
 }
 
+/* horizontal sum */
 template <typename F>
 inline F horizontal_sum_vec(const F * in, unsigned int n)
 {
@@ -131,6 +134,84 @@ inline F horizontal_sum_vec_simd(const F * in, unsigned int n)
     return current.horizontal_sum();
 }
 
+
+/* horizontal min/max */
+template <typename F>
+inline void horizontal_minmax_vec(F & rmin, F & rmax, const F * in, unsigned int n)
+{
+    F current_max = std::numeric_limits<F>::min();
+    F current_min = std::numeric_limits<F>::max();
+    using namespace std;
+
+    do {
+        current_max = max(current_max, *in);
+        current_min = min(current_min, *in++);
+    } while(--n);
+
+    rmax = current_max;
+    rmin = current_min;
+}
+
+template <typename F>
+inline void horizontal_minmax_vec_simd(F & rmin, F & rmax, const F * in, unsigned int n)
+{
+    vec<F> current_max(std::numeric_limits<F>::min());
+    vec<F> current_min(std::numeric_limits<F>::max());
+
+    /* loop */
+    const size_t vec_size = vec<F>::size;
+    n /= vec_size;
+    do {
+        vec<F> val;
+        val.load_aligned(in);
+
+        current_max = max_(current_max, val);
+        current_min = max_(current_min, val);
+        in += vec_size;
+    } while(--n);
+
+    rmin = current_min.horizontal_min();
+    rmax = current_max.horizontal_max();
+}
+
+/* horizontal max/sum */
+template <typename F>
+inline void horizontal_maxsum_vec(F & rmax, F & rsum, const F * in, unsigned int n)
+{
+    F current_max = std::numeric_limits<F>::min();
+    F current_sum = 0;
+    using namespace std;
+
+    do {
+        current_max = max(current_max, *in);
+        current_sum = current_sum + *in++;
+    } while(--n);
+
+    rmax = current_max;
+    rsum = current_sum;
+}
+
+template <typename F>
+inline void horizontal_maxsum_vec_simd(F & rmax, F & rsum, const F * in, unsigned int n)
+{
+    vec<F> current_max(std::numeric_limits<F>::min());
+    vec<F> current_sum(0);
+
+    /* loop */
+    const size_t vec_size = vec<F>::size;
+    n /= vec_size;
+    do {
+        vec<F> val;
+        val.load_aligned(in);
+
+        current_max = max_(current_max, val);
+        current_sum = current_sum + val;
+        in += vec_size;
+    } while(--n);
+
+    rsum = current_sum.horizontal_sum();
+    rmax = current_max.horizontal_max();
+}
 
 
 } /* namespace nova */
