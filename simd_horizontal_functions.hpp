@@ -118,7 +118,7 @@ inline F horizontal_sum_vec(const F * in, unsigned int n)
 template <typename F>
 inline F horizontal_sum_vec_simd(const F * in, unsigned int n)
 {
-    vec<F> current(F(f));
+    vec<F> current(F(0));
 
     /* loop */
     const size_t vec_size = vec<F>::size;
@@ -166,7 +166,7 @@ inline void horizontal_minmax_vec_simd(F & rmin, F & rmax, const F * in, unsigne
         val.load_aligned(in);
 
         current_max = max_(current_max, val);
-        current_min = max_(current_min, val);
+        current_min = min_(current_min, val);
         in += vec_size;
     } while(--n);
 
