@@ -33,6 +33,8 @@
 #define always_inline inline
 #endif
 
+#include "stdint.h"
+
 namespace nova
 {
 
