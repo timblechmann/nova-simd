@@ -94,3 +94,11 @@ BOOST_AUTO_TEST_CASE( slope )
     test_slope<double>();
 }
 
+BOOST_AUTO_TEST_CASE( align )
+{
+    BOOST_REQUIRE(vec<double>::is_aligned(NULL));
+    BOOST_REQUIRE(vec<float>::is_aligned(NULL));
+    BOOST_REQUIRE(!vec<double>::is_aligned((double*)NULL+1));
+    BOOST_REQUIRE(!vec<float>::is_aligned((float*)NULL+1));
+}
+

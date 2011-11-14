@@ -112,6 +112,11 @@ public:
     static const int size = 8;
     static const int objects_per_cacheline = 64/sizeof(float);
 
+    static bool is_aligned(float* ptr)
+    {
+        return ((intptr_t)(ptr) & (intptr_t)(size * sizeof(float) - 1)) == 0;
+    }
+
     /* @{ */
     /** constructors */
     vec(void)

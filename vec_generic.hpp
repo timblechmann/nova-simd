@@ -102,6 +102,11 @@ public:
         base(arg)
     {}
 
+    static bool is_aligned(FloatType * ptr)
+    {
+        return true;
+    }
+
 public:
     /* @} */
 
