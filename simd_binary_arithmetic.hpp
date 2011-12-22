@@ -137,22 +137,22 @@ struct not_equal_to:
 } /* namespace detail */
 
 
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(plus, std::plus)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(plus, std::plus)
 
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(minus, std::minus)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(times, std::multiplies)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(over, std::divides)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(minus, std::minus)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(times, std::multiplies)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(over, std::divides)
 
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(min, detail::min_functor)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(max, detail::max_functor)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less, detail::less)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less_equal, detail::less_equal)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater, detail::greater)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater_equal, detail::greater_equal)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(equal, detail::equal_to)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(notequal, detail::not_equal_to)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(min, detail::min_functor)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(max, detail::max_functor)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(less, detail::less)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(less_equal, detail::less_equal)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(greater, detail::greater)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(greater_equal, detail::greater_equal)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(equal, detail::equal_to)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(notequal, detail::not_equal_to)
 
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(clip2, detail::clip2)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(clip2, detail::clip2)
 
 } /* namespace nova */
 

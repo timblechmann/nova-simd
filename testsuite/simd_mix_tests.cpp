@@ -65,3 +65,70 @@ BOOST_AUTO_TEST_CASE( mix_ramp_tests )
     test_mix_ramp<float>();
     test_mix_ramp<double>();
 }
+
+
+template <typename float_type>
+void test_sum(void)
+{
+    aligned_array<float_type, size>  sseval, mpval, generic, args0, args1;
+    randomize_buffer<float_type>(args0.c_array(), size);
+    randomize_buffer<float_type>(args1.c_array(), size);
+
+    sum_vec(generic.c_array(), args0.c_array(), args1.c_array(), size);
+    sum_vec_simd(sseval.c_array(), args0.c_array(), args1.c_array(), size);
+    sum_vec_simd<size>(mpval.c_array(), args0.c_array(), args1.c_array());
+
+    for (int i = 0; i != size; ++i) {
+        BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.0001 );
+        BOOST_CHECK_CLOSE( mpval[i], generic[i], 0.0001 );
+    }
+}
+
+template <typename float_type>
+void test_sum3(void)
+{
+    aligned_array<float_type, size>  sseval, mpval, generic, args0, args1, args2;
+    randomize_buffer<float_type>(args0.c_array(), size);
+    randomize_buffer<float_type>(args1.c_array(), size);
+    randomize_buffer<float_type>(args2.c_array(), size);
+
+    sum_vec(generic.c_array(), args0.c_array(), args1.c_array(), args2.c_array(), size);
+    sum_vec_simd(sseval.c_array(), args0.c_array(), args1.c_array(), args2.c_array(), size);
+    sum_vec_simd<size>(mpval.c_array(), args0.c_array(), args1.c_array(), args2.c_array());
+
+    for (int i = 0; i != size; ++i) {
+        BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.0001 );
+        BOOST_CHECK_CLOSE( mpval[i], generic[i], 0.0001 );
+    }
+}
+
+template <typename float_type>
+void test_sum4(void)
+{
+    aligned_array<float_type, size>  sseval, mpval, generic, args0, args1, args2, args3;
+    randomize_buffer<float_type>(args0.c_array(), size);
+    randomize_buffer<float_type>(args1.c_array(), size);
+    randomize_buffer<float_type>(args2.c_array(), size);
+    randomize_buffer<float_type>(args3.c_array(), size);
+
+    sum_vec(generic.c_array(), args0.c_array(), args1.c_array(), args2.c_array(), args3.c_array(), size);
+    sum_vec_simd(sseval.c_array(), args0.c_array(), args1.c_array(), args2.c_array(), args3.c_array(), size);
+    sum_vec_simd<size>(mpval.c_array(), args0.c_array(), args1.c_array(), args2.c_array(), args3.c_array());
+
+    for (int i = 0; i != size; ++i) {
+        BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.0001 );
+        BOOST_CHECK_CLOSE( mpval[i], generic[i], 0.0001 );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( sum_tests )
+{
+    test_sum<float>();
+    test_sum<double>();
+
+    test_sum3<float>();
+    test_sum3<double>();
+
+    test_sum4<float>();
+    test_sum4<double>();
+}

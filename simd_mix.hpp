@@ -44,9 +44,36 @@ struct scaled_mix2
         return sig0 * factor0 + sig1 * factor1;
     }
 };
+
+template <typename Dummy>
+struct sum
+{
+    template<typename ArgType>
+    always_inline ArgType operator()(ArgType sig0, ArgType sig1) const
+    {
+        return sig0 + sig1;
+    }
+
+    template<typename ArgType>
+    always_inline ArgType operator()(ArgType sig0, ArgType sig1, ArgType sig2) const
+    {
+        return sig0 + sig1 + sig2;
+    }
+
+    template<typename ArgType>
+    always_inline ArgType operator()(ArgType sig0, ArgType sig1, ArgType sig2, ArgType sig3) const
+    {
+        return (sig0 + sig1) + (sig2 + sig3);
+    }
+};
+
 }
 
 NOVA_SIMD_DEFINE_4ARY_OPERATION(mix, detail::scaled_mix2)
+
+NOVA_SIMD_DEFINE_BINARY_OPERATION(sum, detail::sum)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(sum, detail::sum)
+NOVA_SIMD_DEFINE_4ARY_OPERATION(sum, detail::sum)
 
 }
 

@@ -108,8 +108,8 @@ struct NAME##_<vec<FloatType> >                                         \
 DEFINE_BINARY_MATH_FUNCTOR(pow)
 DEFINE_BINARY_MATH_FUNCTOR(signed_pow)
 
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(pow, detail::pow_)
-NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(spow, detail::signed_pow_)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(pow, detail::pow_)
+NOVA_SIMD_DEFINE_BINARY_OPERATION(spow, detail::signed_pow_)
 
 }
 
