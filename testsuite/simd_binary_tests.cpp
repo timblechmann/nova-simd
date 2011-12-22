@@ -66,7 +66,7 @@ static const unsigned int size = 64;
                                    in0.c_array(), size);                \
         function##_vec_simd<float_type>(out_simd.c_array(), in1,        \
                                         in0.c_array(), size);           \
-        function##_vec_simd<size>(out_mp.c_array(), in1, in0.c_array());\
+        function##_vec_simd<size>(out_mp.c_array(), in1, in0.c_array()); \
                                                                         \
         compare_buffers(out.c_array(), out_simd.c_array(), size);       \
         compare_buffers(out.c_array(), out_mp.c_array(), size);         \
@@ -81,12 +81,12 @@ static const unsigned int size = 64;
         float_type in1_slope = randomize_float_slope<float_type>();     \
                                                                         \
         function##_vec<float_type>(out.c_array(), in0.c_array(),        \
-                                   in1, in1_slope, size);               \
+                                   slope_argument(in1, in1_slope), size); \
         function##_vec_simd<float_type>(out_simd.c_array(),             \
                                         in0.c_array(),                  \
-                                        in1, in1_slope, size);          \
+                                        slope_argument(in1, in1_slope), size); \
         function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
-                                  in1, in1_slope);                      \
+                                  slope_argument(in1, in1_slope));      \
                                                                         \
         compare_buffers(out.c_array(), out_simd.c_array(), size, 5e-4); \
         compare_buffers(out.c_array(), out_mp.c_array(), size, 5e-4);   \
@@ -100,12 +100,12 @@ static const unsigned int size = 64;
         float_type in1 = randomize_float<float_type>();                 \
         float_type in1_slope = randomize_float_slope<float_type>();     \
                                                                         \
-        function##_vec<float_type>(out.c_array(), in1, in1_slope,       \
+        function##_vec<float_type>(out.c_array(), slope_argument(in1, in1_slope), \
                                    in0.c_array(), size);                \
-        function##_vec_simd<float_type>(out_simd.c_array(), in1,        \
-                                        in1_slope,                      \
+        function##_vec_simd<float_type>(out_simd.c_array(),             \
+                                        slope_argument(in1, in1_slope), \
                                         in0.c_array(), size);           \
-        function##_vec_simd<size>(out_mp.c_array(), in1, in1_slope,     \
+        function##_vec_simd<size>(out_mp.c_array(), slope_argument(in1, in1_slope), \
                                   in0.c_array());                       \
                                                                         \
         compare_buffers(out.c_array(), out_simd.c_array(), size, 5e-4); \
@@ -140,7 +140,7 @@ static const unsigned int size = 64;
     {                                                                   \
         function##_compare_rv<float>();                                 \
         function##_compare_rv<double>();                                \
-    }                                                                   \
+    }
 
 
 COMPARE_TEST(plus)

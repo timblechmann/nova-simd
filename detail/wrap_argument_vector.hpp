@@ -96,6 +96,7 @@ struct vector_ramp_argument
     vec<FloatType> slope_;
 };
 
+/* convert scalar args to vector args */
 template <typename FloatType>
 always_inline detail::vector_scalar_argument<FloatType>
 wrap_vector_arg(detail::scalar_scalar_argument<FloatType> const & arg)

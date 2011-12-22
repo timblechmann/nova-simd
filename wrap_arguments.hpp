@@ -116,9 +116,50 @@ always_inline detail::scalar_ramp_argument<FloatType> wrap_argument(FloatType ba
     return detail::scalar_ramp_argument<FloatType>(base, slope);
 }
 
+template <typename FloatType>
+always_inline detail::scalar_scalar_argument<FloatType>
+wrap_argument(detail::scalar_scalar_argument<FloatType> const & f)
+{
+    return f;
+}
+
+template <typename FloatType>
+always_inline detail::scalar_pointer_argument<FloatType>
+wrap_argument(detail::scalar_pointer_argument<FloatType> const & f)
+{
+    return f;
+}
+
+template <typename FloatType>
+always_inline detail::scalar_ramp_argument<FloatType>
+wrap_argument(detail::scalar_ramp_argument<FloatType> const & f)
+{
+    return f;
+}
+
+template <typename FloatType>
+always_inline detail::scalar_scalar_argument<FloatType>
+scalar_argument(FloatType const & f)
+{
+    return wrap_argument(f);
+}
+
+template <typename FloatType>
+always_inline detail::scalar_pointer_argument<FloatType>
+vector_argument(const FloatType * f)
+{
+    return wrap_argument(f);
+}
+
+template <typename FloatType>
+always_inline detail::scalar_ramp_argument<FloatType>
+slope_argument(FloatType const & value, FloatType const & slope)
+{
+    return wrap_argument(value, slope);
+}
+
 }
 
 #undef always_inline
-
 
 #endif /* NOVA_SIMD_WRAP_ARGUMENTS_HPP */
