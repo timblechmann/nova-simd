@@ -21,6 +21,7 @@
 #define SIMD_MIX_HPP
 
 #include "vec.hpp"
+#include "detail/wrap_argument_vector.hpp"
 
 namespace nova
 {
@@ -35,122 +36,77 @@ namespace detail
 {
 
 template <typename F, unsigned int n>
-struct mix_vec
+struct mix_vec_simd
 {
     static const int offset = vec<F>::size;
 
-    static always_inline void mp_iteration(F * out, const F * in0, vec<F> const & factor0,
-                                          const F * in1, vec<F> const & factor1)
+    template <typename InType0, typename Factor0Type, typename InType1, typename Factor1Type>
+    static always_inline void mp_iteration(F * out, InType0 & in0, Factor0Type & factor0,
+                                           InType1 & in1, Factor1Type & factor1)
     {
-        vec<F> vin0, vin1, vout;
-        vin0.load_aligned(in0);
-        vin1.load_aligned(in1);
-        vout = vin0 * factor0 + vin1 * factor1;
+        vec<F> vout = in0.consume() * factor0.consume() + in1.consume() * factor1.consume();
         vout.store_aligned(out);
-        mix_vec<F, n-offset>::mp_iteration(out+offset, in0+offset, factor0, in1+offset, factor1);
-    }
 
-    static always_inline void mp_iteration(F * out, const F * in0, vec<F> & factor0, vec<F> const & slope0,
-                                          const F * in1, vec<F> & factor1, vec<F> const & slope1)
-    {
-        vec<F> vin0, vin1, vout;
-        vin0.load_aligned(in0);
-        vin1.load_aligned(in1);
-        vout = vin0 * factor0 + vin1 * factor1;
-        vout.store_aligned(out);
-        factor0 += slope0;
-        factor1 += slope1;
-        mix_vec<F, n-offset>::mp_iteration(out+offset, in0+offset, factor0, slope0, in1+offset, factor1, slope1);
+        mix_vec_simd<F, n-offset>::mp_iteration(out+offset, in0, factor0, in1, factor1);
     }
-
 };
 
 template <typename F>
-struct mix_vec<F, 0>
+struct mix_vec_simd<F, 0>
 {
-    static always_inline void mp_iteration(F * out, const F * in0, vec<F> const & factor0,
-                                          const F * in1, vec<F> const & factor1)
-    {}
-
-    static always_inline void mp_iteration(F * out, const F * in0, vec<F> & factor0, vec<F> const & slope0,
-                                          const F * in1, vec<F> & factor1, vec<F> const & slope1)
+    template <typename InType0, typename Factor0Type, typename InType1, typename Factor1Type>
+    static always_inline void mp_iteration(F * out, InType0 & in0, Factor0Type & factor0,
+                                           InType1 & in1, Factor1Type & factor1)
     {}
 };
 
-}
-
-template <typename F>
-void mix_vec(F * out, const F * in0, F factor0, const F * in1, F factor1, unsigned int n)
+template <typename FloatType, typename InType0, typename Factor0Type,
+          typename InType1, typename Factor1Type>
+void mix_vec_simd_impl(FloatType * out, InType0 in0, Factor0Type factor0,
+                  InType1 in1, Factor1Type factor1, unsigned int n)
 {
-    do {
-        *out++ = *in0++ * factor0 + *in1++ * factor1;
-    } while(--n);
-}
-
-template <typename F>
-void mix_vec_simd(F * out, const F * in0, F factor0, const F * in1, F factor1, unsigned int n)
-{
-    vec<F> vf0(factor0), vf1(factor1);
-    const int per_loop = vec<F>::objects_per_cacheline;
+    const int per_loop = vec<FloatType>::objects_per_cacheline;
 
     n /= per_loop;
     do {
-        detail::mix_vec<F, per_loop>::mp_iteration(out, in0, vf0, in1, vf1);
-        out += per_loop; in0 += per_loop; in1 += per_loop;
+        detail::mix_vec_simd<FloatType, per_loop>::mp_iteration(out, in0, factor0, in1, factor1);
+        out += per_loop;
     } while(--n);
 }
 
-template <unsigned int n, typename F>
-void mix_vec_simd(F * out, const F * in0, F factor0, const F * in1, F factor1)
-{
-    vec<F> vf0(factor0), vf1(factor1);
-    detail::mix_vec<F, n>::mp_iteration(out, in0, vf0, in1, vf1);
-}
-
-template <typename F>
-void mix_vec(F * out, const F * in0, F factor0, F slope0,
-             const F * in1, F factor1, F slope1, unsigned int n)
+template <typename FloatType, typename InType0, typename Factor0Type,
+typename InType1, typename Factor1Type>
+void mix_vec_impl(FloatType * out, InType0 in0, Factor0Type factor0,
+                       InType1 in1, Factor1Type factor1, unsigned int n)
 {
     do {
-        *out++ = *in0++ * factor0 + *in1++ * factor1; factor0 += slope0; factor1 += slope1;
+        *out++ = in0.consume() * factor0.consume() + in1.consume() * factor1.consume();
     } while(--n);
 }
 
-template <typename F>
-void mix_vec_simd(F * out, const F * in0, F factor0, F slope0,
-                  const F * in1, F factor1, F slope1, unsigned int n)
+
+} // namespace detail
+
+template <typename F, typename Factor0Type, typename Factor1Type>
+void mix_vec(F * out, const F * in0, Factor0Type factor0, const F * in1, Factor1Type factor1, unsigned int n)
 {
-    vec<F> vf0, vf1;
-    const int per_loop = vec<F>::objects_per_cacheline;
-
-    F vslope0_offset = vf0.set_slope(factor0, slope0);
-    F vslope1_offset = vf1.set_slope(factor1, slope1);
-
-    vec<F> vslope0, vslope1;
-    vslope0.set_vec(vslope0_offset);
-    vslope1.set_vec(vslope1_offset);
-
-    n /= per_loop;
-    do {
-        detail::mix_vec<F, per_loop>::mp_iteration(out, in0, vf0, vslope0, in1, vf1, vslope1);
-        out += per_loop; in0 += per_loop; in1 += per_loop;
-    } while(--n);
+    detail::mix_vec_impl(out, wrap_argument(in0), wrap_argument(factor0),
+                              wrap_argument(in1), wrap_argument(factor1), n);
 }
 
-template <unsigned int n, typename F>
-void mix_vec_simd(F * out, const F * in0, F factor0, F slope0,
-                  const F * in1, F factor1, F slope1)
+template <typename FloatType, typename Factor0Type, typename Factor1Type>
+void mix_vec_simd(FloatType * out, FloatType const * in0, Factor0Type factor0,
+                  FloatType const * in1, Factor1Type factor1, unsigned int n)
 {
-    vec<F> vf0, vf1;
+    using detail::wrap_vector_arg;
+    detail::mix_vec_simd_impl(out, wrap_vector_arg(wrap_argument(in0)), wrap_vector_arg(wrap_argument(factor0)),
+                              wrap_vector_arg(wrap_argument(in1)), wrap_vector_arg(wrap_argument(factor1)), n);
+}
 
-    vf0.set_slope(factor0, slope0);
-    vf1.set_slope(factor1, slope1);
-
-    vec<F> vslope0, vslope1;
-    vslope0.set_vec(slope0*vec<F>::size);
-    vslope1.set_vec(slope1*vec<F>::size);
-
-    detail::mix_vec<F, n>::mp_iteration(out, in0, vf0, vslope0, in1, vf1, vslope1);
+template <unsigned int n, typename F, typename Factor0Type, typename Factor1Type>
+void mix_vec_simd(F * out, const F * in0, Factor0Type factor0, const F * in1, Factor1Type factor1)
+{
+    mix_vec_simd(out, in0, factor0, in1, factor1, n);
 }
 
 }

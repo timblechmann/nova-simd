@@ -52,6 +52,14 @@ struct vector_pointer_argument
         return ret;
     }
 
+    always_inline vec<FloatType> consume(void)
+    {
+        vec<FloatType> ret;
+        ret.load_aligned(data);
+        increment();
+        return ret;
+    }
+
     const FloatType * data;
 };
 
@@ -66,6 +74,11 @@ struct vector_scalar_argument
     {}
 
     always_inline vec<FloatType> get(void) const
+    {
+        return vec<FloatType>(data);
+    }
+
+    always_inline vec<FloatType> consume(void)
     {
         return vec<FloatType>(data);
     }
@@ -90,6 +103,13 @@ struct vector_ramp_argument
     always_inline vec<FloatType> get(void) const
     {
         return data;
+    }
+
+    always_inline vec<FloatType> consume(void)
+    {
+        vec<FloatType> ret(data);
+        increment();
+        return ret;
     }
 
     vec<FloatType> data;

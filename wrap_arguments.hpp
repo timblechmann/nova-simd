@@ -46,6 +46,13 @@ struct scalar_pointer_argument
         return *data;
     }
 
+    always_inline FloatType consume(void)
+    {
+        FloatType ret = *data;
+        increment();
+        return ret;
+    }
+
     const FloatType * data;
 };
 
@@ -60,6 +67,11 @@ struct scalar_scalar_argument
     {}
 
     always_inline FloatType get(void) const
+    {
+        return data;
+    }
+
+    always_inline FloatType consume(void)
     {
         return data;
     }
@@ -82,6 +94,13 @@ struct scalar_ramp_argument
     always_inline FloatType get(void) const
     {
         return data;
+    }
+
+    always_inline FloatType consume(void)
+    {
+        FloatType ret = data;
+        increment();
+        return ret;
     }
 
     FloatType data;

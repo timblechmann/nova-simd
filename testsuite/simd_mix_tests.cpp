@@ -50,9 +50,9 @@ void test_mix_ramp(void)
     float_type factor0 = 0.4; float_type slope0 = 0.1/size;
     float_type factor1 = 0.6; float_type slope1 = -0.1/size;
 
-    mix_vec(generic.c_array(), args0.c_array(), factor0, slope0, args1.c_array(), factor1, slope1, size);
-    mix_vec_simd(sseval.c_array(), args0.c_array(), factor0, slope0, args1.c_array(), factor1, slope1, size);
-    mix_vec_simd<size>(mpval.c_array(), args0.c_array(), factor0, slope0, args1.c_array(), factor1, slope1);
+    mix_vec(generic.c_array(), args0.c_array(), slope_argument(factor0, slope0), args1.c_array(), slope_argument(factor1, slope1), size);
+    mix_vec_simd(sseval.c_array(), args0.c_array(), slope_argument(factor0, slope0), args1.c_array(), slope_argument(factor1, slope1), size);
+    mix_vec_simd<size>(mpval.c_array(), args0.c_array(), slope_argument(factor0, slope0), args1.c_array(), slope_argument(factor1, slope1));
 
     for (int i = 0; i != size; ++i) {
         BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.5 );
