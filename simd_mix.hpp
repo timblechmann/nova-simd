@@ -21,6 +21,7 @@
 #define SIMD_MIX_HPP
 
 #include "vec.hpp"
+#include "detail/define_macros.hpp"
 #include "detail/wrap_argument_vector.hpp"
 
 namespace nova
@@ -32,82 +33,20 @@ namespace nova
 #define always_inline inline
 #endif
 
-namespace detail
-{
+namespace detail {
 
-template <typename F, unsigned int n>
-struct mix_vec_simd
+template <typename Dummy>
+struct scaled_mix2
 {
-    static const int offset = vec<F>::size;
-
-    template <typename InType0, typename Factor0Type, typename InType1, typename Factor1Type>
-    static always_inline void mp_iteration(F * out, InType0 & in0, Factor0Type & factor0,
-                                           InType1 & in1, Factor1Type & factor1)
+    template<typename ArgType>
+    always_inline ArgType operator()(ArgType sig0, ArgType factor0, ArgType sig1, ArgType factor1) const
     {
-        vec<F> vout = in0.consume() * factor0.consume() + in1.consume() * factor1.consume();
-        vout.store_aligned(out);
-
-        mix_vec_simd<F, n-offset>::mp_iteration(out+offset, in0, factor0, in1, factor1);
+        return sig0 * factor0 + sig1 * factor1;
     }
 };
-
-template <typename F>
-struct mix_vec_simd<F, 0>
-{
-    template <typename InType0, typename Factor0Type, typename InType1, typename Factor1Type>
-    static always_inline void mp_iteration(F * out, InType0 & in0, Factor0Type & factor0,
-                                           InType1 & in1, Factor1Type & factor1)
-    {}
-};
-
-template <typename FloatType, typename InType0, typename Factor0Type,
-          typename InType1, typename Factor1Type>
-void mix_vec_simd_impl(FloatType * out, InType0 in0, Factor0Type factor0,
-                  InType1 in1, Factor1Type factor1, unsigned int n)
-{
-    const int per_loop = vec<FloatType>::objects_per_cacheline;
-
-    n /= per_loop;
-    do {
-        detail::mix_vec_simd<FloatType, per_loop>::mp_iteration(out, in0, factor0, in1, factor1);
-        out += per_loop;
-    } while(--n);
 }
 
-template <typename FloatType, typename InType0, typename Factor0Type,
-typename InType1, typename Factor1Type>
-void mix_vec_impl(FloatType * out, InType0 in0, Factor0Type factor0,
-                       InType1 in1, Factor1Type factor1, unsigned int n)
-{
-    do {
-        *out++ = in0.consume() * factor0.consume() + in1.consume() * factor1.consume();
-    } while(--n);
-}
-
-
-} // namespace detail
-
-template <typename F, typename Factor0Type, typename Factor1Type>
-void mix_vec(F * out, const F * in0, Factor0Type factor0, const F * in1, Factor1Type factor1, unsigned int n)
-{
-    detail::mix_vec_impl(out, wrap_argument(in0), wrap_argument(factor0),
-                              wrap_argument(in1), wrap_argument(factor1), n);
-}
-
-template <typename FloatType, typename Factor0Type, typename Factor1Type>
-void mix_vec_simd(FloatType * out, FloatType const * in0, Factor0Type factor0,
-                  FloatType const * in1, Factor1Type factor1, unsigned int n)
-{
-    using detail::wrap_vector_arg;
-    detail::mix_vec_simd_impl(out, wrap_vector_arg(wrap_argument(in0)), wrap_vector_arg(wrap_argument(factor0)),
-                              wrap_vector_arg(wrap_argument(in1)), wrap_vector_arg(wrap_argument(factor1)), n);
-}
-
-template <unsigned int n, typename F, typename Factor0Type, typename Factor1Type>
-void mix_vec_simd(F * out, const F * in0, Factor0Type factor0, const F * in1, Factor1Type factor1)
-{
-    mix_vec_simd(out, in0, factor0, in1, factor1, n);
-}
+NOVA_SIMD_DEFINE_4ARY_OPERATION(mix, detail::scaled_mix2)
 
 }
 

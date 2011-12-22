@@ -119,6 +119,21 @@ struct compile_time_unroller
         in1.increment(); in2.increment(); in3.increment();
         compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, in3, f);
     }
+
+    template <typename arg1_type,
+              typename arg2_type,
+              typename arg3_type,
+              typename arg4_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2,
+                                           arg3_type & in3, arg4_type & in4, Functor const & f)
+    {
+        vec_type result = f(in1.get(), in2.get(), in3.get(), in4.get());
+        result.store_aligned(out);
+        in1.increment(); in2.increment(); in3.increment(); in4.increment();
+        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, in3, in4, f);
+    }
 };
 
 template <typename FloatType>
@@ -143,6 +158,15 @@ struct compile_time_unroller<FloatType, 0>
               typename Functor
              >
     static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Arg3 const &, Functor const & f)
+    {}
+
+    template <typename Arg1,
+              typename Arg2,
+              typename Arg3,
+              typename Arg4,
+              typename Functor
+             >
+    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Arg3 const &, Arg4 const &, Functor const & f)
     {}
 };
 
@@ -188,6 +212,23 @@ always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, Ar
     n /= per_loop;
     do {
         detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, f);
+        out += per_loop;
+    } while (--n);
+}
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2,
+          typename Arg3,
+          typename Arg4,
+          typename Functor
+         >
+always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, unsigned int n, Functor const & f)
+{
+    const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
+    n /= per_loop;
+    do {
+        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, arg4, f);
         out += per_loop;
     } while (--n);
 }

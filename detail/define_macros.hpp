@@ -114,9 +114,10 @@ template <typename FloatType,                                           \
          >                                                              \
 inline void NAME##_vec_simd(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, unsigned int n) \
 {                                                                       \
-    nova::detail::generate_simd_loop(out, detail::wrap_vector_arg(arg1), \
-                                     detail::wrap_vector_arg(arg2),     \
-                                     detail::wrap_vector_arg(arg3),     \
+    nova::detail::generate_simd_loop(out,                               \
+                                     detail::wrap_vector_arg(wrap_argument(arg1)), \
+                                     detail::wrap_vector_arg(wrap_argument(arg2)), \
+                                     detail::wrap_vector_arg(wrap_argument(arg3)), \
                                      n, FUNCTOR<FloatType>());          \
 }                                                                       \
                                                                         \
@@ -143,10 +144,78 @@ template <int N,                                                        \
          >                                                              \
 inline void NAME##_vec_simd(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3) \
 {                                                                       \
-    nova::detail::NAME##_vec_simd_perform<N>(out, detail::wrap_vector_arg(arg1), \
-                                             detail::wrap_vector_arg(arg2), \
-                                             detail::wrap_vector_arg(arg3)); \
+    nova::detail::NAME##_vec_simd_perform<N>(out,                       \
+                                             detail::wrap_vector_arg(wrap_argument(arg1)), \
+                                             detail::wrap_vector_arg(wrap_argument(arg2)), \
+                                             detail::wrap_vector_arg(wrap_argument(arg3))); \
 }                                                                       \
+
+
+#define NOVA_SIMD_DEFINE_4ARY_OPERATION(NAME, FUNCTOR)                  \
+template <typename FloatType,                                           \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3,                                                \
+          typename Arg4                                                 \
+         >                                                              \
+inline void NAME##_vec(FloatType * out, Arg1 arg1, Arg2 arg2,           \
+                       Arg3 arg3, Arg4 arg4, unsigned int n)            \
+{                                                                       \
+    nova::detail::apply_on_vector<FloatType>(out,                       \
+                                             wrap_argument(arg1),       \
+                                             wrap_argument(arg2),       \
+                                             wrap_argument(arg3),       \
+                                             wrap_argument(arg4),       \
+                                             n, FUNCTOR<FloatType>());  \
+}                                                                       \
+                                                                        \
+template <typename FloatType,                                           \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3,                                                \
+          typename Arg4                                                 \
+         >                                                              \
+inline void NAME##_vec_simd(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, unsigned int n) \
+{                                                                       \
+    nova::detail::generate_simd_loop(out,                               \
+                                     detail::wrap_vector_arg(wrap_argument(arg1)), \
+                                     detail::wrap_vector_arg(wrap_argument(arg2)), \
+                                     detail::wrap_vector_arg(wrap_argument(arg3)), \
+                                     detail::wrap_vector_arg(wrap_argument(arg4)), \
+                                     n, FUNCTOR<FloatType>());          \
+}                                                                       \
+                                                                        \
+namespace detail {                                                      \
+template <int N,                                                        \
+          typename FloatType,                                           \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3,                                                \
+          typename Arg4                                                 \
+         >                                                              \
+inline void NAME##_vec_simd_perform(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) \
+{                                                                       \
+    nova::detail::compile_time_unroller<FloatType, N>::mp_iteration(out, arg1, arg2, arg3, arg4, \
+                                                                    FUNCTOR<FloatType >()); \
+}                                                                       \
+                                                                        \
+}                                                                       \
+                                                                        \
+template <int N,                                                        \
+          typename FloatType,                                           \
+          typename Arg1,                                                \
+          typename Arg2,                                                \
+          typename Arg3,                                                \
+          typename Arg4                                                 \
+         >                                                              \
+inline void NAME##_vec_simd(FloatType * out, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) \
+{                                                                       \
+    nova::detail::NAME##_vec_simd_perform<N>(out,                       \
+                                             detail::wrap_vector_arg(wrap_argument(arg1)), \
+                                             detail::wrap_vector_arg(wrap_argument(arg2)), \
+                                             detail::wrap_vector_arg(wrap_argument(arg3)), \
+                                             detail::wrap_vector_arg(wrap_argument(arg4))); \
+}
 
 #undef always_inline
 

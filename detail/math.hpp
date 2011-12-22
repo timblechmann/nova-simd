@@ -36,8 +36,7 @@ template <typename FloatType,
          >
 inline void apply_on_vector(FloatType * out, Arg1Type in1, Functor f)
 {
-    for (int i = 0; i != VectorSize; ++i)
-    {
+    for (int i = 0; i != VectorSize; ++i) {
         *out++ = f(in1.get());
         in1.increment();
     }
@@ -51,8 +50,7 @@ template <typename FloatType,
          >
 inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Functor f)
 {
-    for (int i = 0; i != VectorSize; ++i)
-    {
+    for (int i = 0; i != VectorSize; ++i) {
         *out++ = f(in1.get(), in2.get());
         in1.increment();
         in2.increment();
@@ -66,14 +64,32 @@ template <typename FloatType,
           typename Arg3Type,
           typename Functor
          >
-inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg2Type in3, Functor f)
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg3Type in3, Functor f)
 {
-    for (int i = 0; i != VectorSize; ++i)
-    {
+    for (int i = 0; i != VectorSize; ++i) {
         *out++ = f(in1.get(), in2.get(), in3.get());
         in1.increment();
         in2.increment();
         in3.increment();
+    }
+}
+
+template <typename FloatType,
+          int VectorSize,
+          typename Arg1Type,
+          typename Arg2Type,
+          typename Arg3Type,
+          typename Arg4Type,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg3Type in3, Arg4Type in4, Functor f)
+{
+    for (int i = 0; i != VectorSize; ++i) {
+        *out++ = f(in1.get(), in2.get(), in3.get(), in4.get());
+        in1.increment();
+        in2.increment();
+        in3.increment();
+        in4.increment();
     }
 }
 
@@ -123,6 +139,27 @@ inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg3Typ
     }
     while (--n);
 }
+
+template <typename FloatType,
+          typename Arg1Type,
+          typename Arg2Type,
+          typename Arg3Type,
+          typename Arg4Type,
+          typename Functor
+         >
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Arg2Type in2, Arg3Type in3, Arg4Type in4, unsigned int n, Functor f)
+{
+    do
+    {
+        *out++ = f(in1.get(), in2.get(), in3.get(), in4.get());
+        in1.increment();
+        in2.increment();
+        in3.increment();
+        in4.increment();
+    }
+    while (--n);
+}
+
 ///@}
 
 
