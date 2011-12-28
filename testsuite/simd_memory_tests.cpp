@@ -97,7 +97,7 @@ void slope_tests(void)
     set_slope_vec<float_type>(out.c_array(), base, slope, size);
     set_slope_vec_simd<float_type>(out_simd.c_array(), base, slope, size);
 
-    compare_buffers_relative(out.c_array(), out_simd.c_array(), size);
+    compare_buffers(out.c_array(), out_simd.c_array(), size);
 }
 
 BOOST_AUTO_TEST_CASE( slope_test )
@@ -117,7 +117,7 @@ void exp_tests(void)
     set_exp_vec<float_type>(out.c_array(), base, slope, size);
     set_exp_vec_simd<float_type>(out_simd.c_array(), base, slope, size);
 
-    compare_buffers_relative(out.c_array(), out_simd.c_array(), size);
+    compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE( exp_test )

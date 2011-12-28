@@ -222,10 +222,40 @@ inline void set_exp_vec(F * dest, F f, F curve, unsigned int n)
     } while (--n);
 }
 
+namespace detail {
+
+template <int Exponent, typename Type>
+class pow_i
+{
+public:
+    static Type run(Type const & base)
+    {
+        return base * pow_i<Exponent - 1, Type>::run(base);
+    }
+};
+
+template <typename Type>
+class pow_i<1, Type>
+{
+public:
+    static Type run(Type const & base)
+    {
+        return base;
+    }
+};
+
+template <size_t Exponent, typename Type>
+Type ipow(Type const & base)
+{
+    return pow_i<Exponent, Type>::run(base);
+}
+
+}
+
 template <typename F>
 inline void set_exp_vec_simd(F * dest, F f, F curve, unsigned int n)
 {
-    vec<F> vbase, vcurve(curve * curve * curve * curve);
+    vec<F> vbase, vcurve(detail::ipow<vec<F>::size, F>(curve));
     vbase.set_exp(f, curve);
 
     unsigned int unroll = n / vec<F>::objects_per_cacheline;
@@ -419,7 +449,7 @@ inline void addvec_simd(F * out, const F in, const F slope, unsigned int n)
 {
     const int per_loop = vec<F>::objects_per_cacheline;
     vec<F> vin; vin.set_slope(in, slope);
-    vec<F> vslope; vslope.set(slope+slope+slope+slope);
+    vec<F> vslope; vslope.set(slope * vec<F>::size);
     n /= per_loop;
     do
     {
@@ -446,7 +476,7 @@ template <unsigned int n, typename F>
 inline void addvec_simd(F * out, const F in, const F slope)
 {
     vec<F> vin; vin.set_slope(in, slope);
-    vec<F> vslope; vslope.set(slope+slope+slope+slope);
+    vec<F> vslope; vslope.set(slope * vec<F>::size);
     detail::addvec<F, n>::mp_iteration(out, vin, vslope);
 }
 
