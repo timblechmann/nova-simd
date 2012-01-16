@@ -461,6 +461,11 @@ public:
     {
         return detail::vec_log10(arg);
     }
+
+    friend inline vec undenormalize(vec const & arg)
+    {
+        return detail::vec_undenormalize(arg);
+    }
     /* @} */
 
     /* @{ */

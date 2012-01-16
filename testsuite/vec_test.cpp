@@ -123,3 +123,22 @@ BOOST_AUTO_TEST_CASE( align )
     BOOST_REQUIRE(!vec<float>::is_aligned((float*)NULL+1));
 }
 
+template <typename T>
+void test_undenormalize(void)
+{
+    const T min_positive_value = std::numeric_limits<T>::min();
+    typedef vec<T> vec_t;
+    vec_t denormal(min_positive_value/2);
+
+    vec_t fixed = undenormalize(denormal);
+    BOOST_REQUIRE(fixed.get(0) == 0);
+
+    vec_t normal(min_positive_value);
+    BOOST_REQUIRE(normal.get(0) == min_positive_value);
+}
+
+BOOST_AUTO_TEST_CASE( undenormalize_tester )
+{
+    test_undenormalize<float>();
+    test_undenormalize<double>();
+}

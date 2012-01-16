@@ -575,6 +575,21 @@ always_inline VecType vec_select(VecType lhs, VecType rhs, VecType bitmask)
     return result;
 }
 
+
+template <typename VecType>
+always_inline VecType vec_undenormalize(VecType arg)
+{
+    typedef typename VecType::float_type float_type;
+    const float_type min_positive_value = std::numeric_limits<float_type>::min();
+
+    const VecType abs_arg = abs(arg);
+    const VecType abs_arg_lt_min = mask_lt(abs_arg, min_positive_value);
+    const VecType zero = VecType::gen_zero();
+
+    const VecType result = select(arg, zero, abs_arg_lt_min);
+    return result;
+}
+
 }
 }
 

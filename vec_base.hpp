@@ -322,6 +322,8 @@ protected:
     DEFINE_BINARY_STATIC(max_, detail::max)
     DEFINE_BINARY_STATIC(min_, detail::min)
 
+    DEFINE_UNARY_STATIC(undenormalize, detail::undenormalize)
+
 public:
     WrappedType horizontal_min(void) const
     {

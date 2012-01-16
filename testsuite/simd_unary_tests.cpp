@@ -139,3 +139,24 @@ BOOST_AUTO_TEST_CASE( cube_test2 )
 }
 
 COMPARE_TEST(cube)
+
+template <typename float_type>
+void undenormalize_compare(void) {
+    aligned_array<float_type, size> out, out_simd, out_mp, in;
+
+    const float_type min_positive_value = std::numeric_limits<float_type>::min();
+    for (int i = 0; i != size; ++i)
+        in [i] = (i * min_positive_value * 2.0)/(float_type)size;
+
+    nova::undenormalize_vec<float_type>(out.c_array(), in.c_array(), size);
+    nova::undenormalize_vec_simd<float_type>(out_simd.c_array(), in.c_array(), size);
+    nova::undenormalize_vec_simd<size>(out_mp.c_array(), in.c_array());
+    compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6f);
+    compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-6f);
+}
+
+BOOST_AUTO_TEST_CASE( undenormalize_tester )
+{
+    undenormalize_compare<float>();
+    undenormalize_compare<double>();
+}

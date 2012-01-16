@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <limits>
 
 
 namespace nova {
@@ -313,6 +314,23 @@ inline float_type signed_pow(float_type in0, float_type in1)
         return std::pow(in0, in1);
     else
         return -std::pow(-in0, in1);
+}
+
+template <typename float_type>
+inline float_type undenormalize(float_type arg)
+{
+    const float_type min_positive_value = std::numeric_limits<float_type>::min();
+    if (arg > 0) {
+        if (arg < min_positive_value)
+            return 0.0;
+        else
+            return arg;
+    } else {
+        if (arg > -min_positive_value)
+            return 0.0;
+        else
+            return arg;
+    }
 }
 
 }

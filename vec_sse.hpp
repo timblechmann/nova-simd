@@ -604,6 +604,10 @@ public:
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(tanh)
 
 #endif
+    friend inline vec undenormalize(vec const & arg)
+    {
+        return detail::vec_undenormalize(arg);
+    }
     /* @} */
 
     /* @{ */

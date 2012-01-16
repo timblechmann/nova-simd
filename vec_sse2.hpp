@@ -405,6 +405,10 @@ public:
         return detail::vec_signed_sqrt(arg);
     }
 
+    friend inline vec undenormalize(vec const & arg)
+    {
+        return detail::vec_undenormalize(arg);
+    }
     /* @} */
 
     /* @{ */

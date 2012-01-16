@@ -64,6 +64,7 @@ DEFINE_UNARY_FUNCTOR(frac, frac)
 DEFINE_UNARY_FUNCTOR(ceil, ceil)
 DEFINE_UNARY_FUNCTOR(floor, floor)
 DEFINE_UNARY_FUNCTOR(trunc, trunc)
+DEFINE_UNARY_FUNCTOR(undenormalize, undenormalize)
 
 } /* namespace detail */
 
@@ -79,6 +80,7 @@ NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ceil, detail::ceil_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(floor, detail::floor_)
 NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(trunc, detail::trunc_)
 
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(undenormalize, detail::undenormalize_)
 } /* namespace nova */
 
 #undef always_inline
