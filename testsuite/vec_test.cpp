@@ -94,6 +94,27 @@ BOOST_AUTO_TEST_CASE( slope )
     test_slope<double>();
 }
 
+template <typename T>
+void test_select(void)
+{
+    typedef vec<T> vec_t;
+    vec_t a(1.0), b(2.0);
+    vec_t zero = vec_t::gen_zero();
+    vec_t ones = vec_t::gen_ones();
+
+    vec_t select_a = select(a, b, zero);
+    vec_t select_b = select(a, b, ones);
+
+    BOOST_REQUIRE(select_a.get(0) == 1);
+    BOOST_REQUIRE(select_b.get(0) == 2);
+}
+
+BOOST_AUTO_TEST_CASE( select_tester )
+{
+    test_select<float>();
+    test_select<double>();
+}
+
 BOOST_AUTO_TEST_CASE( align )
 {
     BOOST_REQUIRE(vec<double>::is_aligned(NULL));

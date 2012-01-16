@@ -571,7 +571,8 @@ always_inline VecType vec_log10(VecType arg)
 template <typename VecType>
 always_inline VecType vec_select(VecType lhs, VecType rhs, VecType bitmask)
 {
-    return andnot(bitmask, lhs) | (bitmask & rhs);
+    const VecType result = andnot(bitmask, lhs) | (bitmask & rhs);
+    return result;
 }
 
 }

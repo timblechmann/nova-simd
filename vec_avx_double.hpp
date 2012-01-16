@@ -85,6 +85,13 @@ public:
         return _mm256_setzero_pd();
     }
 
+    static inline __m256d gen_ones(void)
+    {
+        __m256d x = gen_zero();
+        __m256d ones = _mm256_cmp_pd(x, x, _CMP_EQ_OQ);
+        return ones;
+    }
+
     vec(__m256d const & arg):
         base(arg)
     {}

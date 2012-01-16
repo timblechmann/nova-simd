@@ -88,6 +88,14 @@ struct vec<double>:
         return _mm_setzero_pd();
     }
 
+    static inline __m128d gen_ones(void)
+    {
+        __m128d x = gen_zero();
+        __m128d ones = _mm_cmpeq_pd(x, x);
+        return ones;
+    }
+
+
     vec(__m128d const & arg):
         base(arg)
     {}
@@ -279,7 +287,7 @@ public:
 #ifdef __SSE4_1__
         return _mm_blendv_pd(lhs.data_, rhs.data_, bitmask.data_);
 #else
-        return detail::vec_select(lhs, bitmask, rhs);
+        return detail::vec_select(lhs, rhs, bitmask);
 #endif
     }
 
