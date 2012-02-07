@@ -28,108 +28,106 @@
 #define always_inline inline
 #endif
 
-namespace nova
-{
-namespace detail
-{
+namespace nova {
+namespace detail {
 
-template <typename FloatType>
 struct abs_log2
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & arg) const
     {
-        return log2_<FloatType>()(fabs_<FloatType>()(arg));
+        return log2_()(fabs_()(arg));
     }
 };
 
-template <typename FloatType>
 struct midi2freq
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & midi) const
     {
-        return (FloatType)440. * pow_<FloatType>()(FloatType(2.),
+        return (FloatType)440. * pow_()(FloatType(2.),
                                                      (midi - FloatType(69.)) * FloatType(0.083333333333));
     }
 };
 
-template <typename FloatType>
 struct freq2midi
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & freq) const
     {
-        return abs_log2<FloatType>()(freq * FloatType(0.0022727272727))  * FloatType(12.) + FloatType(69.);
+        return abs_log2()(freq * FloatType(0.0022727272727))  * FloatType(12.) + FloatType(69.);
     }
 };
 
-template <typename FloatType>
 struct midi2ratio
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & midi) const
     {
-        return pow_<FloatType>()(FloatType(2.), midi * FloatType(0.083333333333));
+        return pow_()(FloatType(2.), midi * FloatType(0.083333333333));
     }
 };
 
-template <typename FloatType>
 struct ratio2midi
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & ratio) const
     {
-        return FloatType(12.) * log2_<FloatType>()(ratio);
+        return FloatType(12.) * log2_()(ratio);
     }
 };
 
-template <typename FloatType>
 struct oct2freq
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & note) const
     {
-        return FloatType(440.) * pow_<FloatType>()(FloatType(2.), note - FloatType(4.75));
+        return FloatType(440.) * pow_()(FloatType(2.), note - FloatType(4.75));
     }
 };
 
 
-template <typename FloatType>
 struct freq2oct
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & freq) const
     {
-        return abs_log2<FloatType>()(freq * FloatType(0.0022727272727)) + FloatType(4.75);
+        return abs_log2()(freq * FloatType(0.0022727272727)) + FloatType(4.75);
     }
 };
 
-template <typename FloatType>
 struct amp2db
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & amp) const
     {
-        return log10_<FloatType>()(fabs_<FloatType>()(amp)) * FloatType(20.);
+        return log10_()(fabs_()(amp)) * FloatType(20.);
     }
 };
 
-template <typename FloatType>
 struct db2amp
 {
+    template <typename FloatType>
     always_inline FloatType operator()(const FloatType & db) const
     {
-        return pow_<FloatType>()(FloatType(10.), db * FloatType(0.05));
+        return pow_()(FloatType(10.), db * FloatType(0.05));
     }
 };
 
 }
 
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(midi2freq, detail::midi2freq)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(freq2midi, detail::freq2midi)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(midi2freq, detail::midi2freq)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(freq2midi, detail::freq2midi)
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(midi2ratio, detail::midi2ratio)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ratio2midi, detail::ratio2midi)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(midi2ratio, detail::midi2ratio)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(ratio2midi, detail::ratio2midi)
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(oct2freq, detail::oct2freq)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(freq2oct, detail::freq2oct)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(oct2freq, detail::oct2freq)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(freq2oct, detail::freq2oct)
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(amp2db, detail::amp2db)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(db2amp, detail::db2amp)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(amp2db, detail::amp2db)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(db2amp, detail::db2amp)
 
 }
 

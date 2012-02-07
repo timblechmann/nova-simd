@@ -35,7 +35,6 @@ namespace nova
 
 namespace detail {
 
-template <typename Dummy>
 struct scaled_mix2
 {
     template<typename ArgType>
@@ -45,7 +44,6 @@ struct scaled_mix2
     }
 };
 
-template <typename Dummy>
 struct sum
 {
     template<typename ArgType>
@@ -69,11 +67,11 @@ struct sum
 
 }
 
-NOVA_SIMD_DEFINE_4ARY_OPERATION(mix, detail::scaled_mix2)
+NOVA_SIMD_DEFINE_4ARY_WRAPPER(mix, detail::scaled_mix2)
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(sum, detail::sum)
-NOVA_SIMD_DEFINE_TERNARY_OPERATION(sum, detail::sum)
-NOVA_SIMD_DEFINE_4ARY_OPERATION(sum, detail::sum)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(sum, detail::sum)
+NOVA_SIMD_DEFINE_TERNARY_WRAPPER(sum, detail::sum)
+NOVA_SIMD_DEFINE_4ARY_WRAPPER(sum, detail::sum)
 
 }
 

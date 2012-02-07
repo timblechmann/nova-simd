@@ -34,33 +34,22 @@
 
 namespace nova {
 
-
-#define DEFINE_UNARY_MATH_FUNCTOR(NAME)                                 \
+#define DEFINE_UNARY_FUNCTOR(NAME)                                      \
 namespace detail {                                                      \
-                                                                        \
-template <typename FloatType>                                           \
 struct NAME##_                                                          \
 {                                                                       \
+    template <typename FloatType>                                       \
     always_inline FloatType operator()(FloatType arg) const             \
-    {                                                                   \
-        return NAME<FloatType>(arg);                                    \
-    }                                                                   \
-};                                                                      \
-                                                                        \
-template <typename FloatType>                                           \
-struct NAME##_<vec<FloatType> >                                         \
-{                                                                       \
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const \
     {                                                                   \
         return NAME(arg);                                               \
     }                                                                   \
 };                                                                      \
-                                                                        \
-}                                                                       \
+} // namespace detail
+
 
 #define DEFINE_UNARY_MATH_FUNCTIONS(NAME)               \
-DEFINE_UNARY_MATH_FUNCTOR(NAME)                         \
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(NAME, detail::NAME##_)
+DEFINE_UNARY_FUNCTOR(NAME)                              \
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(NAME, detail::NAME##_)
 
 
 DEFINE_UNARY_MATH_FUNCTIONS(sin)
@@ -83,22 +72,12 @@ DEFINE_UNARY_MATH_FUNCTIONS(signed_sqrt)
 
 #define DEFINE_BINARY_MATH_FUNCTOR(NAME)                                \
 namespace detail {                                                      \
-                                                                        \
-template <typename FloatType>                                           \
 struct NAME##_                                                          \
 {                                                                       \
+    template <typename FloatType>                                       \
     always_inline FloatType operator()(FloatType lhs, FloatType rhs) const \
     {                                                                   \
-        return NAME<FloatType>(lhs, rhs);                               \
-    }                                                                   \
-};                                                                      \
-                                                                        \
-template <typename FloatType>                                           \
-struct NAME##_<vec<FloatType> >                                         \
-{                                                                       \
-    always_inline vec<FloatType> operator()(vec<FloatType> const & lhs, vec<FloatType> const & rhs) const \
-    {                                                                   \
-        return NAME(lhs, rhs);                                          \
+        return NAME(lhs, rhs);                               \
     }                                                                   \
 };                                                                      \
                                                                         \
@@ -108,11 +87,13 @@ struct NAME##_<vec<FloatType> >                                         \
 DEFINE_BINARY_MATH_FUNCTOR(pow)
 DEFINE_BINARY_MATH_FUNCTOR(signed_pow)
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(pow, detail::pow_)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(spow, detail::signed_pow_)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(pow, detail::pow_)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(spow, detail::signed_pow_)
 
 }
 
+#undef DEFINE_UNARY_FUNCTOR
+#undef DEFINE_BINARY_MATH_FUNCTOR
 #undef DEFINE_UNARY_MATH_FUNCTIONS
 #undef DEFINE_BINARY_MATH_FUNCTIONS
 #undef always_inline

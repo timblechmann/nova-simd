@@ -34,59 +34,40 @@
 #endif
 
 
-namespace nova
-{
-namespace detail
-{
+namespace nova {
+namespace detail {
 
-template<typename float_type>
 struct clip
 {
+    template<typename float_type>
     float_type operator()(float_type value, float_type low, float_type high) const
     {
         return max_(min_(value, high),
                     low);
     }
-
-    typedef vec<float_type> vec_type;
-
-    vec_type operator()(vec_type value, vec_type low, vec_type high) const
-    {
-        return max_(min_(value, high),
-                    low);
-    }
 };
 
-template<typename float_type>
 struct muladd
 {
+    template<typename float_type>
     float_type operator()(float_type value, float_type mul, float_type add) const
     {
         return value * mul + add;
     }
 
-    typedef vec<float_type> vec_type;
-
-    vec_type operator()(vec_type value, vec_type mul, vec_type add) const
+    template<typename float_type>
+    vec<float_type> operator()(vec<float_type> value, vec<float_type> mul, vec<float_type> add) const
     {
         return madd(value, mul, add);
     }
 };
 
-template<typename float_type>
 struct ampmod
 {
+    template<typename float_type>
     float_type operator()(float_type signal, float_type modulator, float_type amount) const
     {
         float_type one = 1.f;
-        return signal * (one + modulator * amount);
-    }
-
-    typedef vec<float_type> vec_type;
-
-    vec_type operator()(vec_type signal, vec_type modulator, vec_type amount) const
-    {
-        vec_type one (1.f);
         return signal * (one + modulator * amount);
     }
 };
@@ -94,9 +75,9 @@ struct ampmod
 }
 
 
-NOVA_SIMD_DEFINE_TERNARY_OPERATION(clip, detail::clip)
-NOVA_SIMD_DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
-NOVA_SIMD_DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
+NOVA_SIMD_DEFINE_TERNARY_WRAPPER(clip, detail::clip)
+NOVA_SIMD_DEFINE_TERNARY_WRAPPER(muladd, detail::muladd)
+NOVA_SIMD_DEFINE_TERNARY_WRAPPER(ampmod, detail::ampmod)
 
 }
 

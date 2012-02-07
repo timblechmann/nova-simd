@@ -29,30 +29,25 @@
 #define always_inline inline
 #endif
 
-namespace nova
-{
+namespace nova {
 
-namespace detail
-{
+namespace detail {
 
 #define DEFINE_UNARY_FUNCTOR(NAME, VEC_NAME)                            \
-template <typename FloatType>                                           \
 struct NAME##_                                                          \
 {                                                                       \
+    template <typename FloatType>                                       \
     always_inline FloatType operator()(FloatType arg) const             \
     {                                                                   \
-        return NAME<FloatType>(arg);                                    \
+        return NAME(arg);                                               \
     }                                                                   \
-};                                                                      \
-                                                                        \
-template <typename FloatType>                                           \
-struct NAME##_<vec<FloatType> >                                         \
-{                                                                       \
-    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const \
+    template <typename FloatType>                                       \
+    always_inline vec<FloatType> operator()(vec<FloatType> arg) const   \
     {                                                                   \
         return VEC_NAME(arg);                                           \
     }                                                                   \
 };
+
 
 DEFINE_UNARY_FUNCTOR(fabs, abs)
 DEFINE_UNARY_FUNCTOR(sign, sign)
@@ -68,21 +63,21 @@ DEFINE_UNARY_FUNCTOR(undenormalize, undenormalize)
 
 } /* namespace detail */
 
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(abs, detail::fabs_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(sgn, detail::sign_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(square, detail::square_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(cube, detail::cube_)
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(abs, detail::fabs_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(sgn, detail::sign_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(square, detail::square_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(cube, detail::cube_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(round, detail::round_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(frac, detail::frac_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(ceil, detail::ceil_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(floor, detail::floor_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(trunc, detail::trunc_)
 
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(round, detail::round_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(frac, detail::frac_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ceil, detail::ceil_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(floor, detail::floor_)
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(trunc, detail::trunc_)
-
-NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(undenormalize, detail::undenormalize_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(undenormalize, detail::undenormalize_)
 } /* namespace nova */
 
 #undef always_inline
+#undef DEFINE_UNARY_FUNCTOR
 
 #endif /* SIMD_UNARY_ARITHMETIC_HPP */

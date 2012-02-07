@@ -36,98 +36,123 @@
 
 
 namespace nova {
+namespace detail {
 
-namespace detail
+struct plus
 {
-
-template<typename float_type>
-struct clip2:
-    public std::binary_function<float_type, float_type, float_type>
-{
-    float_type operator()(float_type const & f, float_type const & limit) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & arg1, FloatType const & arg2) const
     {
-        float_type zero = 0.0;
-        float_type neg = zero - float_type(limit);
+        return arg1 + arg2;
+    }
+};
+
+struct minus
+{
+    template<typename FloatType>
+    FloatType operator()(FloatType const & arg1, FloatType const & arg2) const
+    {
+        return arg1 - arg2;
+    }
+};
+
+struct multiplies
+{
+    template<typename FloatType>
+    FloatType operator()(FloatType const & arg1, FloatType const & arg2) const
+    {
+        return arg1 * arg2;
+    }
+};
+
+struct divides
+{
+    template<typename FloatType>
+    FloatType operator()(FloatType const & arg1, FloatType const & arg2) const
+    {
+        return arg1 / arg2;
+    }
+};
+
+struct clip2
+{
+    template<typename FloatType>
+    FloatType operator()(FloatType const & f, FloatType const & limit) const
+    {
+        FloatType zero = 0.0;
+        FloatType neg = zero - FloatType(limit);
         return max_(neg, min_(f, limit));
     }
 };
 
-template<typename float_type>
-struct min_functor:
-    public std::binary_function<float_type, float_type, float_type>
+struct min_functor
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return min_(x, y);
     }
 };
 
-template<typename float_type>
-struct max_functor:
-    public std::binary_function<float_type, float_type, float_type>
+struct max_functor
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return max_(x, y);
     }
 };
 
-template<typename float_type>
-struct less:
-    public std::binary_function<float_type, float_type, float_type>
+struct less
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x < y;
     }
 };
 
-template<typename float_type>
-struct less_equal:
-    public std::binary_function<float_type, float_type, float_type>
+struct less_equal
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x <= y;
     }
 };
 
-template<typename float_type>
-struct greater:
-    public std::binary_function<float_type, float_type, float_type>
+struct greater
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x > y;
     }
 };
 
-template<typename float_type>
-struct greater_equal:
-    public std::binary_function<float_type, float_type, float_type>
+struct greater_equal
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x >= y;
     }
 };
 
 
-template<typename float_type>
-struct equal_to:
-    public std::binary_function<float_type, float_type, float_type>
+struct equal_to
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x == y;
     }
 };
 
-template<typename float_type>
-struct not_equal_to:
-    public std::binary_function<float_type, float_type, float_type>
+struct not_equal_to
 {
-    float_type operator()(float_type const & x, float_type const & y) const
+    template<typename FloatType>
+    FloatType operator()(FloatType const & x, FloatType const & y) const
     {
         return x != y;
     }
@@ -137,22 +162,22 @@ struct not_equal_to:
 } /* namespace detail */
 
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(plus, std::plus)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(plus, detail::plus)
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(minus, std::minus)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(times, std::multiplies)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(over, std::divides)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(minus, detail::minus)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(times, detail::multiplies)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(over, detail::divides)
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(min, detail::min_functor)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(max, detail::max_functor)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(less, detail::less)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(less_equal, detail::less_equal)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(greater, detail::greater)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(greater_equal, detail::greater_equal)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(equal, detail::equal_to)
-NOVA_SIMD_DEFINE_BINARY_OPERATION(notequal, detail::not_equal_to)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(min, detail::min_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(max, detail::max_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(less, detail::less)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(less_equal, detail::less_equal)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(greater, detail::greater)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(greater_equal, detail::greater_equal)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(equal, detail::equal_to)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(notequal, detail::not_equal_to)
 
-NOVA_SIMD_DEFINE_BINARY_OPERATION(clip2, detail::clip2)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER(clip2, detail::clip2)
 
 } /* namespace nova */
 
