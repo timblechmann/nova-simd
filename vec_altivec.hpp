@@ -21,6 +21,7 @@
 #define VEC_ALTIVEC_HPP
 
 #include <altivec.h>
+#undef bool
 
 #include "detail/vec_math.hpp"
 #include "vec_int_altivec.hpp"
@@ -580,6 +581,5 @@ public:
 
 #undef always_inline
 #undef vec_cmplt_
-#undef bool
 
 #endif /* VEC_ALTIVEC_HPP */
