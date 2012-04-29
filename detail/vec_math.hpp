@@ -150,7 +150,8 @@ always_inline VecType vec_exp_float(VecType const & arg)
 
     /* handle min/max boundaries */
     const VecType maxlogf(88.72283905206835f);
-    const VecType minlogf(-103.278929903431851103f);
+//    const VecType minlogf(-103.278929903431851103f);
+	const VecType minlogf = -maxlogf;
     const VecType max_float(std::numeric_limits<float>::max());
     const VecType zero = VecType::gen_zero();
 

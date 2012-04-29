@@ -99,6 +99,12 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
 
         compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);
     }
+
+	vec<float> zero(0.f);
+	vec<float> exponent(1.1f);
+
+	vec<float> result = pow(zero, exponent);
+	BOOST_REQUIRE_EQUAL(result.get(0), 0.f);
 }
 
 COMPARE_TEST(log, 0.01, 100)
