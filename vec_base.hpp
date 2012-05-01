@@ -361,6 +361,12 @@ protected:
         return vec::NAME(arg.data_);            \
     }
 
+#define NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(NAME)  \
+    inline vec NAME(vec const & rhs) const         \
+    {                                              \
+        return vec::NAME(rhs.data_);               \
+    }
+
 #define NOVA_SIMD_DELEGATE_BINARY_TO_BASE(NAME)                 \
     inline friend vec NAME(vec const & arg1, vec const & arg2)  \
     {                                                           \

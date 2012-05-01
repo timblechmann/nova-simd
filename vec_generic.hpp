@@ -110,6 +110,10 @@ public:
 public:
     /* @} */
 
+    NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(operator+)
+    NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(operator-)
+    NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(operator*)
+    NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(operator/)
 
     /* @{ */
     /** unary functions */
