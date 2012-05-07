@@ -62,11 +62,11 @@ protected:
     vec_base (void)
     {}
 
+public:
     vec_base (VecType arg):
         data_(arg)
     {}
 
-public:
     operator VecType (void) const
     {
         return data_;
@@ -358,19 +358,19 @@ protected:
 #define NOVA_SIMD_DELEGATE_UNARY_TO_BASE(NAME)  \
     inline friend vec NAME(vec const & arg)     \
     {                                           \
-        return vec::NAME(arg.data_);            \
+        return base::NAME(arg.data_);            \
     }
 
 #define NOVA_SIMD_DELEGATE_OPERATOR_TO_BASE(NAME)  \
     inline vec NAME(vec const & rhs) const         \
     {                                              \
-        return vec::NAME(rhs.data_);               \
+        return base::NAME(rhs.data_);               \
     }
 
 #define NOVA_SIMD_DELEGATE_BINARY_TO_BASE(NAME)                 \
     inline friend vec NAME(vec const & arg1, vec const & arg2)  \
     {                                                           \
-        return vec::NAME(arg1.data_, arg2.data_);               \
+        return base::NAME(arg1.data_, arg2.data_);               \
     }
 
 #define NOVA_SIMD_DEFINE_MADD                                   \
