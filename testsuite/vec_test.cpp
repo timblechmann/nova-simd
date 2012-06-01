@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE( align )
 {
     BOOST_REQUIRE(vec<double>::is_aligned(NULL));
     BOOST_REQUIRE(vec<float>::is_aligned(NULL));
-    BOOST_REQUIRE(!vec<double>::is_aligned((double*)NULL+1));
-    BOOST_REQUIRE(!vec<float>::is_aligned((float*)NULL+1));
+    BOOST_REQUIRE(!vec<double>::is_aligned((double*)(NULL+1)));
+    BOOST_REQUIRE(!vec<float>::is_aligned((float*)(NULL+1)));
 }
 
 template <typename T>
@@ -141,4 +141,20 @@ BOOST_AUTO_TEST_CASE( undenormalize_tester )
 {
     test_undenormalize<float>();
     test_undenormalize<double>();
+}
+
+template <typename T>
+void test_reciprocal(void)
+{
+    typedef vec<T> vec_t;
+    vec_t four(4.0);
+    T result = reciprocal(four).get(0);
+    BOOST_REQUIRE_CLOSE(result, 0.25, 1e-5);
+}
+
+
+BOOST_AUTO_TEST_CASE( reciprocal_tester )
+{
+    test_reciprocal<float>();
+    test_reciprocal<double>();
 }

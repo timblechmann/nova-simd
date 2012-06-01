@@ -333,6 +333,12 @@ inline float_type undenormalize(float_type arg)
     }
 }
 
+template <typename float_type>
+inline float_type reciprocal(float_type in)
+{
+    return float_type(1) / in;
+}
+
 }
 }
 

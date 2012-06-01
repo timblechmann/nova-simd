@@ -252,6 +252,19 @@ private:
     }
 
 public:
+    friend vec fast_reciprocal(vec const & arg)
+    {
+        float32x4_t reciprocal = vrecpeq_f32(arg);
+        return reciprocal;
+    }
+
+    friend vec reciprocal(vec const & arg)
+    {
+        float32x4_t reciprocal = vrecpeq_f32(arg);
+        reciprocal = vmulq_f32(reciprocal, vrecpsq_f32(arg, reciprocal));
+        return reciprocal;
+    }
+
     /** arithmetic operators */
 #define OPERATOR_ASSIGNMENT(op, opcode) \
     vec & operator op(vec const & rhs) \

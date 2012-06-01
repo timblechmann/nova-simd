@@ -289,6 +289,8 @@ public:
 
 
 protected:
+    DEFINE_UNARY_STATIC(reciprocal, detail::reciprocal)
+
     DEFINE_UNARY_STATIC(sin, detail::sin)
     DEFINE_UNARY_STATIC(cos, detail::cos)
     DEFINE_UNARY_STATIC(tan, detail::tan)

@@ -591,6 +591,21 @@ always_inline VecType vec_undenormalize(VecType arg)
     return result;
 }
 
+template <typename VecType>
+always_inline VecType vec_reciprocal_newton(VecType arg)
+{
+    const VecType one = VecType::gen_one();
+
+    const VecType approx = fast_reciprocal(arg);
+
+    // One round of Newton-Raphson refinement
+    const VecType diff = one - approx * arg;
+    const VecType result = madd(diff, approx, approx);
+
+    return result;
+}
+
+
 }
 }
 

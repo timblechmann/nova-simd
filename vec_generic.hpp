@@ -104,7 +104,17 @@ public:
 
     static bool is_aligned(FloatType * ptr)
     {
-        return true;
+        return ((intptr_t)(ptr) & (intptr_t)(sizeof(float) - 1)) == 0;
+    }
+
+    static vec gen_zero()
+    {
+        return vec(0.0);
+    }
+
+    static vec gen_ones()
+    {
+        return vec(1.0);
     }
 
 public:
@@ -141,9 +151,21 @@ public:
     /* @{ */
     NOVA_SIMD_DEFINE_MADD
 
+    friend inline vec select(vec lhs, vec rhs, vec bitmask)
+    {
+        vec ret;
+        for (int i = 0; i != size; ++i) {
+            ret.data_[i] = bitmask.data_[i] != 0 ? rhs.data_[i]
+                                                 : lhs.data_[i];
+        }
+        return ret;
+    }
+
     /** mathematical functions */
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(pow)
     NOVA_SIMD_DELEGATE_BINARY_TO_BASE(signed_pow)
+
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(reciprocal)
 
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log)
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(log2)

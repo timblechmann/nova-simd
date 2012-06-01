@@ -354,9 +354,14 @@ public:
         return _mm_xor_ps(arg.data_, gen_sign_mask());
     }
 
-    friend vec reciprocal(const vec & arg)
+    friend vec fast_reciprocal(const vec & arg)
     {
         return _mm_rcp_ps(arg.data_);
+    }
+
+    friend vec reciprocal(const vec & arg)
+    {
+        return detail::vec_reciprocal_newton(arg);
     }
 
     NOVA_SIMD_DEFINE_MADD

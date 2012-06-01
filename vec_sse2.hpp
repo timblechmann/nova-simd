@@ -234,6 +234,8 @@ public:
     ARITHMETIC_OPERATOR(*, _mm_mul_pd)
     ARITHMETIC_OPERATOR(/, _mm_div_pd)
 
+    NOVA_SIMD_DELEGATE_UNARY_TO_BASE(reciprocal)
+
     NOVA_SIMD_DEFINE_MADD
 
 #define RELATIONAL_OPERATOR(op, opcode) \

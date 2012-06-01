@@ -281,6 +281,12 @@ public:
         return vec_xor(arg.data_, gen_sign_mask());
     }
 
+    friend vec fast_reciprocal(const vec & arg)
+    {
+        vector float estimate = vec_re(arg);
+        return estimate;
+    }
+
     friend vec reciprocal(const vec & arg)
     {
         return vec_reciprocal(arg.data_);
