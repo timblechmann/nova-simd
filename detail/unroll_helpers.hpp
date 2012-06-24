@@ -42,24 +42,18 @@ struct compile_time_unroller
     template <typename arg1_type,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, Functor const & f)
+    static always_inline void run(FloatType * out, arg1_type & in1, Functor const & f)
     {
-        vec_type result = f(in1.get());
-        result.store_aligned(out);
-        in1.increment();
-        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, f);
+        compile_time_unroller<FloatType, N>::mp_iteration_1(out, in1.consume(), in1, f);
     }
 
     template <typename arg1_type,
               typename arg2_type,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2, Functor const & f)
+    static always_inline void run(FloatType * out, arg1_type & in1, arg2_type & in2, Functor const & f)
     {
-        vec_type result = f(in1.get(), in2.get());
-        result.store_aligned(out);
-        in1.increment(); in2.increment();
-        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, f);
+        compile_time_unroller<FloatType, N>::mp_iteration_2(out, in1.consume(), in1, in2.consume(), in2, f);
     }
 
     template <typename arg1_type,
@@ -67,13 +61,10 @@ struct compile_time_unroller
               typename arg3_type,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2,
-                                           arg3_type & in3, Functor const & f)
+    static always_inline void run(FloatType * out, arg1_type & in1, arg2_type & in2,
+                                  arg3_type & in3, Functor const & f)
     {
-        vec_type result = f(in1.get(), in2.get(), in3.get());
-        result.store_aligned(out);
-        in1.increment(); in2.increment(); in3.increment();
-        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, in3, f);
+        compile_time_unroller<FloatType, N>::mp_iteration_3(out, in1.consume(), in1, in2.consume(), in2, in3.consume(), in3, f);
     }
 
     template <typename arg1_type,
@@ -82,47 +73,149 @@ struct compile_time_unroller
               typename arg4_type,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, arg1_type & in1, arg2_type & in2,
-                                           arg3_type & in3, arg4_type & in4, Functor const & f)
+    static always_inline void run(FloatType * out, arg1_type & in1, arg2_type & in2,
+                                  arg3_type & in3, arg4_type & in4, Functor const & f)
     {
-        vec_type result = f(in1.get(), in2.get(), in3.get(), in4.get());
+        compile_time_unroller<FloatType, N>::mp_iteration_4(out, in1.consume(), in1, in2.consume(), in2,
+                                                            in3.consume(), in3, in4.consume(), in4, f);
+    }
+
+private:
+    friend class compile_time_unroller<FloatType, vec_type::size + N>;
+
+    template <typename arg1_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration_1(FloatType * out, vec_type loaded_in1, arg1_type & in1, Functor const & f)
+    {
+        vec_type loaded_next_in1;
+        if (N != offset)
+            loaded_next_in1 = in1.consume();
+
+        vec_type result = f(loaded_in1);
         result.store_aligned(out);
-        in1.increment(); in2.increment(); in3.increment(); in4.increment();
-        compile_time_unroller<FloatType, N-offset>::mp_iteration(out+offset, in1, in2, in3, in4, f);
+        compile_time_unroller<FloatType, N-offset>::mp_iteration_1(out+offset, loaded_next_in1, in1, f);
+    }
+
+    template <typename arg1_type,
+              typename arg2_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration_2(FloatType * out, vec_type loaded_in1, arg1_type & in1,
+                                             vec_type loaded_in2, arg2_type & in2, Functor const & f)
+    {
+        vec_type loaded_next_in1;
+        if (N != offset)
+            loaded_next_in1 = in1.consume();
+
+        vec_type loaded_next_in2;
+        if (N != offset)
+            loaded_next_in2 = in2.consume();
+
+        vec_type result = f(loaded_in1, loaded_in2);
+        result.store_aligned(out);
+        compile_time_unroller<FloatType, N-offset>::mp_iteration_2(out+offset, loaded_next_in1, in1, loaded_next_in2, in2, f);
+    }
+
+    template <typename arg1_type,
+              typename arg2_type,
+              typename arg3_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration_3(FloatType * out, vec_type loaded_in1, arg1_type & in1,
+                                             vec_type loaded_in2, arg2_type & in2,
+                                             vec_type loaded_in3, arg3_type & in3, Functor const & f)
+    {
+        vec_type loaded_next_in1;
+        if (N != offset)
+            loaded_next_in1 = in1.consume();
+
+        vec_type loaded_next_in2;
+        if (N != offset)
+            loaded_next_in2 = in2.consume();
+
+        vec_type loaded_next_in3;
+        if (N != offset)
+            loaded_next_in3 = in3.consume();
+
+        vec_type result = f(loaded_in1, loaded_in2, loaded_in3);
+        result.store_aligned(out);
+        compile_time_unroller<FloatType, N-offset>::mp_iteration_3(out+offset, loaded_next_in1, in1, loaded_next_in2, in2,
+                                                                   loaded_next_in3, in3, f);
+    }
+
+    template <typename arg1_type,
+              typename arg2_type,
+              typename arg3_type,
+              typename arg4_type,
+              typename Functor
+             >
+    static always_inline void mp_iteration_4(FloatType * out, vec_type loaded_in1, arg1_type & in1, vec_type loaded_in2, arg2_type & in2,
+                                             vec_type loaded_in3, arg3_type & in3, vec_type loaded_in4, arg4_type & in4, Functor const & f)
+    {
+        vec_type loaded_next_in1;
+        if (N != offset)
+            loaded_next_in1 = in1.consume();
+
+        vec_type loaded_next_in2;
+        if (N != offset)
+            loaded_next_in2 = in2.consume();
+
+        vec_type loaded_next_in3;
+        if (N != offset)
+            loaded_next_in3 = in3.consume();
+
+        vec_type loaded_next_in4;
+        if (N != offset)
+            loaded_next_in4 = in4.consume();
+
+        vec_type result = f(loaded_in1, loaded_in2, loaded_in3, loaded_in4);
+        result.store_aligned(out);
+
+        compile_time_unroller<FloatType, N-offset>::mp_iteration_4(out+offset, loaded_next_in1, in1, loaded_next_in2, in2,
+                                                                   loaded_next_in3, in3, loaded_next_in4, in4, f);
     }
 };
 
 template <typename FloatType>
 struct compile_time_unroller<FloatType, 0>
 {
-    template <typename Arg1,
+    friend class compile_time_unroller<FloatType, vec<FloatType>::size>;
+
+private:
+    template <typename LoadedArg1, typename Arg1,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Functor const & f)
+    static always_inline void mp_iteration_1(FloatType * out, LoadedArg1 const &, Arg1 const &, Functor const & f)
     {}
 
-    template <typename Arg1,
-              typename Arg2,
+    template <typename LoadedArg1, typename Arg1,
+              typename LoadedArg2, typename Arg2,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Functor const & f)
+    static always_inline void mp_iteration_2(FloatType * out, LoadedArg1 const &, Arg1 const &,
+                                             LoadedArg2 const &, Arg2 const &, Functor const & f)
     {}
 
-    template <typename Arg1,
-              typename Arg2,
-              typename Arg3,
+    template <typename LoadedArg1, typename Arg1,
+              typename LoadedArg2, typename Arg2,
+              typename LoadedArg3, typename Arg3,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Arg3 const &, Functor const & f)
+    static always_inline void mp_iteration_3(FloatType * out, LoadedArg1 const &, Arg1 const &,
+                                             LoadedArg2 const &, Arg2 const &, LoadedArg3 const &, Arg3 const &,
+                                             Functor const & f)
     {}
 
-    template <typename Arg1,
-              typename Arg2,
-              typename Arg3,
-              typename Arg4,
+    template <typename LoadedArg1, typename Arg1,
+              typename LoadedArg2, typename Arg2,
+              typename LoadedArg3, typename Arg3,
+              typename LoadedArg4, typename Arg4,
               typename Functor
              >
-    static always_inline void mp_iteration(FloatType * out, Arg1 const &, Arg2 const &, Arg3 const &, Arg4 const &, Functor const & f)
+    static always_inline void mp_iteration_4(FloatType * out, LoadedArg1 const &, Arg1 const &,
+                                             LoadedArg2 const &, Arg2 const &, LoadedArg3 const &, Arg3 const &,
+                                             LoadedArg4 const &, Arg4 const &, Functor const & f)
     {}
 };
 
@@ -136,7 +229,7 @@ always_inline void generate_simd_loop(float_type * out, Arg1 arg1, unsigned int 
     const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
     n /= per_loop;
     do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, f);
+        detail::compile_time_unroller<float_type, per_loop>::run(out, arg1, f);
         out += per_loop;
     } while (--n);
 }
@@ -151,7 +244,7 @@ always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, un
     const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
     n /= per_loop;
     do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, f);
+        detail::compile_time_unroller<float_type, per_loop>::run(out, arg1, arg2, f);
         out += per_loop;
     } while (--n);
 }
@@ -167,7 +260,7 @@ always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, Ar
     const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
     n /= per_loop;
     do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, f);
+        detail::compile_time_unroller<float_type, per_loop>::run(out, arg1, arg2, arg3, f);
         out += per_loop;
     } while (--n);
 }
@@ -184,7 +277,7 @@ always_inline void generate_simd_loop(float_type * out, Arg1 arg1, Arg2 arg2, Ar
     const unsigned int per_loop = vec<float_type>::objects_per_cacheline;
     n /= per_loop;
     do {
-        detail::compile_time_unroller<float_type, per_loop>::mp_iteration(out, arg1, arg2, arg3, arg4, f);
+        detail::compile_time_unroller<float_type, per_loop>::run(out, arg1, arg2, arg3, arg4, f);
         out += per_loop;
     } while (--n);
 }

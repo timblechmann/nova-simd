@@ -51,7 +51,7 @@ struct unary_functor
     static always_inline void perform_vec_simd(FloatType * out, const FloatType * arg)
     {
         nova::detail::vector_pointer_argument<FloatType> varg(arg);
-        nova::detail::compile_time_unroller<FloatType, n>::mp_iteration(out, varg, Functor());
+        nova::detail::compile_time_unroller<FloatType, n>::run(out, varg, Functor());
     }
 };
 
@@ -85,7 +85,7 @@ private:
     template <unsigned int n, typename FloatType, typename Arg1Type, typename Arg2Type>
     static always_inline void perform_vec_simd_(FloatType * out, Arg1Type arg1, Arg2Type arg2)
     {
-        nova::detail::compile_time_unroller<FloatType, n>::mp_iteration(out, arg1, arg2, Functor());
+        nova::detail::compile_time_unroller<FloatType, n>::run(out, arg1, arg2, Functor());
     }
 };
 
@@ -121,7 +121,7 @@ private:
     template <unsigned int n, typename FloatType, typename Arg1Type, typename Arg2Type, typename Arg3Type>
     static always_inline void perform_vec_simd_(FloatType * out, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
     {
-        nova::detail::compile_time_unroller<FloatType, n>::mp_iteration(out, arg1, arg2, arg3, Functor());
+        nova::detail::compile_time_unroller<FloatType, n>::run(out, arg1, arg2, arg3, Functor());
     }
 };
 
@@ -160,7 +160,7 @@ private:
     template <unsigned int n, typename FloatType, typename Arg1Type, typename Arg2Type, typename Arg3Type, typename Arg4Type>
     static always_inline void perform_vec_simd_(FloatType * out, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3, Arg4Type arg4)
     {
-        nova::detail::compile_time_unroller<FloatType, n>::mp_iteration(out, arg1, arg2, arg3, arg4, Functor());
+        nova::detail::compile_time_unroller<FloatType, n>::run(out, arg1, arg2, arg3, arg4, Functor());
     }
 };
 
