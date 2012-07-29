@@ -49,6 +49,11 @@
 #include <linux/ioctl.h>
 #include <asm/byteorder.h>
 
+#if defined(__ia64__) || defined(__alpha__)
+#include <asm-generic/unistd.h>
+#endif
+
+
 /*
  * User-space ABI bits:
  */
