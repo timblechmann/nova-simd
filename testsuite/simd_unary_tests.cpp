@@ -160,3 +160,24 @@ BOOST_AUTO_TEST_CASE( undenormalize_tester )
     undenormalize_compare<float>();
     undenormalize_compare<double>();
 }
+
+template <typename float_type>
+void reciprical_compare(void)
+{
+    aligned_array<float_type, size> out, out_simd, out_mp, in;
+
+    for (int i = 0; i != size; ++i)
+        in [i] = (i * 100)/(float_type)size + 1;
+
+    nova::reciprocal_vec<float_type>(out.c_array(), in.c_array(), size);
+    nova::reciprocal_vec_simd<float_type>(out_simd.c_array(), in.c_array(), size);
+    nova::reciprocal_vec_simd<size>(out_mp.c_array(), in.c_array());
+    compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-6f);
+    compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-6f);
+}
+
+BOOST_AUTO_TEST_CASE( reciprocal_tester )
+{
+    reciprical_compare<float>();
+    reciprical_compare<double>();
+}

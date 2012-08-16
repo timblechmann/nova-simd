@@ -53,6 +53,7 @@ DEFINE_UNARY_FUNCTOR(fabs, abs)
 DEFINE_UNARY_FUNCTOR(sign, sign)
 DEFINE_UNARY_FUNCTOR(square, square)
 DEFINE_UNARY_FUNCTOR(cube, cube)
+DEFINE_UNARY_FUNCTOR(reciprocal, reciprocal)
 
 DEFINE_UNARY_FUNCTOR(round, round)
 DEFINE_UNARY_FUNCTOR(frac, frac)
@@ -75,6 +76,7 @@ NOVA_SIMD_DEFINE_UNARY_WRAPPER(floor, detail::floor_)
 NOVA_SIMD_DEFINE_UNARY_WRAPPER(trunc, detail::trunc_)
 
 NOVA_SIMD_DEFINE_UNARY_WRAPPER(undenormalize, detail::undenormalize_)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(reciprocal, detail::reciprocal_)
 } /* namespace nova */
 
 #undef always_inline
