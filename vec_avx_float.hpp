@@ -48,6 +48,8 @@ private:
     typedef vec_base<float, __m256, 8> base;
 
 public:
+    static const bool has_compare_bitmask = true;
+
     typedef __m256 internal_vector_type;
     typedef float float_type;
 

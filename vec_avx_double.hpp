@@ -46,6 +46,7 @@ struct vec<double>:
 {
 private:
     typedef vec_base<double, __m256d, 4> base;
+    static const bool has_compare_bitmask = true;
 
 public:
     typedef double float_type;

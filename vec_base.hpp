@@ -57,6 +57,7 @@ class vec_base
 
 public:
     static const int size = VecSize;
+    static const bool has_compare_bitmask = false;
 
 protected:
     vec_base (void)

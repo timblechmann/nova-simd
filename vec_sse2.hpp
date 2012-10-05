@@ -103,6 +103,7 @@ struct vec<double>:
 public:
     static const int size = 2;
     static const int objects_per_cacheline = 64/sizeof(double);
+    static const bool has_compare_bitmask = true;
 
     static bool is_aligned(double* ptr)
     {

@@ -142,6 +142,7 @@ struct vec<float>:
 public:
     static const int size = 4;
     static const int objects_per_cacheline = 64/sizeof(float);
+    static const bool has_compare_bitmask = true;
 
     static bool is_aligned(float* ptr)
     {

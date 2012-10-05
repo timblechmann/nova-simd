@@ -67,6 +67,7 @@ private:
     }
 
 public:
+    static const bool has_compare_bitmask = true;
 
     static inline internal_vector_type gen_sign_mask(void)
     {
