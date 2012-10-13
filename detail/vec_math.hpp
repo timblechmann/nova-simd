@@ -492,6 +492,9 @@ always_inline VecType vec_tanh_float(VecType const & arg)
     const VecType maxlogf_2 (22.f);
     const VecType limit_small (0.625f);
 
+	/* medium values */
+    const VecType result_medium_abs = one - two / (vec_exp_tanh_float(abs_arg + abs_arg) + one);
+
     /* large values */
     const VecType abs_big          = mask_gt(abs_arg, maxlogf_2);
     const VecType result_limit_abs = one;
@@ -512,9 +515,6 @@ always_inline VecType vec_tanh_float(VecType const & arg)
         + arg;
 
     const VecType abs_small = mask_lt(abs_arg, limit_small);
-
-    /* medium values */
-    const VecType result_medium_abs = one - two / (vec_exp_tanh_float(abs_arg + abs_arg) + one);
 
     /* select from large and medium branches and set sign */
     const VecType result_lm_abs = select(result_medium_abs, result_limit_abs, abs_big);
