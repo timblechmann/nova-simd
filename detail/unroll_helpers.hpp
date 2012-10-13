@@ -81,7 +81,7 @@ struct compile_time_unroller
     }
 
 private:
-    friend class compile_time_unroller<FloatType, vec_type::size + N>;
+    friend struct compile_time_unroller<FloatType, vec_type::size + N>;
 
     template <typename arg1_type,
               typename Functor
@@ -180,7 +180,7 @@ private:
 template <typename FloatType>
 struct compile_time_unroller<FloatType, 0>
 {
-    friend class compile_time_unroller<FloatType, vec<FloatType>::size>;
+    friend struct compile_time_unroller<FloatType, vec<FloatType>::size>;
 
 private:
     template <typename LoadedArg1, typename Arg1,
