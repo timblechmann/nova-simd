@@ -540,8 +540,11 @@ always_inline VecType vec_signed_pow(VecType arg1, VecType arg2)
 template <typename VecType>
 always_inline VecType vec_pow(VecType arg1, VecType arg2)
 {
+    const VecType zero      = VecType::gen_zero();
+    const VecType arg1_zero = mask_eq(arg1, zero);
+
     const VecType result = exp(arg2 * log(arg1));
-    return result;
+    return select(result, zero, arg1_zero);
 }
 
 template <typename VecType>
