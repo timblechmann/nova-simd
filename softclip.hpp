@@ -24,7 +24,7 @@
 
 #include "vec.hpp"
 
-#include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -32,15 +32,12 @@
 #define always_inline inline
 #endif
 
+namespace nova   {
+namespace detail {
 
-namespace nova
-{
-namespace detail
-{
-
-template <typename FloatType>
 struct softclip
 {
+    template <typename FloatType>
     always_inline FloatType operator()(FloatType arg) const
     {
         FloatType abs = fabs(arg);
@@ -49,71 +46,40 @@ struct softclip
         else
             return (abs - FloatType(0.25)) / arg;
     }
-};
 
-#ifdef SSE
+#if defined(__SSE__) || defined(__AVX__)
+    /* this computes both parts of the branch
+     *
+     * benchmarks (core2) showed:
+     * 6.5 seconds for simdfied code
+     * 5.3 seconds for non-simd code for samples with abs(sample) < 0.5
+     * 17 seconds                    when 50% of the samples have abs(sample) < 0.5
+     * 26 seconds                    for samples with abs(sample) > 0.5
+     *
+     * on intel nethalem cpus, the simdfied code is faster than all non-simd code
+     * */
 
-/* this computes both parts of the branch
- *
- * benchmarks (core2) showed:
- * 6.5 seconds for simdfied code
- * 5.3 seconds for non-simd code for samples with abs(sample) < 0.5
- * 17 seconds                    when 50% of the samples have abs(sample) < 0.5
- * 26 seconds                    for samples with abs(sample) > 0.5
- *
- * on intel nethalem cpus, the simdfied code is faster than all non-simd code
- * */
-
-template <>
-struct softclip<vec<float> >
-{
-    typedef vec<float> vec_type;
-
-    always_inline vec_type operator()(vec_type arg) const
+    template <typename FloatType>
+    always_inline vec<FloatType> operator()(vec<FloatType> arg) const
     {
-        const vec_type const05  = vec_type::gen_05();
-        const vec_type const025 = vec_type::gen_025();
+        typedef vec<FloatType> vec_type;
 
-        vec_type abs = abs(arg);
-        vec_type selecter = mask_lt(abs, const05);
-        vec_type alt_ret = (abs - const025) / arg;
+        const vec_type const05 = vec_type::gen_05();
+        const vec_type const025 (0.25);
+
+        vec_type abs_ = abs(arg);
+        vec_type selecter = mask_lt(abs_, const05);
+        vec_type alt_ret = (abs_ - const025) / arg;
 
         return select(alt_ret, arg, selecter);
     }
+#endif
 };
 
-#endif
+} /* namespace detail */
 
-}
+NOVA_SIMD_DEFINE_UNARY_WRAPPER(softclip, detail::softclip)
 
-
-template <typename float_type>
-inline void softclip_vec(float_type * out, const float_type * in, unsigned int n)
-{
-    detail::apply_on_vector(out, in, n, detail::softclip<float>());
-}
-
-template <typename float_type>
-inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned int n)
-{
-    softclip_vec(out, in, n);
-}
-
-template <unsigned int n, typename float_type>
-inline void softclip_vec_simd(float_type * out, const float_type * in)
-{
-    softclip_vec_simd(out, in, n);
-}
-
-#ifdef SSE
-
-template <>
-inline void softclip_vec_simd<float>(float_type * out, const float_type * in, unsigned int n)
-{
-    detail::generate_simd_loop(out, in, n, detail::softclip<vec<float> >());
-}
-
-#endif
 
 } /* namespace nova */
 
