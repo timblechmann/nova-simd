@@ -38,13 +38,19 @@ namespace detail {
 struct softclip
 {
     template <typename FloatType>
-    always_inline FloatType operator()(FloatType arg) const
+    static FloatType s_run(FloatType arg)
     {
-        FloatType abs = fabs(arg);
+        FloatType abs = std::fabs(arg);
         if (abs < FloatType(0.5))
             return arg;
         else
             return (abs - FloatType(0.25)) / arg;
+    }
+
+    template <typename FloatType>
+    always_inline FloatType operator()(FloatType arg) const
+    {
+        return s_run(arg);
     }
 
 #if defined(__SSE__) || defined(__AVX__)
@@ -72,6 +78,12 @@ struct softclip
         vec_type alt_ret = (abs_ - const025) / arg;
 
         return select(alt_ret, arg, selecter);
+    }
+#else
+    template <typename FloatType>
+    always_inline vec<FloatType> operator()(vec<FloatType> arg) const
+    {
+        return arg.collect(softclip::s_run<FloatType>);
     }
 #endif
 };

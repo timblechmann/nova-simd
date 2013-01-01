@@ -352,6 +352,15 @@ public:
         return ret;
     }
 
+    template <typename Functor>
+    VecType collect(Functor const & f)
+    {
+        vec_base ret;
+        for (int i = 0; i != size; ++i)
+            ret.set(i, f(get(i)));
+        return ret.data_;
+    }
+
 protected:
     VecType data_;
 };
