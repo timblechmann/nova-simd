@@ -24,7 +24,7 @@
 #include <functional>
 #include <cstring>
 
-#include "detail/math.hpp"
+#include "../detail/math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))

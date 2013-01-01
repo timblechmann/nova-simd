@@ -24,8 +24,8 @@
 #include <algorithm>
 #include <numeric>
 
-#include "wrap_arguments.hpp"
-#include "detail/math.hpp"
+#include "../detail/wrap_arguments.hpp"
+#include "../detail/math.hpp"
 #include "vec_base.hpp"
 
 namespace nova

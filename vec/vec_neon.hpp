@@ -24,7 +24,7 @@
 
 #include "vec_base.hpp"
 #include "vec_int_neon.hpp"
-#include "detail/vec_math.hpp"
+#include "../detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))

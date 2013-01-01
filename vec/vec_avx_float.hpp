@@ -22,9 +22,7 @@
 
 #include <immintrin.h>
 
-#include <iostream>
-
-#include "detail/vec_math.hpp"
+#include "../detail/vec_math.hpp"
 #include <numeric>
 
 #if defined(__GNUC__) && defined(NDEBUG)

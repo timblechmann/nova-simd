@@ -23,9 +23,9 @@
 #include <altivec.h>
 #undef bool
 
-#include "detail/vec_math.hpp"
+#include "../detail/vec_math.hpp"
 #include "vec_int_altivec.hpp"
-#include "detail/math.hpp"
+#include "../detail/math.hpp"
 #include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)

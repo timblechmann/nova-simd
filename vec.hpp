@@ -20,26 +20,26 @@
 #ifndef VEC_HPP
 #define VEC_HPP
 
-#include "vec_generic.hpp"
+#include "vec/vec_generic.hpp"
 
 #ifdef __ARM_NEON__
-#  include "vec_neon.hpp"
+#  include "vec/vec_neon.hpp"
 #endif
 
 #ifdef __ALTIVEC__
-#  include "vec_altivec.hpp"
+#  include "vec/vec_altivec.hpp"
 #endif
 
 #ifdef __AVX__
-#  include "vec_avx_float.hpp"
+#  include "vec/vec_avx_float.hpp"
 #elif defined(__SSE__)
-#  include "vec_sse.hpp"
+#  include "vec/vec_sse.hpp"
 #endif
 
 #ifdef __AVX__
-#  include "vec_avx_double.hpp"
+#  include "vec/vec_avx_double.hpp"
 #elif defined(__SSE2__)
-#  include "vec_sse2.hpp"
+#  include "vec/vec_sse2.hpp"
 #endif
 
 namespace nova

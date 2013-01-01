@@ -29,7 +29,7 @@
 #include <smmintrin.h>
 #endif
 
-#include "detail/vec_math.hpp"
+#include "../detail/vec_math.hpp"
 #include "vec_base.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
