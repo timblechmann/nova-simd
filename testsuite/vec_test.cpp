@@ -42,7 +42,7 @@ void compare_float_mask(VecType const & v, unsigned int mask)
 void test_gen_float(void)
 {
     typedef vec<float> vec_t;
-
+#if defined(__SSE__) || defined (__AVX__)
     vec_t zero = vec_t::gen_zero();
     for (int i = 0; i != zero.size; ++i)
         BOOST_REQUIRE_EQUAL( zero.get(i), 0.f);
@@ -66,6 +66,7 @@ void test_gen_float(void)
 
     vec_t exp1_mask = vec_t::gen_exp_mask_1();
     compare_float_mask(exp1_mask, 0x3F000000);
+#endif
 }
 
 BOOST_AUTO_TEST_CASE( get_set )
@@ -119,8 +120,8 @@ BOOST_AUTO_TEST_CASE( align )
 {
     BOOST_REQUIRE(vec<double>::is_aligned(NULL));
     BOOST_REQUIRE(vec<float>::is_aligned(NULL));
-    BOOST_REQUIRE(!vec<double>::is_aligned((double*)(NULL+1)));
-    BOOST_REQUIRE(!vec<float>::is_aligned((float*)(NULL+1)));
+    BOOST_REQUIRE(!vec<double>::is_aligned((double*)(1)));
+    BOOST_REQUIRE(!vec<float>::is_aligned((float*)(1)));
 }
 
 template <typename T>

@@ -21,7 +21,7 @@ separate_arguments(EMULATOR UNIX_COMMAND "${EMULATOR}")
 
 foreach(test ${tests})
   string(REPLACE .cpp "" test_name ${test} )
-  add_executable(${test_name} ${test})
+  add_executable(${test_name} ${test} ${headers})
 
   if(EMULATOR)
     add_test(NAME ${test_name}_run COMMAND ${EMULATOR} ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
