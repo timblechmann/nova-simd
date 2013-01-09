@@ -283,21 +283,32 @@ struct copyvec
     static always_inline void mp_iteration(F * dst, const F * src)
     {
         vec<F> val;
+        if (src_aligned)
+            val.load_aligned(src);
+        else
+            val.load(src);
+
+        mp_iteration(dst, src + offset, val);
+    }
+
+    static always_inline void mp_iteration(F * dst, const F * src, vec<F> const & loaded_value)
+    {
+        vec<F> val;
 
         if (src_aligned)
             val.load_aligned(src);
         else
             val.load(src);
 
-        store_aligned<dst_aligned>(val, dst);
-        copyvec<F, src_aligned, dst_aligned, n-offset>::mp_iteration(dst+offset, src+offset);
+        store_aligned<dst_aligned>(loaded_value, dst);
+        copyvec<F, src_aligned, dst_aligned, n-offset>::mp_iteration(dst+offset, src+offset, val);
     }
 };
 
 template <typename F, bool src_aligned, bool dst_aligned>
 struct copyvec<F, src_aligned, dst_aligned, 0>
 {
-    static always_inline void mp_iteration(F * dst, const F * src)
+    static always_inline void mp_iteration(F * dst, const F * src, vec<F> loaded_value)
     {}
 };
 
