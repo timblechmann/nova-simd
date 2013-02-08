@@ -16,6 +16,13 @@ set(tests
   vec_test.cpp
 )
 
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+if (WIN32)
+   add_definitions(-DNOMINMAX)
+endif()
+
 SET(EMULATOR "" CACHE STRING "use CPU emulator")
 separate_arguments(EMULATOR UNIX_COMMAND "${EMULATOR}")
 

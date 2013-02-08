@@ -26,5 +26,5 @@ BOOST_AUTO_TEST_CASE( softclip_tests_float )
     softclip_vec_simd(simd_val.begin(), arguments.begin(), 10000);
     softclip_vec (normal_val.begin(), arguments.begin(), 10000);
 
-    compare_buffers(normal_val.begin(), simd_val.begin(), 1e-8f);
+    compare_buffers(normal_val.begin(), simd_val.begin(), 10000, 1e-8f);
 }

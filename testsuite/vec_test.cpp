@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( select_tester )
     test_select<double>();
 }
 
-BOOST_AUTO_TEST_CASE( align )
+BOOST_AUTO_TEST_CASE( align_ )
 {
     BOOST_REQUIRE(vec<double>::is_aligned(NULL));
     BOOST_REQUIRE(vec<float>::is_aligned(NULL));
