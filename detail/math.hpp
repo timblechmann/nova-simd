@@ -265,7 +265,7 @@ inline float_type frac(float_type const & arg)
 template <typename float_type>
 inline float_type log2(float_type arg)
 {
-#if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if __cplusplus >= 201103L
     return std::log2(arg);
 #else
     const float rlog2 = 1.f/std::log(2.f);
@@ -273,9 +273,9 @@ inline float_type log2(float_type arg)
 #endif
 }
 
-#if !defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if !(__cplusplus >= 201103L) // C++11
 
-#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
+#if __STDC_VERSION__ >= 199901L // C99
 template <>
 inline float log2(float arg)
 {
@@ -289,7 +289,7 @@ inline double log2(double arg)
 }
 #endif
 
-#endif /* __GXX_EXPERIMENTAL_CXX0X__ */
+#endif
 
 template<typename float_type>
 inline float_type trunc(float_type const & arg)
