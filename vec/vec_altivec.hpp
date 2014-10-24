@@ -22,6 +22,8 @@
 
 #include <altivec.h>
 #undef bool
+#undef pixel
+#undef vector
 
 #include "../detail/vec_math.hpp"
 #include "vec_int_altivec.hpp"
@@ -39,13 +41,13 @@ namespace nova
 
 template <>
 struct vec<float>:
-    vec_base<float, vector float, 4>
+    vec_base<float, __vector float, 4>
 {
-    typedef vector float internal_vector_type;
+    typedef __vector float internal_vector_type;
     typedef float float_type;
 
 private:
-    typedef vec_base<float, vector float, 4> base;
+    typedef vec_base<float, __vector float, 4> base;
 
     static internal_vector_type set_vector(float f0, float f1, float f2, float f3)
     {
@@ -231,7 +233,7 @@ private:
         // adapted from http://developer.apple.com/hardwaredrivers/ve/algorithms.html
 
         // Get the reciprocal estimate
-        vector float estimate = vec_re(arg);
+        __vector float estimate = vec_re(arg);
 
         // One round of Newton-Raphson refinement
         return vec_madd(vec_nmsub(estimate, arg, gen_one()), estimate, estimate);
@@ -284,7 +286,7 @@ public:
 
     friend vec fast_reciprocal(const vec & arg)
     {
-        vector float estimate = vec_re(arg);
+        __vector float estimate = vec_re(arg.data_);
         return estimate;
     }
 
@@ -316,8 +318,8 @@ public:
     vec operator op(vec const & rhs) const \
     { \
         const internal_vector_type one = gen_one(); \
-        vector unsigned int mask = (vector unsigned int)opcode(data_, rhs.data_); \
-        return (internal_vector_type)vec_and(mask, (vector unsigned int)one); \
+        __vector unsigned int mask = (__vector unsigned int)opcode(data_, rhs.data_); \
+        return (internal_vector_type)vec_and(mask, (__vector unsigned int)one); \
     }
 
 #define vec_cmple_(a, b) vec_cmpge(b, a)
@@ -367,7 +369,7 @@ public:
 
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
-        return vec_sel(lhs.data_, rhs.data_, (vector unsigned int)bitmask.data_);
+        return vec_sel(lhs.data_, rhs.data_, (__vector unsigned int)bitmask.data_);
     }
 
     /* @} */
@@ -395,14 +397,14 @@ private:
         // adapted from http://developer.apple.com/hardwaredrivers/ve/algorithms.html
 
         //Get the square root reciprocal estimate
-        vector float zero =    gen_zero();
-        vector float oneHalf = gen_05();
-        vector float one =     gen_one();
-        vector float estimate = vec_rsqrte(arg);
+        __vector float zero =    gen_zero();
+        __vector float oneHalf = gen_05();
+        __vector float one =     gen_one();
+        __vector float estimate = vec_rsqrte(arg);
 
         //One round of Newton-Raphson refinement
-        vector float estimateSquared = vec_madd(estimate, estimate, zero);
-        vector float halfEstimate = vec_madd(estimate, oneHalf, zero);
+        __vector float estimateSquared = vec_madd(estimate, estimate, zero);
+        __vector float halfEstimate = vec_madd(estimate, oneHalf, zero);
         return vec_madd(vec_nmsub(arg, estimateSquared, one), halfEstimate, estimate);
     }
 
