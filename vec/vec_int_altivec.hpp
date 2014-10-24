@@ -27,8 +27,8 @@ namespace detail {
 
 struct int_vec_altivec
 {
-    typedef vector float fvec;
-    typedef vector unsigned int ivec;
+    typedef __vector float fvec;
+    typedef __vector unsigned int ivec;
     ivec data_;
 
 private:
@@ -58,7 +58,7 @@ public:
         data_(arg.data_)
     {}
 
-    int_vec_altivec(vector signed int arg):
+    int_vec_altivec(__vector signed int arg):
         data_((ivec)arg)
     {}
 
