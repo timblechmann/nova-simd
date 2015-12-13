@@ -266,7 +266,14 @@ public:
         return detail::vec_reciprocal_newton(arg);
     }
 
+#ifndef __FMA__
     NOVA_SIMD_DEFINE_MADD
+#else
+    inline friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)
+    {
+        return _mm256_fmadd_ps(arg1.data_, arg2.data_, arg3.data_);
+    }
+#endif
 
 #define RELATIONAL_OPERATOR(op, RELATION) \
     vec operator op(vec const & rhs) const \

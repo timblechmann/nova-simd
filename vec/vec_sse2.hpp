@@ -29,6 +29,10 @@
 #include <smmintrin.h>
 #endif
 
+#ifdef __FMA__
+#include <immintrin.h>
+#endif
+
 #include "../detail/vec_math.hpp"
 #include "vec_base.hpp"
 
@@ -237,7 +241,14 @@ public:
 
     NOVA_SIMD_DELEGATE_UNARY_TO_BASE(reciprocal)
 
+#ifndef __FMA__
     NOVA_SIMD_DEFINE_MADD
+#else
+    inline friend vec madd(vec const & arg1, vec const & arg2, vec const & arg3)
+    {
+        return _mm_fmadd_pd(arg1.data_, arg2.data_, arg3.data_);
+    }
+#endif
 
 #define RELATIONAL_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
