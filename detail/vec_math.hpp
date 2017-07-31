@@ -385,12 +385,12 @@ always_inline VecType vec_asin_float(VecType const & arg)
 
     // range redution: asin(x) = pi/2 - 2 asin( sqrt( (1-x)/2 ) ). for |arg| > 0.5
     VecType arg_greater_05 = mask_gt(abs_arg, 0.5);
-    VecType arg_reduced_sqr = (one - abs_arg) * half;
+    // VecType arg_reduced_sqr = (one - abs_arg) * half;
     VecType arg_reduced = sqrt((one - abs_arg) * half);
     VecType approx_arg = select(abs_arg, arg_reduced, arg_greater_05);
 
 
-    VecType z = select(abs_arg*abs_arg, arg_reduced_sqr, arg_greater_05);
+    // VecType z = select(abs_arg*abs_arg, arg_reduced_sqr, arg_greater_05);
 
     VecType x = approx_arg; VecType x2 = x*x;
     // sollya: fpminimax(asin(x), [|3,5,7,9,11|], [|24...|], [0.000000000000000000001,0.5], x);
