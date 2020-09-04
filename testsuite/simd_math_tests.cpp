@@ -1,7 +1,7 @@
 #include <iostream>
 #define BOOST_TEST_MAIN
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <cmath>
 
@@ -33,10 +33,10 @@ void test_##name(void)                                                  \
                                                                         \
     name##_vec(libmval.begin(), args.begin(), size);                    \
     name##_vec_simd(sseval.begin(), args.begin(), size);                \
-    /*name##_vec_simd<size>(mpval.begin(), args.begin())*/;                 \
+    /*name##_vec_simd<size>(mpval.begin(), args.begin());*/             \
                                                                         \
     compare_buffers(sseval.begin(), libmval.begin(), size, 5e-6f);      \
-    /*compare_buffers(mpval.begin(), libmval.begin(), size, 5e-6f)*/;       \
+    /*compare_buffers(mpval.begin(), libmval.begin(), size, 5e-6f);*/   \
 }                                                                       \
                                                                         \
 BOOST_AUTO_TEST_CASE( name##_tests)                                     \
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( pow_tests_float_1 )
         pow_vec(libmval.begin(), args.begin(), exponent, size);
         pow_vec_simd(sseval.begin(), args.begin(), exponent, size);
 
-        compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);
+        compare_buffers(sseval.begin(), libmval.begin(), size, 1e-4f);
     }
 }
 
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
         spow_vec(libmval.begin(), args.begin(), exponent, size);
         spow_vec_simd(sseval.begin(), args.begin(), exponent, size);
 
-        compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);
+        compare_buffers(sseval.begin(), libmval.begin(), size, 1e-4f);
     }
 
 	vec<float> zero(0.f);

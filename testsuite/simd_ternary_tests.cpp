@@ -1,7 +1,7 @@
 #include <iostream>
 #define BOOST_TEST_MAIN
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <cmath>
 
