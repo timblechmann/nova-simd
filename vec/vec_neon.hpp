@@ -239,6 +239,11 @@ public:
                 return vgetq_lane_f32(data_, 3);
         }
         assert(false);
+#if defined(__GNUC__) || defined(__clang__)
+        __builtin_unreachable();
+#elif defined(_MSC_VER)
+        __assume(false);
+#endif
     }
     /* @} */
 
